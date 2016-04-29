@@ -16,13 +16,12 @@ import javax.swing.JTextField;
 import javax.swing.GroupLayout.Alignment;
 
 import com.supermap.data.DatasetType;
+import com.supermap.data.DatasetVector;
 import com.supermap.data.Datasets;
 import com.supermap.data.Datasource;
 import com.supermap.data.Datasources;
 import com.supermap.desktop.Application;
-import com.supermap.desktop.CtrlAction.JDialogFindTrack.WorkThead;
 import com.supermap.desktop.properties.CommonProperties;
-import com.supermap.desktop.ui.UICommonToolkit;
 import com.supermap.desktop.ui.controls.DataCell;
 import com.supermap.desktop.ui.controls.DatasetComboBox;
 import com.supermap.desktop.ui.controls.DatasourceComboBox;
@@ -31,7 +30,8 @@ import com.supermap.desktop.utilties.CursorUtilties;
 
 public class JDialogHeatMap extends SmDialog {
 	
-//	private JPanel contentPane;
+	String topicName = " KernelDensity";
+	String topicNameRespond = " KernelDensity_Respond";
 	/**
 	 * Create the frame.
 	 */
@@ -40,10 +40,6 @@ public class JDialogHeatMap extends SmDialog {
 		initializeComponents();
 	}
 
-	private JLabel labelStart;
-	private JTextField calendarStart;
-	private JLabel labelEnd;
-	private JTextField calendarEnd;
 	private JLabel labelBounds;
 	private DatasetComboBox comboBoxBounds;	
 	private JLabel labelResolution;
@@ -59,26 +55,11 @@ public class JDialogHeatMap extends SmDialog {
 	private JButton buttonCancel;
 
 	private void initializeComponents() {
-		this.labelStart = new JLabel("开始时间:");
-		this.calendarStart = new JTextField();
-		this.calendarStart.setEditable(false);
-		CalendarChooser startChooser = CalendarChooser.getInstance("yyyy年MM月dd日");
-		this.calendarStart.setBounds(10, 10, 200, 30);
-		this.calendarStart.setText("2016年4月28日");
-		startChooser.register(this.calendarStart);
-
-		this.labelEnd = new JLabel("结束时间:");
-		this.calendarEnd = new JTextField();
-		this.calendarEnd.setEditable(false);
-		CalendarChooser endChooser = CalendarChooser.getInstance("yyyy年MM月dd日");
-		this.calendarEnd.setBounds(10, 10, 200, 30);
-		this.calendarEnd.setText("2016年4月28日");
-		endChooser.register(this.calendarEnd);
 		
 		this.labelResolution = new JLabel("分辨率:");
 		this.textResolution = new JTextField("0.1");
 		this.labelRadius = new JLabel("查找半径:");
-		this.textRadius = new JTextField("10");
+		this.textRadius = new JTextField("0.1");
 		
 		this.labelDatasource = new JLabel("数据源:");
 		this.comboBoxDatasource = new DatasourceComboBox();
@@ -86,7 +67,7 @@ public class JDialogHeatMap extends SmDialog {
 		this.labelBounds = new JLabel("分析范围:");
 		this.comboBoxBounds = new DatasetComboBox();
 		this.labelResult = new JLabel("结果数据集:");
-		this.textDatasetName = new JTextField("HeatMap");
+		this.textDatasetName = new JTextField("KernelDensity");
 		
 		this.buttonOK = new JButton("OK");
 		this.buttonOK.setText(CommonProperties.getString("String_Button_OK"));
@@ -118,16 +99,12 @@ public class JDialogHeatMap extends SmDialog {
 		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(this.labelStart)
-								.addComponent(this.labelEnd)
 								.addComponent(this.labelResolution)
 								.addComponent(this.labelRadius)
 								.addComponent(this.labelDatasource)
 								.addComponent(this.labelBounds)
 								.addComponent(this.labelResult))
 						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(this.calendarStart)
-								.addComponent(this.calendarEnd)
 								.addComponent(this.textResolution)
 								.addComponent(this.textRadius)
 								.addComponent(this.comboBoxDatasource)
@@ -141,12 +118,6 @@ public class JDialogHeatMap extends SmDialog {
 								javax.swing.GroupLayout.PREFERRED_SIZE)));
 		
 		groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
-				.addGroup(groupLayout.createParallelGroup(Alignment.CENTER)
-						.addComponent(this.labelStart)
-						.addComponent(this.calendarStart, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addGroup(groupLayout.createParallelGroup(Alignment.CENTER)
-						.addComponent(this.labelEnd)
-						.addComponent(this.calendarEnd, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addGroup(groupLayout.createParallelGroup(Alignment.CENTER)
 						.addComponent(this.labelResolution)
 						.addComponent(this.textResolution, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
@@ -167,17 +138,29 @@ public class JDialogHeatMap extends SmDialog {
 						.addComponent(this.buttonCancel)));
 		// @formatter:on
 
-		setSize(500, 270);
+		setSize(500, 240);
 		setLocationRelativeTo(null);
 		
 		fillComponents();
 		this.setTitle("计算热度图");
 		this.resetControlEnabled();
+		
+		registerEvents();
 	}
 	
 	private DatasetType[] getSupportDatasetTypes() {
 		
 		return new DatasetType[]{DatasetType.REGION};
+	}
+	
+	private void registerEvents() {
+		this.comboBoxDatasource.addItemListener(comboBoxItemListener);
+		this.comboBoxBounds.addItemListener(comboBoxItemListener);
+	}
+	
+	private void unRegisterEvents() {
+		this.comboBoxDatasource.removeItemListener(comboBoxItemListener);
+		this.comboBoxBounds.removeItemListener(comboBoxItemListener);
 	}
 	
 	protected void fillComponents() {
@@ -187,6 +170,14 @@ public class JDialogHeatMap extends SmDialog {
 		
 		if (datasources.getCount() > 0) {
 			this.resetComboboxDataset(datasources.get(0));
+		}	
+		
+		if (this.comboBoxDatasource.getSelectedDatasource() != null) {
+			this.resetComboboxDataset(this.comboBoxDatasource.getSelectedDatasource());
+			
+			String datasetName = this.textDatasetName.getText();
+			datasetName = this.comboBoxDatasource.getSelectedDatasource().getDatasets().getAvailableDatasetName(datasetName);
+			this.textDatasetName.setText(datasetName);
 		}		
 		
 		if (this.comboBoxBounds.getItemCount() > 0) {
@@ -196,11 +187,21 @@ public class JDialogHeatMap extends SmDialog {
 
 	private void comboBoxDatasourceSelectedItemChanged(ItemEvent e) {
 		try {
-			if (e.getStateChange() == ItemEvent.SELECTED) {				
+			if (e.getStateChange() == ItemEvent.SELECTED) {	
+				resetComboboxDataset(comboBoxDatasource.getSelectedDatasource());
+				
 				String datasetName = this.textDatasetName.getText();
 				datasetName = this.comboBoxDatasource.getSelectedDatasource().getDatasets().getAvailableDatasetName(datasetName);
 				this.textDatasetName.setText(datasetName);
 			}
+		} catch (Exception e2) {
+			Application.getActiveApplication().getOutput().output(e2);
+		}
+	}
+
+	private void comboBoxDatasetSelectedItemChanged(ItemEvent e) {
+		try {
+			resetControlEnabled();
 		} catch (Exception e2) {
 			Application.getActiveApplication().getOutput().output(e2);
 		}
@@ -213,6 +214,8 @@ public class JDialogHeatMap extends SmDialog {
 		public void itemStateChanged(ItemEvent e) {
 			if (e.getSource() == comboBoxDatasource) {
 				comboBoxDatasourceSelectedItemChanged(e);
+			} else if (e.getSource() == comboBoxBounds) {
+				comboBoxDatasetSelectedItemChanged(e);
 			}
 		}
 	}
@@ -256,21 +259,46 @@ public class JDialogHeatMap extends SmDialog {
 		@Override
 		public void run() {
 			try {
-				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //设置日期格式
-				Application.getActiveApplication().getOutput().output(df.format(new Date()) + "开始任务..."); //new Date()为获取当前系统时间
 				doWork();
-				Application.getActiveApplication().getOutput().output(df.format(new Date()) + "任务完成。"); //new Date()为获取当前系统时间
 			} finally {
 			}
 		}
 	}
+	
+	String[] args = new String[3];
+	private void doWork() {		
 
-	private void doWork() {
+//		String[] args = new String[3];
+		args[0] = "192.168.14.240:9092"; // brokers
+		args[1] = topicName; // topic
+			
+		DatasetVector datasetBounds = (DatasetVector)this.comboBoxBounds.getSelectedDataset();
+		String bounds = String.format("%f,%f,%f,%f", 
+				datasetBounds.getBounds().getLeft(),
+				datasetBounds.getBounds().getTop(),
+				datasetBounds.getBounds().getRight(),
+				datasetBounds.getBounds().getBottom());
+		String resolution = this.textResolution.getText();
+		String radius = this.textRadius.getText();	
+		String resultDataset = this.textDatasetName.getText() + "@192.168.14.227:" + topicName + ".udb";
+		String resultPath = "192.168.14.227:/home/huchenpu/demo-4.29/result/";
+//		Usage: KernelDensity <spark> <csv> <left,top,right,bottom> <radius> <resolution> <resultgrd>
+		String parmSpark = String.format("sh %s --class %s --master %s %s %s", 
+				"/home/spark-1.5.2-bin-hadoop2.6/bin/spark-submit", 
+				"com.supermap.spark.test.KernelDensity", 
+				"yarn", 
+				"demo-lbsjava-0.0.1-SNAPSHOT.jar",
+				"local[1]");
+		String parmCSV = "hdfs://192.168.12.103:9000/data/mobile0426095637.csv";
+		String parmQuery = String.format("%s %s %s %s", bounds, radius, resolution, resultDataset);
+		args[2] = String.format("%s %s %s %s %s %s", parmSpark, parmCSV, parmQuery, args[0], topicNameRespond, resultPath);
 
-		String startTime = this.calendarStart.getText();
-		String endTime = this.calendarEnd.getText();	
-		
-		Application.getActiveApplication().getOutput().output(startTime + endTime);
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //设置日期格式
+		Application.getActiveApplication().getOutput().output(df.format(new Date()) + "  发送请求..."); //new Date()为获取当前系统时间	
+//		Application.getActiveApplication().getOutput().output(args[0]);
+//		Application.getActiveApplication().getOutput().output(args[1]);
+//		Application.getActiveApplication().getOutput().output(args[2]);
+		lbsCommandProducer.commandProducer(args);	
 	}
 
 	/**
@@ -278,9 +306,11 @@ public class JDialogHeatMap extends SmDialog {
 	 */
 	private void buttonOKActionPerformed() {
 		try {
-			CursorUtilties.setWaitCursor();			
+			CursorUtilties.setWaitCursor();		
+			
 			WorkThead thread = new WorkThead();
-			thread.run();		
+			thread.start();	
+			
 			this.dispose();
 			
 			

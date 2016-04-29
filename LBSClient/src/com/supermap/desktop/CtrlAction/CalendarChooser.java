@@ -174,6 +174,14 @@ public class CalendarChooser extends JPanel {
 			}
 		});
 	}
+	
+	public Date getTime() {
+		return this.calendar.getTime();
+	}
+	
+	public void setTime(Date date) {
+		this.calendar.setTime(date);
+	}
 
 	// hide the main panel.
 	private void hidePanel() {

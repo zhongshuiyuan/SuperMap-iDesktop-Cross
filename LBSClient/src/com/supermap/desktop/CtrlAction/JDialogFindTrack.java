@@ -1,12 +1,11 @@
 package com.supermap.desktop.CtrlAction;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,25 +15,24 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.xml.crypto.Data;
+import javax.swing.SwingUtilities;
 
-import com.supermap.data.DatasetType;
-import com.supermap.data.Datasets;
 import com.supermap.data.Datasource;
 import com.supermap.data.Datasources;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.properties.CommonProperties;
-import com.supermap.desktop.ui.controls.DataCell;
-import com.supermap.desktop.ui.controls.DatasetComboBox;
 import com.supermap.desktop.ui.controls.DatasourceComboBox;
 import com.supermap.desktop.ui.controls.SmDialog;
 import com.supermap.desktop.utilties.CursorUtilties;
 
+import net.infonode.properties.propertymap.PropertyMapWeakListenerManager;
+
 public class JDialogFindTrack extends SmDialog {
 	
-//	private JPanel contentPane;
+	String topicName = "AttributeQuery";
+	String topicNameRespond = "AttributeQuery_Respond";
+	
 	/**
 	 * Create the frame.
 	 */
@@ -44,9 +42,9 @@ public class JDialogFindTrack extends SmDialog {
 	}
 
 	private JLabel labelStart;
-	private JTextField calendarStart;
+	private JTextField textCalendarStart;
 	private JLabel labelEnd;
-	private JTextField calendarEnd;
+	private JTextField textCalendarEnd;
 
 	private JLabel labelPhoneNumber;
 	private JTextField textPhoneNumber;
@@ -57,29 +55,49 @@ public class JDialogFindTrack extends SmDialog {
 
 	private JButton buttonOK;
 	private JButton buttonCancel;
-
+	
+	CalendarChooser startChooser;
+	CalendarChooser endChooser;
+	String dataFormat = "yyyy-MM-dd:HH:mm:ss";
+	
 	private void initializeComponents() {
 		this.labelStart = new JLabel("开始时间:");
-		this.calendarStart = new JTextField();
-		this.calendarStart.setEditable(false);
-		CalendarChooser startChooser = CalendarChooser.getInstance("yyyy年MM月dd日");
-		this.calendarStart.setBounds(10, 10, 200, 30);
-		this.calendarStart.setText("2016年4月28日");
-		startChooser.register(this.calendarStart);
+		this.textCalendarStart = new JTextField();
+		this.textCalendarStart.setEditable(false);
+		this.textCalendarStart.setBounds(10, 10, 200, 30);
+
+		startChooser = CalendarChooser.getInstance(dataFormat);
+		startChooser.register(this.textCalendarStart);
+		SimpleDateFormat sdf = new SimpleDateFormat(dataFormat);
+		try {
+			startChooser.setTime(sdf.parse("2016-04-11:12:00:00"));
+			SimpleDateFormat time = new SimpleDateFormat(dataFormat); 
+			this.textCalendarStart.setText(time.format(this.startChooser.getTime()));
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			Application.getActiveApplication().getOutput().output(e1.getMessage());
+		}
 
 		this.labelEnd = new JLabel("结束时间:");
-		this.calendarEnd = new JTextField();
-		this.calendarEnd.setEditable(false);
-		CalendarChooser endChooser = CalendarChooser.getInstance("yyyy年MM月dd日");
-		this.calendarEnd.setBounds(10, 10, 200, 30);
-		this.calendarEnd.setText("2016年4月28日");
-		endChooser.register(this.calendarEnd);
+		this.textCalendarEnd = new JTextField();
+		this.textCalendarEnd.setEditable(false);
+		this.textCalendarEnd.setBounds(10, 10, 200, 30);
+		endChooser = CalendarChooser.getInstance(dataFormat);
+		endChooser.register(this.textCalendarEnd);
+		try {
+			endChooser.setTime(sdf.parse("2016-04-11:18:00:00"));
+			SimpleDateFormat time = new SimpleDateFormat(dataFormat); 
+			this.textCalendarEnd.setText(time.format(this.endChooser.getTime()));
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			Application.getActiveApplication().getOutput().output(e1.getMessage());
+		}
 		
 		this.labelDatasource = new JLabel("数据源:");
 		this.comboBoxDatasource = new DatasourceComboBox();
 		this.comboBoxDatasource.setBounds(10, 10, 200, 30);
 		this.labelResult = new JLabel("结果数据集:");
-		this.textDatasetName = new JTextField("LocationTracking");
+		this.textDatasetName = new JTextField("AttributeQuery");
 
 		this.labelPhoneNumber = new JLabel("电话号码:");
 		this.textPhoneNumber = new JTextField("18645392679");
@@ -88,7 +106,7 @@ public class JDialogFindTrack extends SmDialog {
 		this.buttonCancel = new JButton("Cancel");
 		this.buttonCancel.setText(CommonProperties.getString("String_Button_Cancel"));
 		
-		this.getRootPane().setDefaultButton(this.buttonOK);;
+		this.getRootPane().setDefaultButton(this.buttonOK);
 		
 		this.buttonOK.addActionListener(new ActionListener() {
 			@Override
@@ -119,8 +137,8 @@ public class JDialogFindTrack extends SmDialog {
 								.addComponent(this.labelDatasource)
 								.addComponent(this.labelResult))
 						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(this.calendarStart)
-								.addComponent(this.calendarEnd)
+								.addComponent(this.textCalendarStart)
+								.addComponent(this.textCalendarEnd)
 								.addComponent(this.textPhoneNumber)
 								.addComponent(this.comboBoxDatasource)
 								.addComponent(this.textDatasetName)))
@@ -134,10 +152,10 @@ public class JDialogFindTrack extends SmDialog {
 		groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
 				.addGroup(groupLayout.createParallelGroup(Alignment.CENTER)
 						.addComponent(this.labelStart)
-						.addComponent(this.calendarStart, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(this.textCalendarStart, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addGroup(groupLayout.createParallelGroup(Alignment.CENTER)
 						.addComponent(this.labelEnd)
-						.addComponent(this.calendarEnd, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(this.textCalendarEnd, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addGroup(groupLayout.createParallelGroup(Alignment.CENTER)
 						.addComponent(this.labelPhoneNumber)
 						.addComponent(this.textPhoneNumber, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
@@ -158,6 +176,16 @@ public class JDialogFindTrack extends SmDialog {
 		fillComponents();
 		this.setTitle("轨迹查询");
 		this.resetControlEnabled();
+		
+		registerEvents();
+	}
+	
+	private void registerEvents() {
+		this.comboBoxDatasource.addItemListener(comboBoxItemListener);
+	}
+	
+	private void unRegisterEvents() {
+		this.comboBoxDatasource.removeItemListener(comboBoxItemListener);
 	}
 
 	protected void fillComponents() {
@@ -166,8 +194,17 @@ public class JDialogFindTrack extends SmDialog {
 		Datasource activeDatasource = null;
 		if (Application.getActiveApplication().getActiveDatasources() != null && Application.getActiveApplication().getActiveDatasources().length > 0) {
 			activeDatasource = Application.getActiveApplication().getActiveDatasources()[0];
-		}
-		this.comboBoxDatasource.resetComboBox(datasources, activeDatasource);
+		}		
+		
+		if (datasources.getCount() > 0) {
+			this.comboBoxDatasource.resetComboBox(datasources, activeDatasource);
+		}	
+		
+		if (this.comboBoxDatasource.getSelectedDatasource() != null) {
+			String datasetName = this.textDatasetName.getText();
+			datasetName = this.comboBoxDatasource.getSelectedDatasource().getDatasets().getAvailableDatasetName(datasetName);
+			this.textDatasetName.setText(datasetName);
+		}	
 	}
 
 	private void comboBoxDatasourceSelectedItemChanged(ItemEvent e) {
@@ -212,21 +249,48 @@ public class JDialogFindTrack extends SmDialog {
 		@Override
 		public void run() {
 			try {
-				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //设置日期格式
-				Application.getActiveApplication().getOutput().output(df.format(new Date()) + "开始任务..."); //new Date()为获取当前系统时间
 				doWork();
-				Application.getActiveApplication().getOutput().output(df.format(new Date()) + "任务完成。"); //new Date()为获取当前系统时间
 			} finally {
 			}
 		}
 	}
 
-	private void doWork() {
+	String[] args = new String[3];
+	private void doWork() {		
 
-		String startTime = this.calendarStart.getText();
-		String endTime = this.calendarEnd.getText();	
+//		String[] args = new String[3];
+		args[0] = "192.168.14.240:9092"; // brokers
+		args[1] = topicName; // topic
 		
-		Application.getActiveApplication().getOutput().output(startTime + endTime);
+		SimpleDateFormat time = new SimpleDateFormat(dataFormat); 
+		String startTime = time.format(this.startChooser.getTime());
+		String endTime = time.format(this.endChooser.getTime());
+		String phoneNumber = this.textPhoneNumber.getText();
+		String resultDataset = this.textDatasetName.getText() + "@192.168.14.227:/home/huchenpu/demo-4.29/result/" + topicName + ".udb";
+		String resultPath = "192.168.14.227:/home/huchenpu/demo-4.29/result/";
+//		Usage: AttributeQuery <spark> <csv> <mobileNumber> <startTime> <endTime> <resultjson/dataset>
+		String parmSpark = String.format("sh %s --class %s --master %s %s %s", 
+				"/home/spark-1.5.2-bin-hadoop2.6/bin/spark-submit", 
+				"com.supermap.spark.test.AttributeQuery", 
+				"yarn", 
+				"demo-lbsjava-0.0.1-SNAPSHOT.jar",
+				"local[1]");
+		String parmCSV = "hdfs://192.168.12.103:9000/data/test0.csv";
+		String parmQuery = String.format("%s %s %s %s", phoneNumber, startTime, endTime, resultDataset);
+		args[2] = String.format("%s %s %s %s %s %s", parmSpark, parmCSV, parmQuery, args[0], topicNameRespond, resultPath);
+		
+//		Runnable outPutRun = new Runnable() {
+//			@Override
+//			public void run() {
+				SimpleDateFormat df = new SimpleDateFormat(dataFormat); //设置日期格式
+				Application.getActiveApplication().getOutput().output(df.format(new Date()) + "  发送请求..."); //new Date()为获取当前系统时间	
+//				Application.getActiveApplication().getOutput().output(args[0]);
+//				Application.getActiveApplication().getOutput().output(args[1]);
+//				Application.getActiveApplication().getOutput().output(args[2]);
+//			}
+//		};
+		
+		lbsCommandProducer.commandProducer(args);
 	}
 	
 	/**
@@ -234,9 +298,11 @@ public class JDialogFindTrack extends SmDialog {
 	 */
 	private void buttonOKActionPerformed() {
 		try {
-			CursorUtilties.setWaitCursor();			
+			CursorUtilties.setWaitCursor();	
+			
 			WorkThead thread = new WorkThead();
-			thread.run();
+			thread.start();
+			
 			this.dispose();
 		} catch (Exception ex) {
 			Application.getActiveApplication().getOutput().output(ex);

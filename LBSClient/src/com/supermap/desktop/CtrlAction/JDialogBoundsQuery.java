@@ -7,7 +7,6 @@ import java.awt.event.ItemListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -18,12 +17,13 @@ import javax.swing.JTextField;
 
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetType;
+import com.supermap.data.DatasetVector;
 import com.supermap.data.Datasets;
 import com.supermap.data.Datasource;
+import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.data.Datasources;
-import com.supermap.data.Enum;
+import com.supermap.data.EncodeType;
 import com.supermap.desktop.Application;
-import com.supermap.desktop.CtrlAction.JDialogFindTrack.WorkThead;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.UICommonToolkit;
 import com.supermap.desktop.ui.controls.DataCell;
@@ -34,7 +34,8 @@ import com.supermap.desktop.utilties.CursorUtilties;
 
 public class JDialogBoundsQuery extends SmDialog {
 	
-//	private JPanel contentPane;
+	String topicName = "SpatialQuery";
+	String topicNameRespond = "SpatialQuery_Respond";
 	/**
 	 * Create the frame.
 	 */
@@ -63,7 +64,7 @@ public class JDialogBoundsQuery extends SmDialog {
 		this.comboBoxDataset.setBounds(10, 10, 200, 30);
 
 		this.labelResult = new JLabel("结果数据集:");
-		this.textDatasetName = new JTextField("QueryResult");
+		this.textDatasetName = new JTextField("SpatialQuery");
 		this.buttonOK = new JButton("OK");
 		this.buttonOK.setText(CommonProperties.getString("String_Button_OK"));
 		this.buttonCancel = new JButton("Cancel");
@@ -129,11 +130,22 @@ public class JDialogBoundsQuery extends SmDialog {
 		fillComponents();
 		this.resetControlEnabled();
 		this.setTitle("范围查询");
+		
+		registerEvents();
 	}
 	
-	private DatasetType[] getSupportDatasetTypes() {
-		
+	private DatasetType[] getSupportDatasetTypes() {		
 		return new DatasetType[]{DatasetType.REGION};
+	}
+	
+	private void registerEvents() {
+		this.comboBoxDatasource.addItemListener(comboBoxItemListener);
+		this.comboBoxDataset.addItemListener(comboBoxItemListener);
+	}
+	
+	private void unRegisterEvents() {
+		this.comboBoxDatasource.removeItemListener(comboBoxItemListener);
+		this.comboBoxDataset.removeItemListener(comboBoxItemListener);
 	}
 
 	protected void fillComponents() {
@@ -143,11 +155,18 @@ public class JDialogBoundsQuery extends SmDialog {
 		if (Application.getActiveApplication().getActiveDatasources() != null && Application.getActiveApplication().getActiveDatasources().length > 0) {
 			activeDatasource = Application.getActiveApplication().getActiveDatasources()[0];
 		}
-		this.comboBoxDatasource.resetComboBox(datasources, activeDatasource);
-		this.comboBoxDataset.setDatasetTypes(getSupportDatasetTypes());
+		
+		if (datasources.getCount() > 0) {
+			this.comboBoxDatasource.resetComboBox(datasources, activeDatasource);
+			this.comboBoxDataset.setDatasetTypes(getSupportDatasetTypes());
+		}
 		
 		if (this.comboBoxDatasource.getSelectedDatasource() != null) {
 			this.resetComboboxDataset(this.comboBoxDatasource.getSelectedDatasource());
+			
+			String datasetName = this.textDatasetName.getText();
+			datasetName = this.comboBoxDatasource.getSelectedDatasource().getDatasets().getAvailableDatasetName(datasetName);
+			this.textDatasetName.setText(datasetName);
 		}		
 		
 		if (this.comboBoxDataset.getItemCount() > 0) {
@@ -233,21 +252,49 @@ public class JDialogBoundsQuery extends SmDialog {
 		@Override
 		public void run() {
 			try {
-				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //设置日期格式
-				Application.getActiveApplication().getOutput().output(df.format(new Date()) + "开始任务..."); //new Date()为获取当前系统时间
 				doWork();
-				Application.getActiveApplication().getOutput().output(df.format(new Date()) + "任务完成。"); //new Date()为获取当前系统时间
 			} finally {
 			}
 		}
 	}
 
-	private void doWork() {	
+	String[] args = new String[3];
+	private void doWork() {		
 
-		Dataset dataset = this.comboBoxDataset.getSelectedDataset();
-		String resultDatasetName = this.textDatasetName.getText();
+//		String[] args = new String[3];
+		args[0] = "192.168.14.240:9092"; // brokers
+		args[1] = topicName; // topic
+
+		// copy bounds dataset to temp folder
+		String udbName = "SpatialQueryBounds" + System.currentTimeMillis();
+		String tempPath = "/home/huchenpu/demo-4.29/temp/";
+		String udbFullPath = String.format("%s%s.udb", tempPath, udbName);
+		DatasourceConnectionInfo info = new DatasourceConnectionInfo(udbFullPath, udbName, "");
+		Datasource datasource = Application.getActiveApplication().getWorkspace().getDatasources().create(info);
+		DatasetVector dataset = (DatasetVector)this.comboBoxDataset.getSelectedDataset();
+		Dataset boundsDataset = datasource.copyDataset(dataset, dataset.getName(), dataset.getEncodeType());				
+		String boundDatasetParm = boundsDataset.getName() + "@192.168.14.227:" + udbFullPath;
+		datasource.close();
 		
-		Application.getActiveApplication().getOutput().output(dataset.getName() + resultDatasetName);
+		String resultDatasetParm = this.textDatasetName.getText() + "@192.168.14.227:" + topicName + ".udb";		
+		String resultPath = "192.168.14.227:/home/huchenpu/demo-4.29/result/";
+//		SpatialQuery <spark> <csv> <json/dataset> <resultjson>
+		String parmSpark = String.format("sh %s --class %s --master %s %s %s", 
+				"/home/spark-1.5.2-bin-hadoop2.6/bin/spark-submit", 
+				"com.supermap.spark.test.SpatialQuery", 
+				"yarn", 
+				"demo-lbsjava-0.0.1-SNAPSHOT.jar",
+				"local[1]");
+		String parmCSV = "hdfs://192.168.12.103:9000/data/mobile0426095637.csv";
+		String parmQuery = String.format("%s %s", boundDatasetParm, resultDatasetParm);
+		args[2] = String.format("%s %s %s %s %s %s", parmSpark, parmCSV, parmQuery, args[0], topicNameRespond, resultPath);
+
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //设置日期格式
+		Application.getActiveApplication().getOutput().output(df.format(new Date()) + "  发送请求..."); //new Date()为获取当前系统时间	
+//		Application.getActiveApplication().getOutput().output(args[0]);
+//		Application.getActiveApplication().getOutput().output(args[1]);
+//		Application.getActiveApplication().getOutput().output(args[2]);
+		lbsCommandProducer.commandProducer(args);	
 	}
 	
 	/**
@@ -263,7 +310,7 @@ public class JDialogBoundsQuery extends SmDialog {
 				UICommonToolkit.showMessageDialog("数据集名称不合法！");
 			} else {
 				WorkThead thread = new WorkThead();
-				thread.run();
+				thread.start();
 				
 				this.dispose();
 			}
