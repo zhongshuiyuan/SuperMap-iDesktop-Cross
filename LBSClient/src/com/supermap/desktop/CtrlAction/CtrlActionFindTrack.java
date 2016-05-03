@@ -14,6 +14,7 @@ import com.supermap.desktop.enums.WindowType;
 import com.supermap.desktop.implement.CtrlAction;
 import com.supermap.desktop.lbsclient.LBSClientProperties;
 import com.supermap.desktop.ui.UICommonToolkit;
+import com.supermap.desktop.ui.controls.DialogResult;
 import com.supermap.desktop.utilties.CursorUtilties;
 
 import java.io.File;
@@ -42,10 +43,11 @@ public class CtrlActionFindTrack extends CtrlAction {
 		try {
 			JFrame parent = (JFrame)Application.getActiveApplication().getMainFrame();
 			JDialogFindTrack dialog = new JDialogFindTrack(parent, true);
-			dialog.setVisible(true);
-			
-			WorkThead thread = new WorkThead();
-			thread.start();
+			DialogResult result = dialog.showDialog();
+			if (result == DialogResult.OK || result == DialogResult.APPLY) {
+				WorkThead thread = new WorkThead();
+				thread.start();
+			}		
 		} catch (Exception ex) {
 			Application.getActiveApplication().getOutput().output(ex);
 		}
