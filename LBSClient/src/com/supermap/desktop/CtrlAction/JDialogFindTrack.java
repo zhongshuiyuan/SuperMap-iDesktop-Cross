@@ -23,6 +23,7 @@ import com.supermap.data.Datasources;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.controls.DatasourceComboBox;
+import com.supermap.desktop.ui.controls.DialogResult;
 import com.supermap.desktop.ui.controls.SmDialog;
 import com.supermap.desktop.utilties.CursorUtilties;
 
@@ -304,6 +305,8 @@ public class JDialogFindTrack extends SmDialog {
 			thread.start();
 			
 			this.dispose();
+			
+			this.dialogResult = DialogResult.OK;
 		} catch (Exception ex) {
 			Application.getActiveApplication().getOutput().output(ex);
 		} finally {
@@ -316,6 +319,8 @@ public class JDialogFindTrack extends SmDialog {
 	 */
 	private void buttonCancelActionPerformed() {
 		DialogExit();
+		
+		this.dialogResult = DialogResult.CANCEL;
 	}
 
 	/**

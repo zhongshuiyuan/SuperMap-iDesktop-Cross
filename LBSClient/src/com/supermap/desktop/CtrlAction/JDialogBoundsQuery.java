@@ -29,6 +29,7 @@ import com.supermap.desktop.ui.UICommonToolkit;
 import com.supermap.desktop.ui.controls.DataCell;
 import com.supermap.desktop.ui.controls.DatasetComboBox;
 import com.supermap.desktop.ui.controls.DatasourceComboBox;
+import com.supermap.desktop.ui.controls.DialogResult;
 import com.supermap.desktop.ui.controls.SmDialog;
 import com.supermap.desktop.utilties.CursorUtilties;
 
@@ -313,6 +314,8 @@ public class JDialogBoundsQuery extends SmDialog {
 				thread.start();
 				
 				this.dispose();
+				
+				this.dialogResult = DialogResult.OK;
 			}
 		} catch (Exception ex) {
 			Application.getActiveApplication().getOutput().output(ex);
@@ -326,6 +329,8 @@ public class JDialogBoundsQuery extends SmDialog {
 	 */
 	private void buttonCancelActionPerformed() {
 		DialogExit();
+		
+		this.dialogResult = DialogResult.CANCEL;
 	}
 
 	/**

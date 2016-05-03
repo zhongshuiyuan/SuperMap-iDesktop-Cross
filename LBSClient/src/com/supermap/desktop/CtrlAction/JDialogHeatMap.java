@@ -25,6 +25,7 @@ import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.controls.DataCell;
 import com.supermap.desktop.ui.controls.DatasetComboBox;
 import com.supermap.desktop.ui.controls.DatasourceComboBox;
+import com.supermap.desktop.ui.controls.DialogResult;
 import com.supermap.desktop.ui.controls.SmDialog;
 import com.supermap.desktop.utilties.CursorUtilties;
 
@@ -313,6 +314,8 @@ public class JDialogHeatMap extends SmDialog {
 			
 			this.dispose();
 			
+			this.dialogResult = DialogResult.OK;
+			
 			
 //			String datasetName = this.textDatasetName.getText();
 //			String temp = this.comboBoxDatasource.getSelectedDatasource().getDatasets().getAvailableDatasetName(datasetName);
@@ -336,6 +339,8 @@ public class JDialogHeatMap extends SmDialog {
 	 */
 	private void buttonCancelActionPerformed() {
 		DialogExit();
+		
+		this.dialogResult = DialogResult.CANCEL;
 	}
 
 	/**

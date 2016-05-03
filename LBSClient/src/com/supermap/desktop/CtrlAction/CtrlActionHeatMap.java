@@ -42,7 +42,7 @@ public class CtrlActionHeatMap extends CtrlAction {
 			JFrame parent = (JFrame)Application.getActiveApplication().getMainFrame();
 			JDialogHeatMap dialog = new JDialogHeatMap(parent, true);
 			DialogResult result = dialog.showDialog();
-			if (result == DialogResult.OK || result == DialogResult.APPLY) {
+			if (result == DialogResult.OK) {
 				WorkThead thread = new WorkThead();
 				thread.start();
 			}		
