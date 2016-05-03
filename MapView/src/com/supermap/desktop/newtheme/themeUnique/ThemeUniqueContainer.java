@@ -220,6 +220,7 @@ public class ThemeUniqueContainer extends ThemeChangePanel {
 			map = ThemeGuideFactory.getMapControl().getMap();
 			themeUniqueLayer = MapUtilties.findLayerByName(map, layerName);
 			if (null != themeUniqueLayer && null != themeUniqueLayer.getTheme() && themeUniqueLayer.getTheme() instanceof ThemeUnique) {
+				datasetVector = (DatasetVector) themeUniqueLayer.getDataset();
 				themeUnique = new ThemeUnique((ThemeUnique) themeUniqueLayer.getTheme());
 				getTable();
 				map.refresh();
