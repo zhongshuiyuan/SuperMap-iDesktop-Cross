@@ -280,8 +280,8 @@ public class JDialogHeatMap extends SmDialog {
 				datasetBounds.getBounds().getBottom());
 		String resolution = this.textResolution.getText();
 		String radius = this.textRadius.getText();	
-		String resultDataset = this.textDatasetName.getText() + "@192.168.14.227:" + topicName + ".udb";
-		String resultPath = "192.168.14.227:/home/huchenpu/demo-4.29/result/";
+		String resultDataset = this.textDatasetName.getText() + "@huchenpu:" + topicName + ".udb";
+		String resultPath = "huchenpu:/home/huchenpu/demo-4.29/result/";
 //		Usage: KernelDensity <spark> <csv> <left,top,right,bottom> <radius> <resolution> <resultgrd>
 		String parmSpark = String.format("sh %s --class %s --master %s %s %s", 
 				"/home/spark-1.5.2-bin-hadoop2.6/bin/spark-submit", 

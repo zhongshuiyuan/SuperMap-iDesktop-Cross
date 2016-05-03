@@ -273,11 +273,11 @@ public class JDialogBoundsQuery extends SmDialog {
 		Datasource datasource = Application.getActiveApplication().getWorkspace().getDatasources().create(info);
 		DatasetVector dataset = (DatasetVector)this.comboBoxDataset.getSelectedDataset();
 		Dataset boundsDataset = datasource.copyDataset(dataset, dataset.getName(), dataset.getEncodeType());				
-		String boundDatasetParm = boundsDataset.getName() + "@192.168.14.227:" + udbFullPath;
+		String boundDatasetParm = boundsDataset.getName() + "@huchenpu:" + udbFullPath;
 		datasource.close();
 		
-		String resultDatasetParm = this.textDatasetName.getText() + "@192.168.14.227:" + topicName + ".udb";		
-		String resultPath = "192.168.14.227:/home/huchenpu/demo-4.29/result/";
+		String resultDatasetParm = this.textDatasetName.getText() + "@huchenpu:" + topicName + ".udb";		
+		String resultPath = "huchenpu:/home/huchenpu/demo-4.29/result/";
 //		SpatialQuery <spark> <csv> <json/dataset> <resultjson>
 		String parmSpark = String.format("sh %s --class %s --master %s %s %s", 
 				"/home/spark-1.5.2-bin-hadoop2.6/bin/spark-submit", 

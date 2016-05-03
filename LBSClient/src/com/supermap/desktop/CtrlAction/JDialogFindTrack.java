@@ -272,7 +272,7 @@ public class JDialogFindTrack extends SmDialog {
 		String parmSpark = String.format("sh %s --class %s --master %s %s %s", 
 				"/home/spark-1.5.2-bin-hadoop2.6/bin/spark-submit", 
 				"com.supermap.spark.test.AttributeQuery", 
-				"yarn", 
+				"local[1]", 
 				"demo-lbsjava-0.0.1-SNAPSHOT.jar",
 				"local[1]");
 		String parmCSV = "hdfs://192.168.12.103:9000/data/test0.csv";

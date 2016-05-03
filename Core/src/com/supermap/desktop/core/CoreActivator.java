@@ -13,12 +13,13 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.SynchronousBundleListener;
 
+
 public class CoreActivator implements BundleActivator {
 
 	static {
 		GlobalParameters.initResource();
 	}
-
+	
 	ServiceRegistration<?> registration;
 	CoreServiceTracker serviceTracker;
 
