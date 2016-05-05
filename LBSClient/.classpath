@@ -4,6 +4,5 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Controls"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Core"/>
-	<classpathentry exported="true" kind="lib" path="/home/huchenpu/code/SuperMap-iDesktop-Cross/Core/lib/com.supermap.analyst.addressmatching.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

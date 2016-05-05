@@ -28,11 +28,11 @@ import com.supermap.desktop.lbsclient.LBSClientProperties;
 import com.supermap.desktop.ui.UICommonToolkit;
 import com.supermap.desktop.ui.controls.DialogResult;
 
-public class CtrlActionHeatMap extends CtrlAction {
+public class CtrlActionHDFSFiles extends CtrlAction {
 
 	String topicNameRespond = " KernelDensity_Respond";
 	
-	public CtrlActionHeatMap(IBaseItem caller, IForm formClass) {
+	public CtrlActionHDFSFiles(IBaseItem caller, IForm formClass) {
 		super(caller, formClass);
 	}
 
@@ -40,11 +40,11 @@ public class CtrlActionHeatMap extends CtrlAction {
 	public void run() {
 		try {
 			JFrame parent = (JFrame)Application.getActiveApplication().getMainFrame();
-			JDialogHeatMap dialog = new JDialogHeatMap(parent, true);
+			JDialogHDFSFiles dialog = new JDialogHDFSFiles(parent, true);
 			DialogResult result = dialog.showDialog();
-			if (result == DialogResult.OK || result == DialogResult.APPLY) {
-				WorkThead thread = new WorkThead();
-				thread.start();
+			if (result == DialogResult.OK) {
+//				WorkThead thread = new WorkThead();
+//				thread.start();
 			}		
 		} catch (Exception ex) {
 			Application.getActiveApplication().getOutput().output(ex);

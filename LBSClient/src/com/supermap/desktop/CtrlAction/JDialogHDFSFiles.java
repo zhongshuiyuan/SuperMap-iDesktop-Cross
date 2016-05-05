@@ -4,11 +4,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import java.net.URI;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -18,17 +25,24 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+
 import com.supermap.data.Datasource;
 import com.supermap.data.Datasources;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.controls.DatasourceComboBox;
+import com.supermap.desktop.ui.controls.DialogResult;
 import com.supermap.desktop.ui.controls.SmDialog;
 import com.supermap.desktop.utilties.CursorUtilties;
 
 import net.infonode.properties.propertymap.PropertyMapWeakListenerManager;
 
-public class JDialogFindTrack extends SmDialog {
+public class JDialogHDFSFiles extends SmDialog {
 	
 	String topicName = "AttributeQuery";
 	String topicNameRespond = "AttributeQuery_Respond";
@@ -36,7 +50,7 @@ public class JDialogFindTrack extends SmDialog {
 	/**
 	 * Create the frame.
 	 */
-	public JDialogFindTrack(JFrame parent, boolean modal) {
+	public JDialogHDFSFiles(JFrame parent, boolean modal) {
 		super(parent, modal);
 		initializeComponents();
 	}
@@ -178,6 +192,59 @@ public class JDialogFindTrack extends SmDialog {
 		this.resetControlEnabled();
 		
 		registerEvents();
+		
+		String fileURL = "http://192.168.12.103:50070/explorer.html#/data";
+		getYHDSXCategoryIdStr(fileURL);
+	}
+	
+	String yhdsxCategoryIdStr = "";
+	/**
+	 * 获取1号店生鲜食品的分类id字符串
+	 * @param filePath
+	 * @return
+	 */
+	public String getYHDSXCategoryIdStr(String filePath) {
+		final String DELIMITER = new String(new byte[]{1});
+		final String INNER_DELIMITER = ",";
+		
+		// 遍历目录下的所有文件
+		BufferedReader br = null;
+		try {
+			Configuration conf = new Configuration();
+			int n = 0;
+			FileSystem fs = FileSystem.get(conf);
+			FileStatus[] status = fs.listStatus(new Path(filePath));
+			for (FileStatus file : status) {
+//				if (!file.getPath().getName().startsWith("part-")) {
+//					continue;
+//				}
+//				
+//				FSDataInputStream inputStream = fs.open(file.getPath());
+//				br = new BufferedReader(new InputStreamReader(inputStream));
+//				
+//				String line = null;
+//				while (null != (line = br.readLine())) {
+//					String[] strs = line.split(DELIMITER);
+//					String categoryId = strs[0];
+//					String categorySearchName = strs[9];
+//					if (-1 != categorySearchName.indexOf("0-956955")) {
+//						yhdsxCategoryIdStr += (categoryId + INNER_DELIMITER);
+//					}
+//				}// end of while
+			}
+		} catch (Exception ex) {
+			Application.getActiveApplication().getOutput().output(ex);
+		} finally {
+			try {
+				if (br != null) {
+					br.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return yhdsxCategoryIdStr;
 	}
 	
 	private void registerEvents() {
@@ -304,6 +371,8 @@ public class JDialogFindTrack extends SmDialog {
 			thread.start();
 			
 			this.dispose();
+			
+			this.dialogResult = DialogResult.OK;
 		} catch (Exception ex) {
 			Application.getActiveApplication().getOutput().output(ex);
 		} finally {
@@ -316,6 +385,8 @@ public class JDialogFindTrack extends SmDialog {
 	 */
 	private void buttonCancelActionPerformed() {
 		DialogExit();
+		
+		this.dialogResult = DialogResult.CANCEL;
 	}
 
 	/**
