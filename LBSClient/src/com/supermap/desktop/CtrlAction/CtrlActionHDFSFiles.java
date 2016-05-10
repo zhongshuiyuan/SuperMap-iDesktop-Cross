@@ -1,6 +1,6 @@
 package com.supermap.desktop.CtrlAction;
 
-
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -8,10 +8,6 @@ import java.util.Properties;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 import com.supermap.data.Dataset;
 import com.supermap.data.Datasource;
@@ -31,7 +27,7 @@ import com.supermap.desktop.ui.controls.DialogResult;
 public class CtrlActionHDFSFiles extends CtrlAction {
 
 	String topicNameRespond = " KernelDensity_Respond";
-	
+
 	public CtrlActionHDFSFiles(IBaseItem caller, IForm formClass) {
 		super(caller, formClass);
 	}
@@ -39,13 +35,13 @@ public class CtrlActionHDFSFiles extends CtrlAction {
 	@Override
 	public void run() {
 		try {
-			JFrame parent = (JFrame)Application.getActiveApplication().getMainFrame();
-			JDialogHDFSFiles dialog = new JDialogHDFSFiles(parent, true);
+			JFrame parent = (JFrame) Application.getActiveApplication().getMainFrame();
+			JDialogHDFSFiles dialog = new JDialogHDFSFiles();
 			DialogResult result = dialog.showDialog();
 			if (result == DialogResult.OK) {
-//				WorkThead thread = new WorkThead();
-//				thread.start();
-			}		
+				// WorkThead thread = new WorkThead();
+				// thread.start();
+			}
 		} catch (Exception ex) {
 			Application.getActiveApplication().getOutput().output(ex);
 		}
@@ -55,7 +51,7 @@ public class CtrlActionHDFSFiles extends CtrlAction {
 	public boolean enable() {
 		return true;
 	}
-	
+
 	class WorkThead extends Thread {
 
 		@Override

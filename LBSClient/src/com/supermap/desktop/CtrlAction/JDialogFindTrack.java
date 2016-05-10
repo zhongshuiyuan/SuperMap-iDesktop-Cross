@@ -85,7 +85,7 @@ public class JDialogFindTrack extends SmDialog {
 		endChooser = CalendarChooser.getInstance(dataFormat);
 		endChooser.register(this.textCalendarEnd);
 		try {
-			endChooser.setTime(sdf.parse("2016-04-11:18:00:00"));
+			endChooser.setTime(sdf.parse("2016-04-11:12:30:00"));
 			SimpleDateFormat time = new SimpleDateFormat(dataFormat); 
 			this.textCalendarEnd.setText(time.format(this.endChooser.getTime()));
 		} catch (ParseException e1) {
@@ -272,10 +272,11 @@ public class JDialogFindTrack extends SmDialog {
 		String parmSpark = String.format("sh %s --class %s --master %s %s %s", 
 				"/home/spark-1.5.2-bin-hadoop2.6/bin/spark-submit", 
 				"com.supermap.spark.test.AttributeQuery", 
-				"local[1]", 
+				"spark://192.168.12.103:7077", 
 				"demo-lbsjava-0.0.1-SNAPSHOT.jar",
 				"local[1]");
-		String parmCSV = "hdfs://192.168.12.103:9000/data/test0.csv";
+//		JDialogHDFSFiles.webFile = "test0.csv";
+		String parmCSV = JDialogHDFSFiles.getFilePath();
 		String parmQuery = String.format("%s %s %s %s", phoneNumber, startTime, endTime, resultDataset);
 		args[2] = String.format("%s %s %s %s %s %s", parmSpark, parmCSV, parmQuery, args[0], topicNameRespond, resultPath);
 		

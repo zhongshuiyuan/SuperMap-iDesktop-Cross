@@ -83,29 +83,33 @@ public class lbsResultConsumer {
 				@Override
 				public void run() {
 					SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //设置日期格式
-					Application.getActiveApplication().getOutput().output(df.format(new Date()) + "  任务完成。"); //new Date()为获取当前系统时间
+					Application.getActiveApplication().getOutput().output(df.format(new Date()) + "  任务完成，查询结果保存在：[" + filePath + "]。"); //new Date()为获取当前系统时间
 					
-					// open datasource
-					DatasourceConnectionInfo info = new DatasourceConnectionInfo(filePath, topicNameRespond, "");
-					Datasource datasource = Application.getActiveApplication().getWorkspace().getDatasources().open(info);
-					if (datasource != null) {
-						Dataset datast = datasource.getDatasets().get(0);
-						
-						IFormMap formMap = null;
-						IForm form = Application.getActiveApplication().getActiveForm();
-						if (form != null && form instanceof IFormMap) {
-							formMap = (IFormMap)form;
-						}
-						
-						if (formMap == null) {
-							formMap = (IFormMap)CommonToolkit.FormWrap.fireNewWindowEvent(WindowType.MAP);
-						}
-						
-						if (formMap != null) {
-							formMap.getMapControl().getMap().getLayers().add(datast, true);	
-							formMap.getMapControl().getMap().refresh();
-						}
-					}				
+					// 判断如果是UDB就直接打开
+					if (filePath.endsWith(".udb")) {
+						// open datasource
+						DatasourceConnectionInfo info = new DatasourceConnectionInfo(filePath, topicNameRespond, "");
+						Datasource datasource = Application.getActiveApplication().getWorkspace().getDatasources().open(info);
+						if (datasource != null) {
+							Dataset datast = datasource.getDatasets().get(datasource.getDatasets().getCount() - 1);
+							
+							IFormMap formMap = null;
+							IForm form = Application.getActiveApplication().getActiveForm();
+							if (form != null && form instanceof IFormMap) {
+								formMap = (IFormMap)form;
+							}
+							
+							if (formMap == null) {
+								formMap = (IFormMap)CommonToolkit.FormWrap.fireNewWindowEvent(WindowType.MAP);
+							}
+							
+							if (formMap != null) {
+								formMap.getMapControl().getMap().getLayers().add(datast, true);	
+//								formMap.getMapControl().getMap().setViewBounds(datast.getBounds());
+								formMap.getMapControl().getMap().refresh();
+							}
+						}	
+					}								
 				}
 			});
 		}

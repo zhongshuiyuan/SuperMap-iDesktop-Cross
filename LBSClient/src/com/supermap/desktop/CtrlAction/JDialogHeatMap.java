@@ -30,8 +30,8 @@ import com.supermap.desktop.utilties.CursorUtilties;
 
 public class JDialogHeatMap extends SmDialog {
 	
-	String topicName = " KernelDensity";
-	String topicNameRespond = " KernelDensity_Respond";
+	String topicName = "KernelDensity";
+	String topicNameRespond = "KernelDensity_Respond";
 	/**
 	 * Create the frame.
 	 */
@@ -59,7 +59,7 @@ public class JDialogHeatMap extends SmDialog {
 		this.labelResolution = new JLabel("分辨率:");
 		this.textResolution = new JTextField("0.1");
 		this.labelRadius = new JLabel("查找半径:");
-		this.textRadius = new JTextField("0.1");
+		this.textRadius = new JTextField("0.5");
 		
 		this.labelDatasource = new JLabel("数据源:");
 		this.comboBoxDatasource = new DatasourceComboBox();
@@ -280,16 +280,18 @@ public class JDialogHeatMap extends SmDialog {
 				datasetBounds.getBounds().getBottom());
 		String resolution = this.textResolution.getText();
 		String radius = this.textRadius.getText();	
-		String resultDataset = this.textDatasetName.getText() + "@huchenpu:" + topicName + ".udb";
-		String resultPath = "huchenpu:/home/huchenpu/demo-4.29/result/";
+		String resultDataset = "/home/demo-4.29/KernelDensity.grd";
+//		String resultDataset = this.textDatasetName.getText() + "@huchenpu:" + topicName + ".udb";
+		String resultPath = "192.168.14.227:/home/huchenpu/demo-4.29/result/";
 //		Usage: KernelDensity <spark> <csv> <left,top,right,bottom> <radius> <resolution> <resultgrd>
 		String parmSpark = String.format("sh %s --class %s --master %s %s %s", 
 				"/home/spark-1.5.2-bin-hadoop2.6/bin/spark-submit", 
 				"com.supermap.spark.test.KernelDensity", 
-				"yarn", 
+				"spark://192.168.12.103:7077", 
 				"demo-lbsjava-0.0.1-SNAPSHOT.jar",
 				"local[1]");
-		String parmCSV = "hdfs://192.168.12.103:9000/data/mobile0426095637.csv";
+//		JDialogHDFSFiles.webFile = "mobile0426095637.csv";
+		String parmCSV = JDialogHDFSFiles.getFilePath();
 		String parmQuery = String.format("%s %s %s %s", bounds, radius, resolution, resultDataset);
 		args[2] = String.format("%s %s %s %s %s %s", parmSpark, parmCSV, parmQuery, args[0], topicNameRespond, resultPath);
 

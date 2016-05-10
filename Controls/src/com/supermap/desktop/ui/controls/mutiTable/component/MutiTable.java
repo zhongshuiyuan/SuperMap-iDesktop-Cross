@@ -374,7 +374,7 @@ public class MutiTable extends JTable implements MouseListener {
 		// 获取模型
 		MutiTableModel mutiTableModel = (MutiTableModel) this.getModel();
 		try {
-			mutiTableModel.addRow(data);
+			mutiTableModel.addRow(data, null);
 		} catch (Exception e) {
 			Application.getActiveApplication().getOutput().output(e);
 		}

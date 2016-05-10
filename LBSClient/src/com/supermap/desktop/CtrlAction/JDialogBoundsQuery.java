@@ -266,26 +266,29 @@ public class JDialogBoundsQuery extends SmDialog {
 		args[1] = topicName; // topic
 
 		// copy bounds dataset to temp folder
-		String udbName = "SpatialQueryBounds" + System.currentTimeMillis();
+		String udbName = "SpatialQuery";// + System.currentTimeMillis();
 		String tempPath = "/home/huchenpu/demo-4.29/temp/";
 		String udbFullPath = String.format("%s%s.udb", tempPath, udbName);
 		DatasourceConnectionInfo info = new DatasourceConnectionInfo(udbFullPath, udbName, "");
 		Datasource datasource = Application.getActiveApplication().getWorkspace().getDatasources().create(info);
 		DatasetVector dataset = (DatasetVector)this.comboBoxDataset.getSelectedDataset();
 		Dataset boundsDataset = datasource.copyDataset(dataset, dataset.getName(), dataset.getEncodeType());				
-		String boundDatasetParm = boundsDataset.getName() + "@huchenpu:" + udbFullPath;
+		String boundDatasetParm = boundsDataset.getName() + "@192.168.14.227:" + udbFullPath;
 		datasource.close();
 		
-		String resultDatasetParm = this.textDatasetName.getText() + "@huchenpu:" + topicName + ".udb";		
-		String resultPath = "huchenpu:/home/huchenpu/demo-4.29/result/";
+//		String resultDatasetParm = this.textDatasetName.getText() + "@192.168.14.227:" + topicName + ".udb";	
+		String resultDatasetParm = "/home/demo-4.29/SpatialQuery.json";
+		
+		String resultPath = "192.168.14.227:/home/huchenpu/demo-4.29/result/";
 //		SpatialQuery <spark> <csv> <json/dataset> <resultjson>
 		String parmSpark = String.format("sh %s --class %s --master %s %s %s", 
 				"/home/spark-1.5.2-bin-hadoop2.6/bin/spark-submit", 
 				"com.supermap.spark.test.SpatialQuery", 
-				"yarn", 
+				"spark://192.168.12.103:7077", 
 				"demo-lbsjava-0.0.1-SNAPSHOT.jar",
 				"local[1]");
-		String parmCSV = "hdfs://192.168.12.103:9000/data/mobile0426095637.csv";
+//		JDialogHDFSFiles.webFile = "mobile0426095637.csv";
+		String parmCSV = JDialogHDFSFiles.getFilePath();
 		String parmQuery = String.format("%s %s", boundDatasetParm, resultDatasetParm);
 		args[2] = String.format("%s %s %s %s %s %s", parmSpark, parmCSV, parmQuery, args[0], topicNameRespond, resultPath);
 

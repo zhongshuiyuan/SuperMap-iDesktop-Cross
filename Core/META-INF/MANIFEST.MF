@@ -214,7 +214,4 @@ Export-Package: Aladdin,
  org.apache.log4j.varia,
  org.apache.log4j.xml,
  org.slf4j,
- org.slf4j.helpers,
- org.slf4j.spi,
- org.xerial.snappy,
- org.xerial.snappy.buffer
+ org.slf4j.helpers

@@ -30,7 +30,7 @@ import com.supermap.desktop.ui.controls.DialogResult;
 
 public class CtrlActionHeatMap extends CtrlAction {
 
-	String topicNameRespond = " KernelDensity_Respond";
+	String topicNameRespond = "KernelDensity_Respond";
 	
 	public CtrlActionHeatMap(IBaseItem caller, IForm formClass) {
 		super(caller, formClass);
