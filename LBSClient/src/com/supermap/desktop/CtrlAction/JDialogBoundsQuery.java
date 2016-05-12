@@ -288,7 +288,7 @@ public class JDialogBoundsQuery extends SmDialog {
 				"demo-lbsjava-0.0.1-SNAPSHOT.jar",
 				"local[1]");
 //		JDialogHDFSFiles.webFile = "mobile0426095637.csv";
-		String parmCSV = JDialogHDFSFiles.getFilePath();
+		String parmCSV = webHDFS.getHDFSFilePath();
 		String parmQuery = String.format("%s %s", boundDatasetParm, resultDatasetParm);
 		args[2] = String.format("%s %s %s %s %s %s", parmSpark, parmCSV, parmQuery, args[0], topicNameRespond, resultPath);
 

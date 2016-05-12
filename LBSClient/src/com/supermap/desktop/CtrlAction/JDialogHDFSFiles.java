@@ -21,13 +21,17 @@ import org.apache.commons.io.IOUtils;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
 import com.supermap.desktop.Application;
+import com.supermap.desktop.CommonToolkit;
+import com.supermap.desktop.CtrlAction.webHDFS.HDFSDefine;
 import com.supermap.desktop.properties.CommonProperties;
+import com.supermap.desktop.ui.UICommonToolkit;
 import com.supermap.desktop.ui.controls.DialogResult;
 import com.supermap.desktop.ui.controls.SmDialog;
 import com.supermap.desktop.ui.controls.button.SmButton;
@@ -36,22 +40,11 @@ import com.supermap.desktop.utilties.CursorUtilties;
 
 public class JDialogHDFSFiles extends SmDialog {
 
-	public static String webURL = "http://192.168.12.103:50070/webhdfs/v1/data/";
-	public static String webFile = "test0.csv"; // mobile0426095637.csv"
-
-	public static void main(String[] args) {
-		String aaa = getFilePath();
-		JDialogHDFSFiles f = new JDialogHDFSFiles();
-		f.showDialog();
-	}
-	
-	public static String getFilePath() {
-		String serverPath = webURL;
-		serverPath = serverPath.replace("webhdfs/v1/", "");
-		serverPath = serverPath.replace("http", "hdfs");
-		serverPath += webFile;
-		return serverPath;
-	}
+//	public static void main(String[] args) {
+//		String aaa = getFilePath();
+//		JDialogHDFSFiles f = new JDialogHDFSFiles();
+//		f.showDialog();
+//	}
 
 	/**
 	 *
@@ -70,6 +63,7 @@ public class JDialogHDFSFiles extends SmDialog {
 	private JButton buttonBrowser;
 	private JTable table;
 	private SmButton buttonOK;
+	private SmButton buttonDownload;
 	private SmButton buttonCancel;
 
 	/**
@@ -84,10 +78,11 @@ public class JDialogHDFSFiles extends SmDialog {
 		this.setSize(900, 600);
 
 		this.labelServerURL = new JLabel("服务器地址:");
-		this.textServerURL = new JTextField(webURL);
+		this.textServerURL = new JTextField(webHDFS.webURL);
 		this.buttonBrowser = new JButton("浏览");
 
-		this.buttonOK = new SmButton(CommonProperties.getString("String_Button_OK"));
+		this.buttonOK = new SmButton("选择");
+		this.buttonDownload = new SmButton("下载");
 		this.buttonCancel = new SmButton(CommonProperties.getString("String_Button_Cancel"));
 		this.getRootPane().setDefaultButton(this.buttonOK);
 
@@ -107,6 +102,13 @@ public class JDialogHDFSFiles extends SmDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				buttonOKActionPerformed();
+			}
+		});
+		
+		this.buttonDownload.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				buttonDownloadActionPerformed();
 			}
 		});
 
@@ -270,7 +272,8 @@ public class JDialogHDFSFiles extends SmDialog {
 			urlPath += childFolder;
 		}
 		
-		String result = GetContentUsingHttp(urlPath + "?op=LISTSTATUS", "GET");
+		webHDFS webHdfs = new webHDFS();		
+		String result = webHdfs.getFileList(urlPath);
 
 		String[] temps = result.split("\"|,|:|\\[|\\]|\\{|\\}|\\\r|\\\n");
 		ArrayList<String> results = new ArrayList<String>();
@@ -312,9 +315,9 @@ public class JDialogHDFSFiles extends SmDialog {
 			Boolean isDir = false;
 			if (type.equalsIgnoreCase("DIRECTORY")) {
 				isDir = true;
-			}
-			
-			HDFSDefine hdfsDefine = new HDFSDefine(permission, owner, group, length, replication, blockSize, pathSuffix, isDir);
+			}			
+				
+			HDFSDefine hdfsDefine = webHdfs.getHDFSDefine(permission, owner, group, length, replication, blockSize, pathSuffix, isDir);
 			this.addFileInfo(hdfsDefine);
 			
 			if (0 < table.getRowCount()) {
@@ -323,43 +326,6 @@ public class JDialogHDFSFiles extends SmDialog {
 		}
 		
 		return urlPath;
-	}
-
-	public String GetContentUsingHttp(String urlPath, String method) {
-		String result = "";
-		try {
-			if (method.equalsIgnoreCase("GET")) {
-				InputStream inputStream = http_Get.getInputStream(urlPath);
-				try {
-					result = IOUtils.toString(inputStream);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-			// HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-			// using (HttpWebResponse response = request.GetResponse() as
-			// HttpWebResponse)
-			// {
-			// //if(response.StatusCode == HttpStatusCode.OK)
-			// {
-			// using (Stream responseStream = response.GetResponseStream())
-			// {
-			// using (StreamReader read = new StreamReader(responseStream,
-			// Encoding.UTF8))
-			// {
-			// ret = read.ReadToEnd();
-			// }
-			// }
-			// }
-			// response.Close();
-			// }
-		} catch (Exception ex) {
-			Application.getActiveApplication().getOutput().output(ex);
-		}
-
-		return result;
 	}
 
 	/**
@@ -379,16 +345,47 @@ public class JDialogHDFSFiles extends SmDialog {
 	 * 确定按钮点击事件
 	 */
 	private void buttonOKActionPerformed() {
-		try {			
+		try {	
+			Boolean fileSelected = false;
 			if (table.getSelectedRow() != -1) {
 				HDFSDefine define = (HDFSDefine)((HDFSTableModel)this.table.getModel()).getRowTagAt(table.getSelectedRow());
 				if (define != null && !define.isDir()) {
-					JDialogHDFSFiles.webFile = define.getName();
-					JDialogHDFSFiles.webURL = this.textServerURL.getText();
+					webHDFS.webFile = define.getName();
+					webHDFS.webURL = this.textServerURL.getText();
 					
+					fileSelected = true;
 					this.dispose();
 					this.dialogResult = DialogResult.OK;
-				} 
+				}
+			} 
+			
+			if (!fileSelected) {
+				UICommonToolkit.showMessageDialog("please select a file");
+			}
+		} catch (Exception ex) {
+			Application.getActiveApplication().getOutput().output(ex);
+		} finally {
+			CursorUtilties.setDefaultCursor();
+		}
+	}
+	
+	private void buttonDownloadActionPerformed() {
+		try {	
+			Boolean fileSelected = false;
+			if (table.getSelectedRow() != -1) {
+				HDFSDefine define = (HDFSDefine)((HDFSTableModel)this.table.getModel()).getRowTagAt(table.getSelectedRow());
+				if (define != null && !define.isDir()) {
+					webHDFS.webFile = define.getName();
+					webHDFS.webURL = this.textServerURL.getText();
+					
+					fileSelected = true;
+					
+					// show save file dialog
+				}
+			} 
+			
+			if (!fileSelected) {
+				UICommonToolkit.showMessageDialog("please select a file");
 			}
 		} catch (Exception ex) {
 			Application.getActiveApplication().getOutput().output(ex);
@@ -403,107 +400,7 @@ public class JDialogHDFSFiles extends SmDialog {
 	private void buttonCancelActionPerformed() {
 		this.dispose();
 		this.dialogResult = DialogResult.CANCEL;
-	}
-	
-	/**
-	 * describe a HDFS file
-	 *
-	 * @author huchenpu
-	 */
-	public class HDFSDefine {
-		private String fullPath = "";
-		String permission = "", owner = "", group = "", length = "", replication = "", blockSize = "", pathSuffix = "";
-		Boolean isDir = false;
-
-		public HDFSDefine(String permission, String owner, String group, String size, String replication,
-				String blockSize, String name, Boolean isDir) {
-			this.permission = permission;
-			this.owner = owner;
-			this.group = group;
-			this.length = size;
-			this.replication = replication;
-			this.blockSize = blockSize;
-			this.pathSuffix = name;
-			this.isDir = isDir;
-		}
-		
-		public String getPermission() {
-			return permission;
-		}
-
-		public void setPermission(String permission) {
-			this.permission = permission;
-		}	
-		
-		public String getOwner() {
-			return owner;
-		}
-
-		public void setOwner(String owner) {
-			this.owner = owner;
-		}	
-		
-		public String getGroup() {
-			return this.group;
-		}
-
-		public void setGroup(String group) {
-			this.group = group;
-		}	
-		
-		public String getSize() {
-			return this.length;
-		}
-
-		public void setSize(String length) {
-			this.length = length;
-		}	
-		
-		public String getReplication() {
-			return this.replication;
-		}
-
-		public void setReplication(String replication) {
-			this.replication = replication;
-		}	
-		
-		public String getBlockSize() {
-			return this.blockSize;
-		}
-
-		public void setBlockSize(String blockSize) {
-			this.blockSize = blockSize;
-		}	
-		
-		public String getName() {
-			return this.pathSuffix;
-		}
-
-		public void setName(String pathSuffix) {
-			this.pathSuffix = pathSuffix;
-		}	
-		
-		public Boolean isDir() {
-			return this.isDir;
-		}
-
-		public void setIsDir(Boolean isDir) {
-			this.isDir = isDir;
-		}	
-
-		public String getFullPath() {
-			return fullPath;
-		}
-
-		public void setFullPath(String fullPath) {
-			this.fullPath = fullPath;
-		}		
-
-		@Override
-		public String toString() {
-			return this.fullPath;
-		}
-	}
+	}	
 	
 	/**
 	 * describe a HDFS file DataModel
