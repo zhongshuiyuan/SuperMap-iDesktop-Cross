@@ -40,11 +40,10 @@ import com.supermap.desktop.utilties.CursorUtilties;
 
 public class JDialogHDFSFiles extends SmDialog {
 
-//	public static void main(String[] args) {
-//		String aaa = getFilePath();
-//		JDialogHDFSFiles f = new JDialogHDFSFiles();
-//		f.showDialog();
-//	}
+	public static void main(String[] args) {
+		JDialogHDFSFiles f = new JDialogHDFSFiles();
+		f.showDialog();
+	}
 
 	/**
 	 *
@@ -170,7 +169,7 @@ public class JDialogHDFSFiles extends SmDialog {
 						.addComponent(this.buttonBrowser))
 				.addComponent(scrollPaneTable, 100, 200, Short.MAX_VALUE)
 				.addGroup(gLayout.createParallelGroup(Alignment.CENTER)
-//						.addComponent(this.buttonBrowser)
+						.addComponent(this.buttonDownload)
 						.addComponent(this.buttonOK)
 						.addComponent(this.buttonCancel)));
 		// @formatter:on
@@ -184,8 +183,9 @@ public class JDialogHDFSFiles extends SmDialog {
 	private void initializeResources() {
 		if (table != null) {
 			this.setTitle(("Browse Directory"));
-			this.buttonCancel.setText(CommonProperties.getString("String_Button_Cancel"));
+			this.buttonCancel.setText(CommonProperties.getString("String_Button_Close"));
 			this.buttonOK.setText(CommonProperties.getString("String_Button_OK"));
+			this.buttonOK.setText("选择");
 
 			this.table.getColumnModel().getColumn(COLUMN_INDEX_Permission).setHeaderValue("Permission");
 			this.table.getColumnModel().getColumn(COLUMN_INDEX_Owner).setHeaderValue("Owner");
@@ -372,24 +372,24 @@ public class JDialogHDFSFiles extends SmDialog {
 	
 	private void buttonDownloadActionPerformed() {
 		try {	
-			Boolean fileSelected = false;
-			if (table.getSelectedRow() != -1) {
-				HDFSDefine define = (HDFSDefine)((HDFSTableModel)this.table.getModel()).getRowTagAt(table.getSelectedRow());
-				if (define != null && !define.isDir()) {
-					webHDFS.webFile = define.getName();
-					webHDFS.webURL = this.textServerURL.getText();
-					
-					fileSelected = true;
+//			Boolean fileSelected = false;
+//			if (table.getSelectedRow() != -1) {
+//				HDFSDefine define = (HDFSDefine)((HDFSTableModel)this.table.getModel()).getRowTagAt(table.getSelectedRow());
+//				if (define != null && !define.isDir()) {
+//					webHDFS.webFile = define.getName();
+//					webHDFS.webURL = this.textServerURL.getText();
+//					
+//					fileSelected = true;
 					
 					// show save file dialog
 					JDialogFileSaveAs dialogFileSaveAs = new JDialogFileSaveAs();
 					dialogFileSaveAs.showDialog();
-				}
-			} 
-			
-			if (!fileSelected) {
-				UICommonToolkit.showMessageDialog("please select a file");
-			}
+//				}
+//			} 
+//			
+//			if (!fileSelected) {
+//				UICommonToolkit.showMessageDialog("please select a file");
+//			}
 		} catch (Exception ex) {
 			Application.getActiveApplication().getOutput().output(ex);
 		} finally {

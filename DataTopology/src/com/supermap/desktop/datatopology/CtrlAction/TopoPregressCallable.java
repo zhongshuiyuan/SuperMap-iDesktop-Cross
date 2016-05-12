@@ -28,32 +28,32 @@ public class TopoPregressCallable extends UpdateProgressCallable {
 	@Override
 	public Boolean call() throws Exception {
 		try {
-			int count = table.getRowCount();
-			MutiTableModel model = (MutiTableModel) table.getModel();
-			DatasetVector[] datasets = new DatasetVector[count];
-			int[] precisionOrders = new int[count];
-			if (0 < count) {
-				for (int i = 0; i < count; i++) {
-					String datasetName = model.getTagValue(i).get(1).toString();
-					String datasourceName = model.getTagValue(i).get(2).toString();
-					Datasource datasource = Application.getActiveApplication().getWorkspace().getDatasources().get(datasourceName);
-					datasets[i] = (DatasetVector) datasource.getDatasets().get(datasetName);
-					TopologyDatasetRelationItem item = new TopologyDatasetRelationItem(datasets[i]);
-					precisionOrders[i] = item.getPrecisionOrder();
-				}
-				percentListener = new PercentListener();
-				TopologyValidator.addSteppedListener(percentListener);
-				long startTime = System.currentTimeMillis();
-				boolean topologyPreprocessResult = TopologyValidator.preprocess(datasets, precisionOrders, options, tolerance);
-				String time = String.valueOf((System.currentTimeMillis() - startTime)/1000.0);
-				String topologyPreprocessInfo = "";
-				if (topologyPreprocessResult) {
-					topologyPreprocessInfo = MessageFormat.format(DataTopologyProperties.getString("String_Message_PreprogressSuccess"), time);
-				} else {
-					topologyPreprocessInfo = DataTopologyProperties.getString("String_Message_PreprogressFailed");
-				}
-				Application.getActiveApplication().getOutput().output(topologyPreprocessInfo);
-			}
+//			int count = table.getRowCount();
+//			MutiTableModel model = (MutiTableModel) table.getModel();
+//			DatasetVector[] datasets = new DatasetVector[count];
+//			int[] precisionOrders = new int[count];
+//			if (0 < count) {
+//				for (int i = 0; i < count; i++) {
+//					String datasetName = model.getTagValue(i).get(1).toString();
+//					String datasourceName = model.getTagValue(i).get(2).toString();
+//					Datasource datasource = Application.getActiveApplication().getWorkspace().getDatasources().get(datasourceName);
+//					datasets[i] = (DatasetVector) datasource.getDatasets().get(datasetName);
+//					TopologyDatasetRelationItem item = new TopologyDatasetRelationItem(datasets[i]);
+//					precisionOrders[i] = item.getPrecisionOrder();
+//				}
+//				percentListener = new PercentListener();
+//				TopologyValidator.addSteppedListener(percentListener);
+//				long startTime = System.currentTimeMillis();
+//				boolean topologyPreprocessResult = TopologyValidator.preprocess(datasets, precisionOrders, options, tolerance);
+//				String time = String.valueOf((System.currentTimeMillis() - startTime)/1000.0);
+//				String topologyPreprocessInfo = "";
+//				if (topologyPreprocessResult) {
+//					topologyPreprocessInfo = MessageFormat.format(DataTopologyProperties.getString("String_Message_PreprogressSuccess"), time);
+//				} else {
+//					topologyPreprocessInfo = DataTopologyProperties.getString("String_Message_PreprogressFailed");
+//				}
+//				Application.getActiveApplication().getOutput().output(topologyPreprocessInfo);
+//			}
 		} catch (Exception e) {
 			Application.getActiveApplication().getOutput().output(e);
 		} finally {

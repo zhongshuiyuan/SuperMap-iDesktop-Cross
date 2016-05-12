@@ -349,54 +349,54 @@ public class JDialogTopoPreProgress extends SmDialog {
 
 	private void deleteFromTable() {
 		try {
-			// 删除后设置第0行被选中
-			if (0 < table.getRowCount()) {
-				int[] selectRows = table.getSelectedRows();
-				DDLExportTableModel tableModel = (DDLExportTableModel) table.getModel();
-				tableModel.removeRows(selectRows);
-				int[] rowCount = new int[table.getRowCount()];
-				// 刷新序号
-				Object[][] datas = new Object[rowCount.length][3];
-				HashSet<DatasetType> datasetTypes = new HashSet<DatasetType>();
-				for (int i = 0; i < rowCount.length; i++) {
-					Object[] temp = new Object[3];
-					temp[COLUMN_INDEX_COUNT] = i + 1;
-					DataCell datasetCell = (DataCell) tableModel.getTagValue(i).get(1);
-					DataCell datasourceCell = (DataCell) tableModel.getTagValue(i).get(2);
-					Datasource datasource = Application.getActiveApplication().getWorkspace().getDatasources().get(datasourceCell.toString());
-					temp[COLUMN_INDEX_DATASET] = datasetCell;
-					Dataset dataset = DatasetUtilties.getDatasetFromDatasource(datasetCell.toString(), datasource);
-					datasetTypes.add(dataset.getType());
-					temp[COLUMN_INDEX_DATASOURCE] = datasourceCell;
-					datas[i] = temp;
-				}
-				tableModel.refreshContents(datas);
-				table.updateUI();
-				if (0 < table.getRowCount()) {
-					if (datasetTypes.contains(DatasetType.REGION)) {
-						checkBoxArcsInserted.setEnabled(true);
-						checkBoxPolygonsChecked.setEnabled(true);
-						checkBoxVertexArcInserted.setEnabled(true);
-						checkBoxVertexesSnapped.setEnabled(true);
-					} else if (datasetTypes.contains(DatasetType.LINE)) {
-						checkBoxArcsInserted.setEnabled(true);
-						checkBoxPolygonsChecked.setEnabled(false);
-						checkBoxVertexArcInserted.setEnabled(true);
-						checkBoxVertexesSnapped.setEnabled(true);
-					} else if (datasetTypes.contains(DatasetType.POINT)) {
-						checkBoxArcsInserted.setEnabled(false);
-						checkBoxPolygonsChecked.setEnabled(false);
-						checkBoxVertexArcInserted.setEnabled(false);
-						checkBoxVertexesSnapped.setEnabled(true);
-					}
-					table.setRowSelectionInterval(0, 0);
-				} else {
-					checkBoxArcsInserted.setEnabled(false);
-					checkBoxPolygonsChecked.setEnabled(false);
-					checkBoxVertexArcInserted.setEnabled(false);
-					checkBoxVertexesSnapped.setEnabled(false);
-				}
-			}
+//			// 删除后设置第0行被选中
+//			if (0 < table.getRowCount()) {
+//				int[] selectRows = table.getSelectedRows();
+//				DDLExportTableModel tableModel = (DDLExportTableModel) table.getModel();
+//				tableModel.removeRows(selectRows);
+//				int[] rowCount = new int[table.getRowCount()];
+//				// 刷新序号
+//				Object[][] datas = new Object[rowCount.length][3];
+//				HashSet<DatasetType> datasetTypes = new HashSet<DatasetType>();
+//				for (int i = 0; i < rowCount.length; i++) {
+//					Object[] temp = new Object[3];
+//					temp[COLUMN_INDEX_COUNT] = i + 1;
+//					DataCell datasetCell = (DataCell) tableModel.getTagValue(i).get(1);
+//					DataCell datasourceCell = (DataCell) tableModel.getTagValue(i).get(2);
+//					Datasource datasource = Application.getActiveApplication().getWorkspace().getDatasources().get(datasourceCell.toString());
+//					temp[COLUMN_INDEX_DATASET] = datasetCell;
+//					Dataset dataset = DatasetUtilties.getDatasetFromDatasource(datasetCell.toString(), datasource);
+//					datasetTypes.add(dataset.getType());
+//					temp[COLUMN_INDEX_DATASOURCE] = datasourceCell;
+//					datas[i] = temp;
+//				}
+//				tableModel.refreshContents(datas);
+//				table.updateUI();
+//				if (0 < table.getRowCount()) {
+//					if (datasetTypes.contains(DatasetType.REGION)) {
+//						checkBoxArcsInserted.setEnabled(true);
+//						checkBoxPolygonsChecked.setEnabled(true);
+//						checkBoxVertexArcInserted.setEnabled(true);
+//						checkBoxVertexesSnapped.setEnabled(true);
+//					} else if (datasetTypes.contains(DatasetType.LINE)) {
+//						checkBoxArcsInserted.setEnabled(true);
+//						checkBoxPolygonsChecked.setEnabled(false);
+//						checkBoxVertexArcInserted.setEnabled(true);
+//						checkBoxVertexesSnapped.setEnabled(true);
+//					} else if (datasetTypes.contains(DatasetType.POINT)) {
+//						checkBoxArcsInserted.setEnabled(false);
+//						checkBoxPolygonsChecked.setEnabled(false);
+//						checkBoxVertexArcInserted.setEnabled(false);
+//						checkBoxVertexesSnapped.setEnabled(true);
+//					}
+//					table.setRowSelectionInterval(0, 0);
+//				} else {
+//					checkBoxArcsInserted.setEnabled(false);
+//					checkBoxPolygonsChecked.setEnabled(false);
+//					checkBoxVertexArcInserted.setEnabled(false);
+//					checkBoxVertexesSnapped.setEnabled(false);
+//				}
+//			}
 		} catch (Exception ex) {
 			Application.getActiveApplication().getOutput().output(ex);
 		}

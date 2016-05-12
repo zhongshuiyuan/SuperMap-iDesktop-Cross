@@ -21,7 +21,6 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.table.AbstractTableModel;
 
 import com.supermap.desktop.Application;
-import com.supermap.desktop.CtrlAction.CtrlActionHDFSFilesDownload.WorkThead;
 import com.supermap.desktop.CtrlAction.webHDFS.HDFSDefine;
 import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.properties.CommonProperties;
@@ -33,6 +32,11 @@ import com.supermap.desktop.ui.controls.button.SmButton;
 import com.supermap.desktop.utilties.CursorUtilties;
 
 public class JDialogFileSaveAs extends SmDialog {
+
+	public static void main(String[] args) {
+		JDialogFileSaveAs f = new JDialogFileSaveAs();
+		f.showDialog();
+	}
 	
 	private JLabel labelServerURL;
 	private JTextField textServerURL;
@@ -47,11 +51,6 @@ public class JDialogFileSaveAs extends SmDialog {
 	private String webURL;
 	private String webFile;
 	private String localPath;
-	
-//	public static void main(String[] args) {
-//		JDialogFileSaveAs dialog = new JDialogFileSaveAs();
-//		dialog.setVisible(true);
-//	}
 	
 	public JDialogFileSaveAs() {
 		initializeComponents();
@@ -75,12 +74,13 @@ public class JDialogFileSaveAs extends SmDialog {
 	}
 	
 	public void initializeComponents() {
-		this.setSize(900, 600);
+		this.setSize(500, 100);
 		this.setLocation(400, 300);
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
 		this.labelServerURL = new JLabel("服务器地址:");
 		this.textServerURL = new JTextField("Web URL");
+		this.textServerURL.setEditable(false);
 		this.buttonBrowser = new JButton("浏览");
 		
 		this.labelLocalPath = new JLabel("本地路径:");
@@ -117,14 +117,16 @@ public class JDialogFileSaveAs extends SmDialog {
 		this.getContentPane().setLayout(gLayout);	
 		
 		// @formatter:off
-		gLayout.setHorizontalGroup(gLayout.createParallelGroup(Alignment.LEADING)
+		gLayout.setHorizontalGroup(gLayout.createParallelGroup(Alignment.CENTER)
 				.addGroup(gLayout.createSequentialGroup()
-						.addComponent(this.labelServerURL)
-						.addComponent(this.textServerURL, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(this.buttonBrowser, 32, 32, 32))
-				.addGroup(gLayout.createSequentialGroup()
-						.addComponent(this.labelLocalPath)
-						.addComponent(this.textLocalPath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addGroup(gLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(this.labelServerURL)
+								.addComponent(this.labelLocalPath))
+						.addGroup(gLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(gLayout.createSequentialGroup()
+										.addComponent(this.textServerURL, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+										.addComponent(this.buttonBrowser, 30, 30, 30))
+								.addComponent(this.textLocalPath)))
 				.addGroup(gLayout.createSequentialGroup()
 						.addGap(10, 10, Short.MAX_VALUE)
 						.addComponent(this.buttonOK, 75, 75, 75)
@@ -140,6 +142,7 @@ public class JDialogFileSaveAs extends SmDialog {
 				.addGroup(gLayout.createParallelGroup(Alignment.CENTER)
 						.addComponent(this.buttonOK)
 						.addComponent(this.buttonCancel)));
+		// @formatter:on
 	}
 
 	public String getWebURL() {
