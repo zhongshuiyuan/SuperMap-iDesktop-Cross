@@ -155,22 +155,23 @@ public class JDialogHDFSFiles extends SmDialog {
 		// @formatter:off
 		gLayout.setHorizontalGroup(gLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(gLayout.createSequentialGroup().addComponent(this.labelServerURL)
-						.addComponent(this.textServerURL, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-								Short.MAX_VALUE)
+						.addComponent(this.textServerURL, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 						.addComponent(this.buttonBrowser, 32, 32, 32))
 				.addComponent(scrollPaneTable, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addGroup(gLayout.createSequentialGroup().addGap(10, 10, Short.MAX_VALUE)
-						.addComponent(this.buttonOK, 75, 75, 75).addComponent(this.buttonCancel, 75, 75, 75)));
+				.addGroup(gLayout.createSequentialGroup()
+						.addGap(10, 10, Short.MAX_VALUE)
+						.addComponent(this.buttonDownload, 75, 75, 75)
+						.addComponent(this.buttonOK, 75, 75, 75)
+						.addComponent(this.buttonCancel, 75, 75, 75)));
 
 		gLayout.setVerticalGroup(gLayout.createSequentialGroup()
 				.addGroup(gLayout.createParallelGroup(Alignment.CENTER).addComponent(this.labelServerURL)
-						.addComponent(this.textServerURL, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,
-								GroupLayout.PREFERRED_SIZE)
+						.addComponent(this.textServerURL, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(this.buttonBrowser))
-				// .addGap(7)
 				.addComponent(scrollPaneTable, 100, 200, Short.MAX_VALUE)
-				// .addGap(7)
-				.addGroup(gLayout.createParallelGroup(Alignment.CENTER).addComponent(this.buttonOK)
+				.addGroup(gLayout.createParallelGroup(Alignment.CENTER)
+//						.addComponent(this.buttonBrowser)
+						.addComponent(this.buttonOK)
 						.addComponent(this.buttonCancel)));
 		// @formatter:on
 	}
@@ -381,6 +382,8 @@ public class JDialogHDFSFiles extends SmDialog {
 					fileSelected = true;
 					
 					// show save file dialog
+					JDialogFileSaveAs dialogFileSaveAs = new JDialogFileSaveAs();
+					dialogFileSaveAs.showDialog();
 				}
 			} 
 			
