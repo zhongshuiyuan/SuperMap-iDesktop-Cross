@@ -69,12 +69,11 @@ public class JDialogFileSaveAs extends SmDialog {
 	
 	private String getWebFilePath() {
 		String webFilePath = this.webURL + this.webFile;
-		this.textServerURL.setText(webFilePath);
 		return webFilePath;
 	}
 	
 	public void initializeComponents() {
-		this.setSize(500, 100);
+		this.setSize(600, 150);
 		this.setLocation(400, 300);
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
@@ -86,7 +85,7 @@ public class JDialogFileSaveAs extends SmDialog {
 		this.labelLocalPath = new JLabel("本地路径:");
 		this.textLocalPath = new JTextField("Local Path");
 		
-		this.buttonOK = new SmButton(CommonProperties.getString("String_Button_OK"));
+		this.buttonOK = new SmButton("下载");
 		this.buttonCancel = new SmButton(CommonProperties.getString("String_Button_Cancel"));
 		
 		this.buttonBrowser.addActionListener(new ActionListener() {
@@ -123,10 +122,11 @@ public class JDialogFileSaveAs extends SmDialog {
 								.addComponent(this.labelServerURL)
 								.addComponent(this.labelLocalPath))
 						.addGroup(gLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(this.textServerURL)
 								.addGroup(gLayout.createSequentialGroup()
-										.addComponent(this.textServerURL, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+										.addComponent(this.textLocalPath, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 										.addComponent(this.buttonBrowser, 30, 30, 30))
-								.addComponent(this.textLocalPath)))
+								))
 				.addGroup(gLayout.createSequentialGroup()
 						.addGap(10, 10, Short.MAX_VALUE)
 						.addComponent(this.buttonOK, 75, 75, 75)
@@ -134,11 +134,11 @@ public class JDialogFileSaveAs extends SmDialog {
 		gLayout.setVerticalGroup(gLayout.createSequentialGroup()
 				.addGroup(gLayout.createParallelGroup(Alignment.CENTER)
 						.addComponent(this.labelServerURL)
-						.addComponent(this.textServerURL, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(this.buttonBrowser, 23, 23, 23))
+						.addComponent(this.textServerURL, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addGroup(gLayout.createParallelGroup(Alignment.CENTER)
 						.addComponent(this.labelLocalPath)
-						.addComponent(this.textLocalPath, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(this.textLocalPath, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(this.buttonBrowser, 23, 23, 23))
 				.addGroup(gLayout.createParallelGroup(Alignment.CENTER)
 						.addComponent(this.buttonOK)
 						.addComponent(this.buttonCancel)));
@@ -151,6 +151,9 @@ public class JDialogFileSaveAs extends SmDialog {
 	
 	public void setWebURL(String webURL) {
 		this.webURL = webURL;
+		if (this.textServerURL != null) {
+			this.textServerURL.setText(this.getWebFilePath());
+		}
 	}
 	
 	public String getWebFile() {
@@ -159,6 +162,9 @@ public class JDialogFileSaveAs extends SmDialog {
 	
 	public void setWebFile(String webFile) {
 		this.webFile = webFile;
+		if (this.textServerURL != null) {
+			this.textServerURL.setText(this.getWebFilePath());
+		}
 	}
 	
 	public String getLocalPath() {
@@ -167,7 +173,9 @@ public class JDialogFileSaveAs extends SmDialog {
 	
 	public void setLocalPath(String localPath) {
 		this.localPath = localPath;
-		this.textLocalPath.setText(this.localPath);
+		if (this.textLocalPath != null) {
+			this.textLocalPath.setText(this.localPath);
+		}
 	}
 	
 	private void buttonBrowserActionPerformed() {
@@ -186,8 +194,7 @@ public class JDialogFileSaveAs extends SmDialog {
 
 			int state = smFileChoose.showDefaultDialog();
 			if (state == JFileChooser.APPROVE_OPTION) {
-//				jTextFieldFileName.setText(smFileChoose.getFilePath());
-//				fileName = smFileChoose.getFileName();
+				this.textLocalPath.setText(smFileChoose.getFilePath());
 			}
 		} catch (Exception ex) {
 			Application.getActiveApplication().getOutput().output(ex);
@@ -200,29 +207,13 @@ public class JDialogFileSaveAs extends SmDialog {
 	 * 确定按钮点击事件
 	 */
 	private void buttonOKActionPerformed() {
-		try {	
-
-			this.localPath = this.textLocalPath.getText();
-			
+		try {
+			this.localPath = this.textLocalPath.getText();			
 			WorkThead thread = new WorkThead();
 			thread.start();
 			
-//			Boolean fileSelected = false;
-//			if (table.getSelectedRow() != -1) {
-//				HDFSDefine define = (HDFSDefine)((HDFSTableModel)this.table.getModel()).getRowTagAt(table.getSelectedRow());
-//				if (define != null && !define.isDir()) {
-//					webHDFS.webFile = define.getName();
-//					webHDFS.webURL = this.textServerURL.getText();
-//					
-//					fileSelected = true;
-//					this.dispose();
-//					this.dialogResult = DialogResult.OK;
-//				}
-//			} 
-//			
-//			if (!fileSelected) {
-//				UICommonToolkit.showMessageDialog("please select a file");
-//			}
+//			this.dispose();
+//			this.dialogResult = DialogResult.OK;
 		} catch (Exception ex) {
 			Application.getActiveApplication().getOutput().output(ex);
 		} finally {

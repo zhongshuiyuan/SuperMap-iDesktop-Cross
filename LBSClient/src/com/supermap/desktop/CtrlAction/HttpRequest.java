@@ -108,13 +108,17 @@ public class HttpRequest {
 		Boolean result = false;
 		
 		Application.getActiveApplication().getOutput().output("Start fetch stream.");
-		InputStream inputStream = getHttpStream(urlPath, param);
-		Application.getActiveApplication().getOutput().output("Fetch stream finished.");
+		InputStream inputStream = null;
+		while (inputStream == null) {
+			inputStream = getHttpStream(urlPath, param);
+		}
+		
 		byte[] data = new byte[1024];
 		int len = 0;
 		FileOutputStream fileOutputStream = null;
 		try {
 			if (inputStream != null) {
+				Application.getActiveApplication().getOutput().output("Fetch stream finished.");
 				Application.getActiveApplication().getOutput().output("Start save file.");
 				fileOutputStream = new FileOutputStream(localPath);
 				while ((len = inputStream.read(data)) != -1) {

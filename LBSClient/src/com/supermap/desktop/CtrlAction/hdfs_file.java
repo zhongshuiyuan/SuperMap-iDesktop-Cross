@@ -1,13 +1,13 @@
 package com.supermap.desktop.CtrlAction;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
-import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
+//import java.io.BufferedReader;
+//import java.io.IOException;
+//import java.io.InputStream;
+//import java.net.URI;
+//import java.util.ArrayList;
+//import java.util.List;
+//import org.apache.hadoop.hdfs.DistributedFileSystem;
+//import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
 
 import com.supermap.desktop.Application;
 

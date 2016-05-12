@@ -372,24 +372,27 @@ public class JDialogHDFSFiles extends SmDialog {
 	
 	private void buttonDownloadActionPerformed() {
 		try {	
-//			Boolean fileSelected = false;
-//			if (table.getSelectedRow() != -1) {
-//				HDFSDefine define = (HDFSDefine)((HDFSTableModel)this.table.getModel()).getRowTagAt(table.getSelectedRow());
-//				if (define != null && !define.isDir()) {
-//					webHDFS.webFile = define.getName();
-//					webHDFS.webURL = this.textServerURL.getText();
-//					
-//					fileSelected = true;
+			Boolean fileSelected = false;
+			if (table.getSelectedRow() != -1) {
+				HDFSDefine define = (HDFSDefine)((HDFSTableModel)this.table.getModel()).getRowTagAt(table.getSelectedRow());
+				if (define != null && !define.isDir()) {
+					webHDFS.webFile = define.getName();
+					webHDFS.webURL = this.textServerURL.getText();
+					
+					fileSelected = true;
 					
 					// show save file dialog
 					JDialogFileSaveAs dialogFileSaveAs = new JDialogFileSaveAs();
+					dialogFileSaveAs.setWebURL(webHDFS.webURL);
+					dialogFileSaveAs.setWebFile(webHDFS.webFile);
+					dialogFileSaveAs.setLocalPath("/home/huchenpu/demo/result/" + webHDFS.webFile);
 					dialogFileSaveAs.showDialog();
-//				}
-//			} 
-//			
-//			if (!fileSelected) {
-//				UICommonToolkit.showMessageDialog("please select a file");
-//			}
+				}
+			} 
+			
+			if (!fileSelected) {
+				UICommonToolkit.showMessageDialog("please select a file");
+			}
 		} catch (Exception ex) {
 			Application.getActiveApplication().getOutput().output(ex);
 		} finally {
