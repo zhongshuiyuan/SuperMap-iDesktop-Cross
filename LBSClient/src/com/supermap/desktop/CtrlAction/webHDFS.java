@@ -1,22 +1,6 @@
 package com.supermap.desktop.CtrlAction;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import javax.swing.SwingUtilities;
-
-import org.apache.commons.io.IOUtils;
-
-import com.supermap.data.Dataset;
-import com.supermap.data.Datasource;
-import com.supermap.data.DatasourceConnectionInfo;
-import com.supermap.desktop.Application;
-import com.supermap.desktop.CommonToolkit;
-import com.supermap.desktop.Interface.IForm;
-import com.supermap.desktop.Interface.IFormMap;
-import com.supermap.desktop.enums.WindowType;
 
 public class webHDFS {
 	
