@@ -109,7 +109,7 @@ public class MetaProcessBasicStatistics extends MetaProcess {
 			                               ProcessProperties.getString("String_Result_Variance")+var);
 			StatisticsCollection statisticsCollection = new StatisticsCollection(max, min, mean, std, var);
 			if (histogram.isCreate()) {
-				histogram.setSelectedItem(StatisticsAnalyst.createHistogram(src,histogram.getGroupCount()));
+				histogram.setSelectedItem(StatisticsAnalyst.createHistogram(src,histogram.getGroupCount(),histogram.getFunctionType()));
 			}
 			this.getParameters().getOutputs().getData(OUTPUT_DATA).setValue(statisticsCollection);
 		} catch (Exception e) {

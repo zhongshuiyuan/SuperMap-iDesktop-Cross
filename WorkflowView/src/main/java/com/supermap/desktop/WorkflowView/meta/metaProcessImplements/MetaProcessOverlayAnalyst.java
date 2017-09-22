@@ -144,23 +144,21 @@ public class MetaProcessOverlayAnalyst extends MetaProcess {
 	}
 
 	private void initParameterStates() {
+		DatasetVector dataset;
 		if (this.analystType == OverlayAnalystType.UNION || this.analystType == OverlayAnalystType.XOR || this.analystType == OverlayAnalystType.UPDATE) {
 			parameterSourceDataset.setDatasetTypes(DatasetType.REGION);
+			dataset = (DatasetVector) DatasetUtilities.getDefaultDataset(DatasetType.REGION);
 		} else {
 			parameterSourceDataset.setDatasetTypes(DatasetType.POINT, DatasetType.LINE, DatasetType.REGION);
+			dataset = DatasetUtilities.getDefaultDatasetVector();
 		}
 		parameterOverlayDataset.setDatasetTypes(DatasetType.REGION);
-		Dataset dataset = DatasetUtilities.getDefaultDataset(DatasetType.REGION);
+
 		if (dataset != null) {
-			parameterOverlayDatasource.setSelectedItem(dataset.getDatasource());
-			parameterOverlayDataset.setSelectedItem(dataset);
-		}
-		DatasetVector datasetVector = DatasetUtilities.getDefaultDatasetVector();
-		if (datasetVector != null) {
-			parameterSourceDatasource.setSelectedItem(datasetVector.getDatasource());
-			parameterSourceDataset.setSelectedItem(datasetVector);
-			if (!datasetVector.getDatasource().isReadOnly()) {
-				parameterResultDatasource.setSelectedItem(datasetVector.getDatasource());
+			parameterSourceDatasource.setSelectedItem(dataset.getDatasource());
+			parameterSourceDataset.setSelectedItem(dataset);
+			if (!dataset.getDatasource().isReadOnly()) {
+				parameterResultDatasource.setSelectedItem(dataset.getDatasource());
 			} else {
 				Datasource defaultResultDatasource = DatasourceUtilities.getDefaultResultDatasource();
 				parameterResultDatasource.setSelectedItem(defaultResultDatasource);
@@ -171,13 +169,13 @@ public class MetaProcessOverlayAnalyst extends MetaProcess {
 				resultName = datasource.getDatasets().getAvailableDatasetName(resultName);
 			}
 			parameterSaveDataset.setSelectedItem(resultName);
-			if ((this.analystType == OverlayAnalystType.UNION || this.analystType == OverlayAnalystType.XOR || this.analystType == OverlayAnalystType.UPDATE) && datasetVector.getType() == DatasetType.REGION) {
-				parameterTolerance.setSelectedItem(DoubleUtilities.getFormatString(DatasetUtilities.getDefaultTolerance(datasetVector).getNodeSnap()));
-				parameterUnit.setDescribe(LengthUnit.convertForm(datasetVector.getPrjCoordSys().getCoordUnit()).toString());
+			if ((this.analystType == OverlayAnalystType.UNION || this.analystType == OverlayAnalystType.XOR || this.analystType == OverlayAnalystType.UPDATE) && dataset.getType() == DatasetType.REGION) {
+				parameterTolerance.setSelectedItem(DoubleUtilities.getFormatString(DatasetUtilities.getDefaultTolerance(dataset).getNodeSnap()));
+				parameterUnit.setDescribe(LengthUnit.convertForm(dataset.getPrjCoordSys().getCoordUnit()).toString());
 			}
 			if (this.analystType == OverlayAnalystType.CLIP || this.analystType == OverlayAnalystType.ERASE || this.analystType == OverlayAnalystType.INTERSECT || this.analystType == OverlayAnalystType.IDENTITY) {
-				parameterTolerance.setSelectedItem(DoubleUtilities.getFormatString(DatasetUtilities.getDefaultTolerance(datasetVector).getNodeSnap()));
-				parameterUnit.setDescribe(LengthUnit.convertForm(datasetVector.getPrjCoordSys().getCoordUnit()).toString());
+				parameterTolerance.setSelectedItem(DoubleUtilities.getFormatString(DatasetUtilities.getDefaultTolerance(dataset).getNodeSnap()));
+				parameterUnit.setDescribe(LengthUnit.convertForm(dataset.getPrjCoordSys().getCoordUnit()).toString());
 			}
 			parameterTolerance.setMinValue(0);
 			parameterTolerance.setIsIncludeMin(true);

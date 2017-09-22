@@ -46,8 +46,8 @@ public class MetaProcessFlowAccumulation extends MetaProcessHydrology {
 		if (datasetGrid != null) {
 			weightDatasource.setSelectedItem(datasetGrid.getDatasource());
 			weightDataset.setDatasource(datasetGrid.getDatasource());
-			weightDataset.setShowNullValue(true);
 		}
+		weightDataset.setShowNullValue(true);
 
 		ParameterCombine weightCombine = new ParameterCombine();
 		weightCombine.setDescribe(WEIGHT_DATA);

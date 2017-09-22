@@ -50,7 +50,7 @@ public class ParameterSingleDatasetPanel extends SwingPanel implements IParamete
 			isSelectingItem = true;
 			boolean isDeleted = false;
 			try {
-				if (((Dataset) parameterSingleDataset.getSelectedItem()).getName().equals(datasetDeletingEvent.getDatasetName())) {
+				if ((parameterSingleDataset.getSelectedItem()).getName().equals(datasetDeletingEvent.getDatasetName())) {
 					isDeleted = true;
 				}
 			} catch (Exception e) {
@@ -110,9 +110,9 @@ public class ParameterSingleDatasetPanel extends SwingPanel implements IParamete
 		this.datasetComboBox.setShowNullValue(parameterSingleDataset.isShowNullValue());
 		this.datasetComboBox.setSupportedDatasetTypes(datasetTypes);
 		if (this.datasource != null) {
-			Object selectedItem = parameterSingleDataset.getSelectedItem();
-			if (selectedItem != null && selectedItem instanceof Dataset) {
-				this.datasetComboBox.setSelectedDataset((Dataset) selectedItem);
+			Dataset selectedItem = parameterSingleDataset.getSelectedItem();
+			if (selectedItem != null) {
+				this.datasetComboBox.setSelectedDataset(selectedItem);
 			}
 		}
 	}
