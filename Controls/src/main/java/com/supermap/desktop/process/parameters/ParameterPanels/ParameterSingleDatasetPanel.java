@@ -110,6 +110,9 @@ public class ParameterSingleDatasetPanel extends SwingPanel implements IParamete
 
 		this.datasetComboBox.setShowNullValue(parameterSingleDataset.isShowNullValue());
 		this.datasetComboBox.setSupportedDatasetTypes(datasetTypes);
+		if (parameterSingleDataset.getPixelFormat() != null) {
+			this.datasetComboBox.setPixelFormats(parameterSingleDataset.getPixelFormat());
+		}
 		if (this.datasource != null) {
 			Dataset selectedItem = parameterSingleDataset.getSelectedItem();
 			if (selectedItem != null) {
