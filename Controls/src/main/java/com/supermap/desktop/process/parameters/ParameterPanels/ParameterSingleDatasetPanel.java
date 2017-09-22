@@ -60,6 +60,7 @@ public class ParameterSingleDatasetPanel extends SwingPanel implements IParamete
 			isSelectingItem = false;
 			if (isDeleted && datasetComboBox.getItemCount() > 0) {
 				datasetComboBox.setSelectedIndex(0);
+				//parameterSingleDataset.setSelectedItem(datasetComboBox.getSelectedDataset());
 			}
 		}
 	};
@@ -264,6 +265,7 @@ public class ParameterSingleDatasetPanel extends SwingPanel implements IParamete
 				}
 			}
 		});
+		addDatasourceListener(this.datasource);
 	}
 
 	private void workspaceChanged() {
