@@ -215,13 +215,13 @@ public class ParameterInputDataType extends ParameterCombine {
 		parameterEngineType.setSelectedItem("POSTGRESQL");
 		parameterEngineType.setEnabled(false);
 		parameterTextFieldAddress.setRequisite(true);
-		parameterTextFieldAddress.setDefaultWarningValue("192.168.15.248");
+		parameterTextFieldAddress.setDefaultWarningValue("{ip}");
 		parameterDataBaseName.setRequisite(true);
-		parameterDataBaseName.setDefaultWarningValue("supermap");
+//		parameterDataBaseName.setDefaultWarningValue("");
 		parameterTextFieldUserName.setRequisite(true);
-		parameterTextFieldUserName.setDefaultWarningValue("postgres");
+//		parameterTextFieldUserName.setDefaultWarningValue("");
 		parameterTextFieldPassword.setRequisite(true);
-		parameterTextFieldPassword.setSelectedItem("supermap");
+//		parameterTextFieldPassword.setSelectedItem("supermap");
 		ParameterCombine parameterCombine2 = new ParameterCombine();
 		parameterCombine2.addParameters(
 				parameterTextFieldAddress,

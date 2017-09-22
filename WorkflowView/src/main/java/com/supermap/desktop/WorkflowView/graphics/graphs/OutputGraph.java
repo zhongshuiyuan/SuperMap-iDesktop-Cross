@@ -3,6 +3,7 @@ package com.supermap.desktop.WorkflowView.graphics.graphs;
 import com.supermap.desktop.WorkflowView.graphics.GraphCanvas;
 import com.supermap.desktop.process.parameter.interfaces.datas.OutputData;
 import com.supermap.desktop.utilities.DoubleUtilities;
+import com.supermap.desktop.utilities.FontUtilities;
 import sun.swing.SwingUtilities2;
 
 import java.awt.*;
@@ -42,7 +43,7 @@ public class OutputGraph extends RectangleGraph {
 	protected void onPaint(Graphics g) {
 		super.onPaint(g);
 
-		Font font = new Font(getCanvas().getFont().getName(), Font.PLAIN, 14);
+		Font font = new Font(FontUtilities.getMainFrameFontName(), Font.PLAIN, 14);
 		g.setFont(font);
 		g.setColor(Color.WHITE);
 

@@ -23,6 +23,7 @@ public class ImportSettingCreator implements IImportSettingCreator {
 			if ("EXCEL".equalsIgnoreCase(type)) {
 				return new ImportSettingExcel();
 			}
+
 			if ("B".equalsIgnoreCase(type)) {
 				type = "TEMSClutter";
 			} else if ("DEM".equalsIgnoreCase(type)) {
