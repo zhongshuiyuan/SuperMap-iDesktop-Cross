@@ -243,4 +243,7 @@ public class ParameterPatternsParameter extends ParameterCombine {
 		return this.parameterComboBoxConceptModel;
 	}
 
+	public ParameterFile getParameterFile() {
+		return parameterFile;
+	}
 }

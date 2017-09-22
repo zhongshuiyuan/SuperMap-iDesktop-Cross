@@ -5,14 +5,17 @@ import com.supermap.analyst.spatialstatistics.WeightsUtilities;
 import com.supermap.data.DatasetType;
 import com.supermap.data.DatasetVector;
 import com.supermap.desktop.Application;
+import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
 import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.process.ProcessProperties;
 import com.supermap.desktop.process.parameter.ParameterDataNode;
+import com.supermap.desktop.process.parameter.interfaces.datas.types.BasicTypes;
 import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
 import com.supermap.desktop.process.parameter.ipls.ParameterFile;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.controls.SmFileChoose;
+
 import java.io.File;
 
 /**
@@ -20,6 +23,7 @@ import java.io.File;
  * 生成空间权重矩阵文件
  */
 public class MetaProcessCreateSpatialWeightMatrixFile extends MetaProcessAnalyzingPatterns {
+	private static final String OUTPUT_DATA = "CreateSpatialWeightMatrixFileResult";
 	private ParameterFile parameterFile;
 
 	@Override
@@ -54,6 +58,7 @@ public class MetaProcessCreateSpatialWeightMatrixFile extends MetaProcessAnalyzi
 		parameterCombine.addParameters(parameterFile);
 		parameterCombine.setDescribe(CommonProperties.getString("String_ResultSet"));
 		parameters.addParameters(parameterCombine);
+		this.parameters.addOutputParameters(OUTPUT_DATA, ProcessOutputResultProperties.getString("String_SpatialWeightMatrixFile"), BasicTypes.STRING, parameterFile);
 	}
 
 	@Override
@@ -75,8 +80,12 @@ public class MetaProcessCreateSpatialWeightMatrixFile extends MetaProcessAnalyzi
 			// 唯一字段默认给SmID
 			isSuccessful = WeightsUtilities.buildWeightMatrix(
 					datasetVector, "SmID",
-					(String) parameterFile.getSelectedItem(),
+					parameterFile.getSelectedItem(),
 					parameterPatternsParameter.getPatternParameter());
+
+			if (isSuccessful) {
+				this.getParameters().getOutputs().getData(OUTPUT_DATA).setValue(parameterFile);
+			}
 		} catch (Exception e) {
 			Application.getActiveApplication().getOutput().output(e.getMessage());
 			e.printStackTrace();

@@ -7,11 +7,7 @@ import com.supermap.desktop.process.core.IProcess;
 import com.supermap.desktop.process.core.Workflow;
 import com.supermap.desktop.process.parameter.events.ParameterPropertyChangedEvent;
 import com.supermap.desktop.process.parameter.events.ParameterPropertyChangedListener;
-import com.supermap.desktop.process.parameter.interfaces.IEnvironmentParameter;
-import com.supermap.desktop.process.parameter.interfaces.IParameter;
-import com.supermap.desktop.process.parameter.interfaces.IParameterPanel;
-import com.supermap.desktop.process.parameter.interfaces.IParameters;
-import com.supermap.desktop.process.parameter.interfaces.ISelectionParameter;
+import com.supermap.desktop.process.parameter.interfaces.*;
 import com.supermap.desktop.process.parameter.interfaces.datas.InputData;
 import com.supermap.desktop.process.parameter.interfaces.datas.Inputs;
 import com.supermap.desktop.process.parameter.interfaces.datas.Outputs;
@@ -30,11 +26,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author XiaJT
@@ -252,7 +244,7 @@ public class DefaultParameters implements IParameters {
 	public void addInputParameters(String name, Type type, IParameter... parameters) {
 		this.process.getInputs().addData(name, type);
 		this.process.getInputs().getData(name).addParameters(parameters);
-		inputParametersManager.add(name, parameters);
+		inputParametersManager.add(name, type, parameters);
 	}
 
 	@Override
@@ -266,7 +258,7 @@ public class DefaultParameters implements IParameters {
 	public void addInputParameters(String name, String text, Type type, IParameter... parameters) {
 		this.process.getInputs().addData(name, text, type);
 		this.process.getInputs().getData(name).addParameters(parameters);
-		inputParametersManager.add(name, parameters);
+		inputParametersManager.add(name, type, parameters);
 	}
 
 	@Override

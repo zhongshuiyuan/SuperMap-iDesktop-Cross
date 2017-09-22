@@ -14,7 +14,7 @@ import java.util.LinkedHashMap;
  */
 public class Outputs {
 	private IProcess process;
-//	private ConcurrentHashMap<String, OutputData> datas = new ConcurrentHashMap<>();
+	//	private ConcurrentHashMap<String, OutputData> datas = new ConcurrentHashMap<>();
 	private LinkedHashMap<String, OutputData> datas = new LinkedHashMap<>();
 	//  将ConcurrentHashMap改为LinkedHashMap，保存存入的OutputData拿出时顺序一致   ————李文发
 

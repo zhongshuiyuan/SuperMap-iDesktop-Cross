@@ -9,12 +9,16 @@ import com.supermap.desktop.process.events.StatusChangeEvent;
 import com.supermap.desktop.process.events.StatusChangeListener;
 import com.supermap.desktop.process.loader.DefaultProcessLoader;
 import com.supermap.desktop.process.loader.IProcessLoader;
+import com.supermap.desktop.process.parameter.interfaces.AbstractParameter;
 import com.supermap.desktop.process.parameter.interfaces.IParameter;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
 import com.supermap.desktop.process.parameter.interfaces.datas.InputData;
 import com.supermap.desktop.process.parameter.interfaces.datas.Inputs;
 import com.supermap.desktop.process.parameter.interfaces.datas.OutputData;
 import com.supermap.desktop.process.parameter.interfaces.datas.Outputs;
+import com.supermap.desktop.process.parameter.interfaces.datas.types.BasicTypes;
+import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
+import com.supermap.desktop.process.parameter.ipls.ParameterSwitch;
 import com.supermap.desktop.utilities.StringUtilities;
 
 import javax.swing.event.EventListenerList;
@@ -132,14 +136,19 @@ public abstract class AbstractProcess implements IProcess {
 	 * @return
 	 */
 	private boolean isInputDataReady() {
-		// 运行前，源数据和结果数据是否为空异常判断-yuanR2017.9.13
+		// 运行前，必填导入参数（源数据和其他参数）是否为空异常判断-yuanR2017.9.13
 		InputData[] inputData = this.getParameters().getInputs().getDatas();
 		for (InputData anInputData : inputData) {
+			if (anInputData.getType().equals(BasicTypes.STRING)) {
+			}
 			if (!anInputData.isBinded()) {
 				ArrayList<IParameter> iParameters = anInputData.getParameters();
 				for (IParameter iParameter : iParameters) {
-					if (!iParameter.isReady()) {
-						return false;
+					// 当导入数据不是“源数据”，并且是必要参数时才检查值得合法性-yuanR
+					if (iParameter instanceof ParameterCombine || iParameter instanceof ParameterSwitch || (iParameter instanceof AbstractParameter && iParameter.isRequisite())) {
+						if (!iParameter.isReady()) {
+							return false;
+						}
 					}
 				}
 			}
