@@ -99,7 +99,6 @@ public class ParameterFieldComboBox extends AbstractParameter implements ISelect
 		return this;
 	}
 
-
 	public boolean isShowSystemField() {
 		return isShowSystemField;
 	}
