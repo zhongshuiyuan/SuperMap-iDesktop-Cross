@@ -46,8 +46,8 @@ public class MetaProcessFillSink extends MetaProcessHydrology {
 		if (dataset != null) {
 			sinkDatasource.setSelectedItem(dataset.getDatasource());
 			sinkDataset.setDatasource(dataset.getDatasource());
-			sinkDataset.setShowNullValue(true);
 		}
+		sinkDataset.setShowNullValue(true);
 
 		ParameterCombine sinkCombine = new ParameterCombine();
 		sinkCombine.setDescribe(SINK_DATA);

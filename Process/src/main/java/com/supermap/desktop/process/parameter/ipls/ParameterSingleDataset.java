@@ -22,6 +22,7 @@ public class ParameterSingleDataset extends AbstractParameter implements ISelect
 	private Dataset selectedItem;
 	//	@ParameterField(name = DATASET_TYPES_FIELD_NAME) not ready
 	private DatasetType[] datasetTypes;
+	private PixelFormat[] pixelFormats=null;//栅格数据集像素类型
 	@ParameterField(name = DATASOURCE_FIELD_NAME)
 	private Datasource datasource;
 	private String describe = CommonProperties.getString(CommonProperties.Label_Dataset);
@@ -33,12 +34,6 @@ public class ParameterSingleDataset extends AbstractParameter implements ISelect
 			}
 		}
 	};
-
-//	private boolean isDatasetRequisite = true;
-//
-//	public void setDatasetRequisite(boolean isRequisite) {
-//		this.isDatasetRequisite = isRequisite;
-//	}
 
 	/**
 	 * 是否为必填参数和是否显示未空值有关
@@ -137,5 +132,13 @@ public class ParameterSingleDataset extends AbstractParameter implements ISelect
 
 	public boolean isShowNullValue() {
 		return isShowNullValue;
+	}
+
+	public PixelFormat[] getPixelFormat() {
+		return pixelFormats;
+	}
+
+	public void setPixelFormat(PixelFormat[] pixelFormats) {
+		this.pixelFormats = pixelFormats;
 	}
 }

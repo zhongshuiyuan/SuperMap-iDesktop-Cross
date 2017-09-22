@@ -359,17 +359,27 @@ public class DialogCacheCheck extends JFrame {
 								CacheUtilities.showMessageDialog(DialogCacheCheck.this, datasourcePath + " not exists!");
 								return;
 							}
-							ArrayList<String> taskPaths = CacheUtilities.getTaskPath("task", cachePath);
-							for (String taskPath : taskPaths) {
-								ArrayList<String> sciNames = CheckCache.getSciFileList(taskPath);
-								File scifile = new File(sciNames.get(0));
-								parentPath = scifile.getParentFile().getParent();
+							ArrayList<String> checkedPaths = CacheUtilities.getTaskPath("checked", cachePath);
+							for (String checkedPath : checkedPaths) {
+								File checkedFile = new File(checkedPath);
+
+								File[] checkedSciFiles = checkedFile.listFiles();
+								parentPath = checkedFile.getParent();
+								File[] failedSciFiles = new File(CacheUtilities.replacePath(parentPath, "failed")).listFiles();
+								String sciPath = "";
+								if (null != checkedSciFiles && checkedSciFiles.length > 0) {
+									sciPath = checkedSciFiles[0].getAbsolutePath();
+								} else if (null != failedSciFiles && failedSciFiles.length > 0) {
+									sciPath = failedSciFiles[0].getAbsolutePath();
+								}
 								CacheWriter writer = new CacheWriter();
-								writer.FromConfigFile(sciNames.get(0));
-								anchorLeft = writer.getIndexBounds().getLeft();
-								anchorTop = writer.getIndexBounds().getTop();
-								tileSize = writer.getTileSize().value();
-								CheckCache.error2Udb(anchorLeft, anchorTop, tileSize, parentPath, datasourcePath);
+								boolean result = writer.FromConfigFile(sciPath);
+								if (result) {
+									anchorLeft = writer.getIndexBounds().getLeft();
+									anchorTop = writer.getIndexBounds().getTop();
+									tileSize = writer.getTileSize().value();
+									CheckCache.error2Udb(anchorLeft, anchorTop, tileSize, parentPath, datasourcePath);
+								}
 							}
 						} catch (Exception e) {
 							//hanyzh:写入UDB有可能抛异常，不要影响后面的执行--error2Udb试图两次打开UDB异常

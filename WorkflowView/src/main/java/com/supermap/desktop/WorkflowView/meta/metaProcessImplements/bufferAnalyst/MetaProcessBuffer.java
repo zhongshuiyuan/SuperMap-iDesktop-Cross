@@ -147,7 +147,7 @@ public class MetaProcessBuffer extends MetaProcess {
 
 		ParameterCombine parameterCombineParameter = new ParameterCombine();
 		parameterCombineParameter.setDescribe(CommonProperties.getString("String_GroupBox_ParamSetting"));
-		parameterCombineParameter.addParameters(new ParameterCombine().addParameters(this.parameterUnionBuffer, this.parameterRetainAttribute),
+		parameterCombineParameter.addParameters(new ParameterCombine(ParameterCombine.HORIZONTAL).addParameters(this.parameterUnionBuffer, this.parameterRetainAttribute),
 				this.parameterTextFieldSemicircleLineSegment);
 
 		ParameterCombine parameterCombineResult = new ParameterCombine();
