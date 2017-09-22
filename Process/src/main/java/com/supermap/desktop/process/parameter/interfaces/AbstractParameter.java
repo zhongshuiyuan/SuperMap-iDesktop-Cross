@@ -33,7 +33,7 @@ public abstract class AbstractParameter implements IParameter, Irequisite {
 	// For custom Parameter, there are many components, some of which are available and some are unavailable.
 	// The current implementation initialization is either available or unavailable.
 	// Therefore, the new variable is used as a flag to determine whether the Panel need to be reset.
-	private boolean isComplexParameter=false;
+	private boolean isComplexParameter = false;
 
 	@Override
 	public void addPanelPropertyChangedListener(PanelPropertyChangedListener panelPropertyChangedListener) {
