@@ -84,7 +84,12 @@ public abstract class MetaProcessSpatialMeasure extends MetaProcess {
 	}
 
 	private void initComponentState() {
-		DatasetVector datasetVector = DatasetUtilities.getDefaultDatasetVector();
+		DatasetVector datasetVector=null;
+		if (getKey().equals(MetaKeys.LINEAR_DIRECTIONAL_MEAN)) {
+			datasetVector = (DatasetVector) DatasetUtilities.getDefaultDataset(DatasetType.LINE);
+		}else {
+			datasetVector = (DatasetVector) DatasetUtilities.getDefaultDataset(DatasetType.POINT,DatasetType.LINE,DatasetType.REGION);
+		}
 		if (datasetVector != null) {
 			datasource.setSelectedItem(datasetVector.getDatasource());
 			dataset.setSelectedItem(datasetVector);
