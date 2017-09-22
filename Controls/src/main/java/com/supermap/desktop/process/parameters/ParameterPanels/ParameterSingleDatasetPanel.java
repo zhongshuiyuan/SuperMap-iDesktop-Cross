@@ -50,7 +50,7 @@ public class ParameterSingleDatasetPanel extends SwingPanel implements IParamete
 			isSelectingItem = true;
 			boolean isDeleted = false;
 			try {
-				if (((Dataset) parameterSingleDataset.getSelectedItem()).getName().equals(datasetDeletingEvent.getDatasetName())) {
+				if ((parameterSingleDataset.getSelectedItem()).getName().equals(datasetDeletingEvent.getDatasetName())) {
 					isDeleted = true;
 				}
 			} catch (Exception e) {

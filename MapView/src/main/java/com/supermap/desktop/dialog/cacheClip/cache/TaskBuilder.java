@@ -144,19 +144,19 @@ public class TaskBuilder {
 					FieldInfo fieldInfoCol = new FieldInfo("tilecol", FieldType.INT32);
 					FieldInfo fieldInfotype = new FieldInfo("errortype", FieldType.INT32);
 					FieldInfo fieldInfodesc = new FieldInfo("errordesc", FieldType.TEXT);
-					if (null != dataset.getFieldInfos().get("tiletype")) {
+					if (null == dataset.getFieldInfos().get("tiletype")) {
 						dataset.getFieldInfos().add(fieldInfoGroup);
 					}
-					if (null != dataset.getFieldInfos().get("tilerow")) {
+					if (null == dataset.getFieldInfos().get("tilerow")) {
 						dataset.getFieldInfos().add(fieldInfoRow);
 					}
-					if (null != dataset.getFieldInfos().get("tilecol")) {
+					if (null == dataset.getFieldInfos().get("tilecol")) {
 						dataset.getFieldInfos().add(fieldInfoCol);
 					}
-					if (null != dataset.getFieldInfos().get("errortype")) {
+					if (null == dataset.getFieldInfos().get("errortype")) {
 						dataset.getFieldInfos().add(fieldInfotype);
 					}
-					if (null != dataset.getFieldInfos().get("errordesc")) {
+					if (null == dataset.getFieldInfos().get("errordesc")) {
 						dataset.getFieldInfos().add(fieldInfodesc);
 					}
 
