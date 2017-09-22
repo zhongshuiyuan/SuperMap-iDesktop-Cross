@@ -161,7 +161,7 @@ public class MetaProcessBuffer extends MetaProcess {
 				parameterCombineResult
 		);
 		this.parameters.addInputParameters(INPUT_SOURCE_DATASET, DatasetTypes.SIMPLE_VECTOR, parameterCombineSourceData);
-		this.parameters.addOutputParameters(OUTPUT_DATASET, ProcessOutputResultProperties.getString("String_BufferResult"), DatasetTypes.REGION, parameterCombineResult);
+		this.parameters.addOutputParameters(OUTPUT_DATASET, ProcessOutputResultProperties.getString("String_Result_RegionDataset"), DatasetTypes.REGION, parameterCombineResult);
 	}
 
 	private void setComponentEnable() {
