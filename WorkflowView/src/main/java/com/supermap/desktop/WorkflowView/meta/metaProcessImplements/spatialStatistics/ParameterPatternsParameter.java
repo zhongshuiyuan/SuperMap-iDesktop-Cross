@@ -100,7 +100,6 @@ public class ParameterPatternsParameter extends ParameterCombine {
 					CoreProperties.getString("String_Open"), modelName, "OpenOne");
 		}
 		this.parameterFile.setModuleName(modelName);
-		this.parameterFile.setRequisite(true);
 
 		this.parameterTextFieldKNeighbors.setDescribe(ProcessProperties.getString("String_KNeighbors"));
 		this.parameterSelfWeightFieldComboBox.setDescribe(ProcessProperties.getString("String_SelfWeightField"));
