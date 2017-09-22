@@ -53,8 +53,8 @@ public class MetaProcessFlowLength extends MetaProcessHydrology {
 		if (datasetGrid != null) {
 			weightDatasource.setSelectedItem(datasetGrid.getDatasource());
 			weightDataset.setDatasource(datasetGrid.getDatasource());
-			weightDataset.setShowNullValue(true);
 		}
+		weightDataset.setShowNullValue(true);
 		comboBoxMethod.setItems(new ParameterDataNode(ProcessProperties.getString("String_Item_DownStream"),0),
 				new ParameterDataNode(ProcessProperties.getString("String_Item_UpStream"),1));
 
