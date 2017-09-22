@@ -100,6 +100,7 @@ public class MetaProcessTextToField extends MetaProcessTypeConversion {
 			if (isAdd) {
 				FieldInfo newFieldInfo = new FieldInfo();
 				newFieldInfo.setName(filedName);
+				newFieldInfo.setType(FieldType.TEXT);
 				fieldInfos.add(newFieldInfo);
 			}
 

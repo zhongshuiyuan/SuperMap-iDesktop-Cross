@@ -81,6 +81,7 @@ public class CtrlActionMapCatchAsRectangle extends CtrlAction {
 				}
 				mapControl.getMap().refreshTrackingLayer();
 				mapControl.removeKeyListener(keyAdapter);
+				overPickup();
 			}
 		}
 	};

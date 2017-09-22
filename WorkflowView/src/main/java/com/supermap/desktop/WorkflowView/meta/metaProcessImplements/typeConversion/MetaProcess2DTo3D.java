@@ -5,6 +5,7 @@ import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
 import com.supermap.desktop.process.ProcessProperties;
+import com.supermap.desktop.process.constraint.ipls.DatasourceConstraint;
 import com.supermap.desktop.process.constraint.ipls.EqualDatasetConstraint;
 import com.supermap.desktop.process.constraint.ipls.EqualDatasourceConstraint;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
@@ -106,6 +107,7 @@ public class MetaProcess2DTo3D extends MetaProcessTypeConversion {
 		equalDatasetConstraint.constrained(comboBoxZ, ParameterFieldComboBox.DATASET_FIELD_NAME);
 		equalDatasetConstraint.constrained(comboBoxFrom, ParameterFieldComboBox.DATASET_FIELD_NAME);
 		equalDatasetConstraint.constrained(comboBoxTo, ParameterFieldComboBox.DATASET_FIELD_NAME);
+		DatasourceConstraint.getInstance().constrained(outputData, ParameterSaveDataset.DATASOURCE_FIELD_NAME);
 	}
 
 	@Override
