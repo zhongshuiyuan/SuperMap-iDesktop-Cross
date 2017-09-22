@@ -10,6 +10,8 @@ import com.supermap.desktop.ui.mdi.plaf.MdiGroupUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -223,7 +225,7 @@ public class MdiGroup extends JComponent {
 		activePage(getPageAt(pageIndex));
 	}
 
-	public void activePage(MdiPage activePage) {
+	public void activePage(final MdiPage activePage) {
 		if (activePage == null) {
 			return;
 		}
@@ -232,21 +234,27 @@ public class MdiGroup extends JComponent {
 			return;
 		}
 
-		MdiPage oldActivePage = this.activePage;
+		final MdiPage oldActivePage = this.activePage;
 		this.eventsHelper.firePageActivating(new PageActivatingEvent(this, activePage, oldActivePage));
 		this.activePage = activePage;
-
-		// activePage 可见，其余不可见
-		for (int i = 0; i < this.pages.size(); i++) {
-			this.pages.get(i).getComponent().setVisible(this.pages.get(i) == activePage);
-		}
-
-		invokeFocus();
-		this.eventsHelper.firePageActivated(new PageActivatedEvent(this, activePage, oldActivePage));
 
 		// 更改状态重绘
 		revalidate();
 		repaint();
+		this.eventsHelper.firePageActivated(new PageActivatedEvent(this, activePage, oldActivePage));
+
+		// 延迟刷新内容控件，优先界面上工具条、Tab 等的绘制
+		Timer timer = new Timer(0, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				for (int i = 0; i < pages.size(); i++) {
+					pages.get(i).getComponent().setVisible(pages.get(i) == activePage);
+				}
+				invokeFocus();
+			}
+		});
+		timer.setRepeats(false);
+		timer.start();
 	}
 
 	/**
