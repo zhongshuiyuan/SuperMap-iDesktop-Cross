@@ -1,5 +1,6 @@
 package com.supermap.desktop.process.parameters.ParameterPanels;
 
+import com.supermap.analyst.spatialanalyst.FunctionType;
 import com.supermap.analyst.spatialanalyst.GridHistogram;
 import com.supermap.analyst.spatialanalyst.HistogramSegmentInfo;
 import com.supermap.desktop.process.ProcessProperties;
@@ -9,10 +10,8 @@ import com.supermap.desktop.process.parameter.interfaces.IParameter;
 import com.supermap.desktop.process.parameter.interfaces.IParameterPanel;
 import com.supermap.desktop.process.parameter.interfaces.ParameterPanelDescribe;
 import com.supermap.desktop.process.parameter.ipls.ParameterHistogram;
-import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.controls.GridBagConstraintsHelper;
 import com.supermap.desktop.ui.controls.TextFields.NumTextFieldLegit;
-import com.supermap.desktop.utilities.DoubleUtilities;
 import com.supermap.desktop.utilities.StringUtilities;
 
 import javax.swing.*;
@@ -30,12 +29,18 @@ import java.beans.PropertyChangeListener;
 public class ParameterHistogramPanel extends SwingPanel implements IParameterPanel {
 	private ParameterHistogram parameterHistogram;
 	private JCheckBox checkBox;
-	private JLabel label;
+	private JLabel labelCount;
+	private JLabel labelFunction;
 	private NumTextFieldLegit numCount;
+	private JComboBox<String> comboBoxFunction;
 	private HistogramPanel histogramPanel;
 	private JScrollPane scrollPane;
 
-	public ParameterHistogramPanel(final IParameter parameterHistogram) {
+	private static final String NONE = "NONE";
+	private static final String ARCSIN = "ARCSIN";
+	private static final String LOG = "LOG";
+
+	public ParameterHistogramPanel(IParameter parameterHistogram) {
 		super(parameterHistogram);
 		this.parameterHistogram = (ParameterHistogram) parameterHistogram;
 		initComponent();
@@ -44,9 +49,11 @@ public class ParameterHistogramPanel extends SwingPanel implements IParameterPan
 
 		panel.setLayout(new GridBagLayout());
 		panel.add(checkBox, new GridBagConstraintsHelper(0, 0, 2, 1).setWeight(1, 1).setFill(GridBagConstraints.HORIZONTAL).setInsets(0,0,5,0));
-		panel.add(label, new GridBagConstraintsHelper(0, 1, 1, 1).setWeight(0, 1).setFill(GridBagConstraints.NONE).setAnchor(GridBagConstraints.WEST).setInsets(0,0,5,25));
+		panel.add(labelCount, new GridBagConstraintsHelper(0, 1, 1, 1).setWeight(0, 1).setFill(GridBagConstraints.NONE).setAnchor(GridBagConstraints.WEST).setInsets(0,0,5,25));
 		panel.add(numCount, new GridBagConstraintsHelper(1, 1, 1, 1).setWeight(1, 1).setFill(GridBagConstraints.HORIZONTAL).setAnchor(GridBagConstraints.WEST).setInsets(0, 20, 5, 0));
-		panel.add(scrollPane, new GridBagConstraintsHelper(0, 2, 2, 1).setWeight(1, 1).setFill(GridBagConstraints.HORIZONTAL));
+		panel.add(labelFunction, new GridBagConstraintsHelper(0, 2, 1, 1).setWeight(0, 1).setFill(GridBagConstraints.NONE).setAnchor(GridBagConstraints.WEST).setInsets(0,0,5,25));
+		panel.add(comboBoxFunction, new GridBagConstraintsHelper(1, 2, 1, 1).setWeight(1, 1).setFill(GridBagConstraints.HORIZONTAL).setAnchor(GridBagConstraints.WEST).setInsets(0, 20, 5, 0));
+		panel.add(scrollPane, new GridBagConstraintsHelper(0, 3, 2, 1).setWeight(1, 1).setFill(GridBagConstraints.HORIZONTAL));
 		initListener();
 	}
 
@@ -55,18 +62,27 @@ public class ParameterHistogramPanel extends SwingPanel implements IParameterPan
 		histogramPanel =new HistogramPanel();
 		histogramPanel.setPreferredSize(new Dimension(0,300));
 		checkBox = new JCheckBox();
-		label = new JLabel();
+		labelCount = new JLabel();
+		labelFunction = new JLabel();
 		numCount = new NumTextFieldLegit();
+		comboBoxFunction = new JComboBox<>();
 		checkBox.setText(ProcessProperties.getString("String_CheckBox_CreateHistogram"));
-		label.setText(ProcessProperties.getString("String_Label_GroupCount"));
+		labelCount.setText(ProcessProperties.getString("String_Label_GroupCount"));
+		labelFunction.setText(ProcessProperties.getString("String_Label_ChangeFunc"));
 		scrollPane.setViewportView(histogramPanel);
 		numCount.setText("5");
 		numCount.setMinValue(1);
 		numCount.setBit(-1);
-		label.setVisible(false);
+		comboBoxFunction.addItem(NONE);
+		comboBoxFunction.addItem(ARCSIN);
+		comboBoxFunction.addItem(LOG);
+		labelCount.setVisible(false);
+		labelFunction.setVisible(false);
 		numCount.setVisible(false);
+		comboBoxFunction.setVisible(false);
 		parameterHistogram.setCreate(false);
 		scrollPane.setVisible(false);
+		parameterHistogram.setFunctionType(FunctionType.NONE);
 	}
 
 	private void initListener() {
@@ -81,10 +97,12 @@ public class ParameterHistogramPanel extends SwingPanel implements IParameterPan
 		checkBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				label.setVisible(checkBox.isSelected());
+				labelCount.setVisible(checkBox.isSelected());
+				labelFunction.setVisible(checkBox.isSelected());
 				numCount.setVisible(checkBox.isSelected());
 				parameterHistogram.setCreate(checkBox.isSelected());
 				scrollPane.setVisible(checkBox.isSelected());
+				comboBoxFunction.setVisible(checkBox.isSelected());
 			}
 		});
 		numCount.getDocument().addDocumentListener(new DocumentListener() {
@@ -109,6 +127,18 @@ public class ParameterHistogramPanel extends SwingPanel implements IParameterPan
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				change();
+			}
+		});
+		comboBoxFunction.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (comboBoxFunction.getSelectedItem().equals(NONE)) {
+					parameterHistogram.setFunctionType(FunctionType.NONE);
+				} else if (comboBoxFunction.getSelectedItem().equals(ARCSIN)) {
+					parameterHistogram.setFunctionType(FunctionType.ARCSIN);
+				} else {
+					parameterHistogram.setFunctionType(FunctionType.LOG);
+				}
 			}
 		});
 	}
@@ -166,7 +196,6 @@ public class ParameterHistogramPanel extends SwingPanel implements IParameterPan
 				g.drawString(gridHistogram.getFrequencies()[i] + "", 30 + (int) hInterval * i, height - 18 - heightRange);
 			}
 		}
-
 	}
 }
 

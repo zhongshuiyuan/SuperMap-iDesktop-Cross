@@ -134,7 +134,7 @@ public class MetaProcessMultiBuffer extends MetaProcess {
 		);
 
 		this.parameters.addInputParameters(INPUT_SOURCE_DATASET, DatasetTypes.SIMPLE_VECTOR, parameterCombineSourceData);
-		this.parameters.addOutputParameters(OUTPUT_DATASET, ProcessOutputResultProperties.getString("String_MultiBufferResult"), DatasetTypes.REGION, parameterCombineResult);
+		this.parameters.addOutputParameters(OUTPUT_DATASET, ProcessOutputResultProperties.getString("String_Result_RegionDataset"), DatasetTypes.REGION, parameterCombineResult);
 	}
 
 	private void initComponentState() {
@@ -212,8 +212,8 @@ public class MetaProcessMultiBuffer extends MetaProcess {
 	@Override
 	public boolean execute() {
 		boolean isSuccessful = false;
-		Datasource resultDatasource = null;
-		String resultName = null;
+		Datasource resultDatasource;
+		String resultName;
 
 		// 源数据
 		DatasetVector sourceDatasetVector;

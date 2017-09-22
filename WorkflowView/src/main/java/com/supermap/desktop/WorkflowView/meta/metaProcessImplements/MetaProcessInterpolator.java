@@ -9,15 +9,7 @@ import com.supermap.analyst.spatialanalyst.InterpolationRBFParameter;
 import com.supermap.analyst.spatialanalyst.Interpolator;
 import com.supermap.analyst.spatialanalyst.SearchMode;
 import com.supermap.analyst.spatialanalyst.VariogramMode;
-import com.supermap.data.Dataset;
-import com.supermap.data.DatasetGrid;
-import com.supermap.data.DatasetType;
-import com.supermap.data.DatasetVector;
-import com.supermap.data.Datasource;
-import com.supermap.data.PixelFormat;
-import com.supermap.data.Rectangle2D;
-import com.supermap.data.SteppedEvent;
-import com.supermap.data.SteppedListener;
+import com.supermap.data.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
@@ -75,7 +67,7 @@ public class MetaProcessInterpolator extends MetaProcessGridAnalyst {
 	private ParameterNumber parameterStill;
 	private ParameterNumber parameterAngle;
 	private ParameterNumber parameterRange;
-	private ParameterComboBox parameterSteps;
+	private ParameterComboBox parameterExponent;
 	private ParameterNumber parameterMean;
 	private ParameterNumber parameterNugget;
 	private InterpolationAlgorithmType interpolationAlgorithmType;
@@ -96,8 +88,9 @@ public class MetaProcessInterpolator extends MetaProcessGridAnalyst {
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (parameterDataset.getSelectedItem() != null && evt.getNewValue() instanceof DatasetVector) {
-				parameterInterpolatorFields.setSelectedItem("SmUserID");
-				Rectangle2D bounds = ((DatasetVector) evt.getNewValue()).getBounds();
+				parameterInterpolatorFields.setSelectedItem("SmID");
+				DatasetVector datasetVector = (DatasetVector) evt.getNewValue();
+				Rectangle2D bounds = (datasetVector).getBounds();
 				double x = bounds.getWidth() / 500;
 				double y = bounds.getHeight() / 500;
 				double resolution = x > y ? y : x;
@@ -108,6 +101,7 @@ public class MetaProcessInterpolator extends MetaProcessGridAnalyst {
 					parameterRow.setSelectedItem(rows);
 					parameterColumn.setSelectedItem(columns);
 				}
+				parameterMean.setSelectedItem(updateMean(datasetVector));
 			}
 		}
 	};
@@ -198,8 +192,8 @@ public class MetaProcessInterpolator extends MetaProcessGridAnalyst {
 		parameterRange.setMinValue(0);
 		parameterMean = new ParameterNumber(CommonProperties.getString("String_Mean"));
 		parameterMean.setSelectedItem(0);
-		parameterSteps = new ParameterComboBox().setDescribe(CommonProperties.getString("String_Steps"));
-		parameterSteps.setItems(new ParameterDataNode("1", Exponent.exp1), new ParameterDataNode("2", Exponent.exp2));
+		parameterExponent = new ParameterComboBox().setDescribe(CommonProperties.getString("String_Steps"));
+		parameterExponent.setItems(new ParameterDataNode("1", Exponent.exp1), new ParameterDataNode("2", Exponent.exp2));
 		parameterNugget = new ParameterNumber(CommonProperties.getString("String_Nugget"));
 		parameterNugget.setSelectedItem(0);
 		ParameterCombine otherParamCombine = new ParameterCombine();
@@ -216,9 +210,8 @@ public class MetaProcessInterpolator extends MetaProcessGridAnalyst {
 		} else if (interpolationAlgorithmType.equals(InterpolationAlgorithmType.SimpleKRIGING)) {
 			otherParamCombine.addParameters(new ParameterCombine().addParameters(parameterVariogramMode, parameterAngle, parameterMean)
 					, new ParameterCombine().addParameters(parameterStill, parameterRange, parameterNugget));
-			parameterMean.setSelectedItem(4);
 		} else if (interpolationAlgorithmType.equals(InterpolationAlgorithmType.UniversalKRIGING)) {
-			otherParamCombine.addParameters(new ParameterCombine().addParameters(parameterVariogramMode, parameterAngle, parameterSteps)
+			otherParamCombine.addParameters(new ParameterCombine().addParameters(parameterVariogramMode, parameterAngle, parameterExponent)
 					, new ParameterCombine().addParameters(parameterStill, parameterRange, parameterNugget));
 		}
 
@@ -243,8 +236,10 @@ public class MetaProcessInterpolator extends MetaProcessGridAnalyst {
 			parameterDataset.setSelectedItem(datasetVector);
 			parameterInterpolatorFields.setFieldName((DatasetVector) datasetVector);
 			searchMode.setDataset(datasetVector);
-
 			parameterInterpolatorFields.setFieldType(fieldType);
+			parameterInterpolatorFields.setShowSystemField(true);
+			parameterInterpolatorFields.setSelectedItem("SmID");
+			parameterMean.setSelectedItem(updateMean((DatasetVector) datasetVector));
 
 			Rectangle2D bounds = datasetVector.getBounds();
 			double x = bounds.getWidth() / 500;
@@ -275,6 +270,14 @@ public class MetaProcessInterpolator extends MetaProcessGridAnalyst {
 
 	private void registerEvents() {
 		this.parameterDataset.addPropertyListener(this.propertyChangeListener);
+		this.parameterInterpolatorFields.addPropertyListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (parameterDataset.getSelectedItem() != null && parameterMean.isEnabled()) {
+					parameterMean.setSelectedItem(updateMean((DatasetVector) parameterDataset.getSelectedItem()));
+				}
+			}
+		});
 	}
 
 	@Override
@@ -333,7 +336,7 @@ public class MetaProcessInterpolator extends MetaProcessGridAnalyst {
 					((InterpolationKrigingParameter) interpolationParameter).setMean(Double.valueOf(parameterMean.getSelectedItem()));
 				}
 				if (interpolationParameter.equals(InterpolationAlgorithmType.UniversalKRIGING)) {
-					((InterpolationKrigingParameter) interpolationParameter).setExponent((Exponent) parameterSteps.getSelectedData());
+					((InterpolationKrigingParameter) interpolationParameter).setExponent((Exponent) parameterExponent.getSelectedData());
 				}
 				((InterpolationKrigingParameter) interpolationParameter).setNugget(Double.valueOf(parameterNugget.getSelectedItem()));
 			}
@@ -362,7 +365,6 @@ public class MetaProcessInterpolator extends MetaProcessGridAnalyst {
 		return isSuccessful;
 	}
 
-
 	@Override
 	public Class<? extends IProcessLoader> getLoader() {
 		return InterpolatorProcessLoader.class;
@@ -385,6 +387,19 @@ public class MetaProcessInterpolator extends MetaProcessGridAnalyst {
 		return key;
 	}
 
+	public double updateMean(DatasetVector datasetVector) {
+		double mean = 0;
+		String field = parameterInterpolatorFields.getFieldName();
+		Recordset recordset = datasetVector.getRecordset(false, CursorType.DYNAMIC);
+		while (!recordset.isEOF()) {
+			mean +=Double.valueOf(recordset.getObject(field).toString());
+			recordset.moveNext();
+		}
+		mean = mean / recordset.getRecordCount();
+		recordset.dispose();
+
+		return mean;
+	}
 
 	public void setInterpolationParameter(InterpolationParameter interpolationParameter) {
 		Rectangle2D bounds = new Rectangle2D();
@@ -400,5 +415,4 @@ public class MetaProcessInterpolator extends MetaProcessGridAnalyst {
 		interpolationParameter.setResolution(Double.valueOf(parameterResolution.getSelectedItem()));
 		interpolationParameter.setBounds(bounds);
 	}
-
 }

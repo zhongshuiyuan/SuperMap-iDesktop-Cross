@@ -1,5 +1,6 @@
 package com.supermap.desktop.process.parameter.ipls;
 
+import com.supermap.analyst.spatialanalyst.FunctionType;
 import com.supermap.analyst.spatialanalyst.GridHistogram;
 import com.supermap.desktop.process.constraint.annotation.ParameterField;
 import com.supermap.desktop.process.enums.ParameterType;
@@ -17,6 +18,7 @@ public class ParameterHistogram extends AbstractParameter implements ISelectionP
 	private GridHistogram selectedItem;
 	private int groupCount;
 	private boolean isCreate;
+	private FunctionType functionType;
 
 	@Override
 	public String getDescribe() {
@@ -56,6 +58,14 @@ public class ParameterHistogram extends AbstractParameter implements ISelectionP
 
 	public void setCreate(boolean create) {
 		isCreate = create;
+	}
+
+	public FunctionType getFunctionType() {
+		return functionType;
+	}
+
+	public void setFunctionType(FunctionType functionType) {
+		this.functionType = functionType;
 	}
 
 	@Override

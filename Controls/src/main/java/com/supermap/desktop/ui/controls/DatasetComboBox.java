@@ -1,16 +1,6 @@
 package com.supermap.desktop.ui.controls;
 
-import com.supermap.data.Dataset;
-import com.supermap.data.DatasetCreatedEvent;
-import com.supermap.data.DatasetCreatedListener;
-import com.supermap.data.DatasetDeletedAllEvent;
-import com.supermap.data.DatasetDeletedAllListener;
-import com.supermap.data.DatasetDeletedEvent;
-import com.supermap.data.DatasetDeletedListener;
-import com.supermap.data.DatasetRenamedEvent;
-import com.supermap.data.DatasetRenamedListener;
-import com.supermap.data.DatasetType;
-import com.supermap.data.Datasets;
+import com.supermap.data.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.controls.ControlDefaultValues;
 import com.supermap.desktop.controls.utilities.JComboBoxUIUtilities;
@@ -42,6 +32,7 @@ public class DatasetComboBox extends JComboBox<Dataset> {
     private transient Datasets datasets;
     private boolean isFireItemListener = true;
     private boolean isShowNullValue = false;
+    private PixelFormat[] pixelFormats = null;
 
     private DatasetCreatedListener datasetCreatedListener = new DatasetCreatedListener() {
         @Override
@@ -207,6 +198,11 @@ public class DatasetComboBox extends JComboBox<Dataset> {
         updateItems();
     }
 
+    public void setPixelFormats(PixelFormat[] pixelFormats) {
+        this.pixelFormats = pixelFormats;
+        updateItems();
+    }
+
     /**
      * 更改设置之后，更新组合框的子项
      */
@@ -225,6 +221,13 @@ public class DatasetComboBox extends JComboBox<Dataset> {
                         DatasetType type = dataset.getType();
                         if (this.getSupportedDatasetTypes() != null && this.getSupportedDatasetTypes().length > 0 && !isSupportDatasetType(type)) {
                             continue;
+                        } else if (dataset instanceof DatasetGrid && this.pixelFormats != null) {
+                            //需要筛选栅格数据集像素类型的
+                            for (PixelFormat pixelFormat:pixelFormats) {
+                                if (pixelFormat.equals(((DatasetGrid) dataset).getPixelFormat())) {
+                                    this.addItem(dataset);
+                                }
+                            }
                         } else {
                             this.addItem(dataset);
                         }

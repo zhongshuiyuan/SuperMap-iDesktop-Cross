@@ -5,6 +5,7 @@ import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
 import com.supermap.desktop.process.ProcessProperties;
+import com.supermap.desktop.process.constraint.ipls.DatasourceConstraint;
 import com.supermap.desktop.process.constraint.ipls.EqualDatasetConstraint;
 import com.supermap.desktop.process.constraint.ipls.EqualDatasourceConstraint;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
@@ -71,6 +72,8 @@ public class MetaProcessFieldToText extends MetaProcessTypeConversion {
 		EqualDatasetConstraint equalDatasetConstraint = new EqualDatasetConstraint();
 		equalDatasetConstraint.constrained(inputDataset, ParameterSingleDataset.DATASET_FIELD_NAME);
 		equalDatasetConstraint.constrained(fieldComboBox, ParameterFieldComboBox.DATASET_FIELD_NAME);
+
+		DatasourceConstraint.getInstance().constrained(outputData, ParameterSaveDataset.DATASOURCE_FIELD_NAME);
 	}
 
 	@Override
@@ -102,7 +105,7 @@ public class MetaProcessFieldToText extends MetaProcessTypeConversion {
 					try {
 						resultDataset.getFieldInfos().add(fieldInfo);
 					} catch (Exception e) {
-						Application.getActiveApplication().getOutput().output(e.getMessage());
+						Application.getActiveApplication().getOutput().output(ProcessProperties.getString("String_SourceDataFieldError"));
 						e.printStackTrace();
 						outputData.getResultDatasource().getDatasets().delete(resultDataset.getName());
 						return false;

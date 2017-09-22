@@ -208,6 +208,7 @@ public class MetaProcessDEMBuild extends MetaProcess {
 			lakeDataset.setDatasource(datasetVector.getDatasource());
 		}
 		comboBoxLakeField.setFieldType(fieldType);
+		comboBoxLakeField.setShowNullValue(true);
 
 		if (datasetVector != null) {
 			clipDatasource.setSelectedItem(datasetVector.getDatasource());
@@ -305,9 +306,15 @@ public class MetaProcessDEMBuild extends MetaProcess {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				Rectangle2D bounds = sourceDataset.getSelectedDataset().getBounds();
-				double cellSize = Double.parseDouble(textFieldCellSize.getSelectedItem().toString());
+				double cellSize = Double.parseDouble(textFieldCellSize.getSelectedItem());
 				textFieldRowCount.setSelectedItem((int) (bounds.getHeight() / cellSize));
 				textFieldColumnCount.setSelectedItem((int) (bounds.getWidth() / cellSize));
+			}
+		});
+		lakeDataset.addPropertyListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				comboBoxLakeField.setShowNullValue(lakeDataset.getSelectedItem() == null);
 			}
 		});
 	}
@@ -370,12 +377,12 @@ public class MetaProcessDEMBuild extends MetaProcess {
 			terrainBuilderParameter.setEncodeType((EncodeType) comboBoxEncodeType.getSelectedData());
 			terrainBuilderParameter.setInterpolateType((TerrainInterpolateType) comboBoxInterpolateType.getSelectedData());
 			terrainBuilderParameter.setPixelFormat((PixelFormat) comboBoxPixelFormat.getSelectedData());
-			terrainBuilderParameter.setProcessFlatArea(Boolean.parseBoolean(checkBox.getSelectedItem().toString()));
+			terrainBuilderParameter.setProcessFlatArea(Boolean.parseBoolean(checkBox.getSelectedItem()));
 			terrainBuilderParameter.setStatisticType((TerrainStatisticType) comboBoxTerrainStatisticType.getSelectedData());
-			terrainBuilderParameter.setZFactor(Double.valueOf(textNumZFactor.getSelectedItem().toString()));
-			terrainBuilderParameter.setCellSize(Double.valueOf(textFieldCellSize.getSelectedItem().toString()));
+			terrainBuilderParameter.setZFactor(Double.valueOf(textNumZFactor.getSelectedItem()));
+			terrainBuilderParameter.setCellSize(Double.valueOf(textFieldCellSize.getSelectedItem()));
 			if (textNumResampleTolerance.isEnabled()) {
-				terrainBuilderParameter.setResampleLen(Double.valueOf(textNumResampleTolerance.getSelectedItem().toString()));
+				terrainBuilderParameter.setResampleLen(Double.valueOf(textNumResampleTolerance.getSelectedItem()));
 			}
 
 			String datasetName = resultDataset.getDatasetName();

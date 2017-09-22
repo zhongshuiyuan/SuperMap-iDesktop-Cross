@@ -6,18 +6,17 @@ import com.supermap.desktop.process.core.DataMatch;
 import com.supermap.desktop.process.core.IProcess;
 import com.supermap.desktop.process.core.IRelation;
 import com.supermap.desktop.process.core.Workflow;
-import com.supermap.desktop.process.events.RelationAddedEvent;
-import com.supermap.desktop.process.events.RelationAddedListener;
-import com.supermap.desktop.process.events.RelationRemovingEvent;
-import com.supermap.desktop.process.events.RelationRemovingListener;
-import com.supermap.desktop.process.events.WorkflowChangeEvent;
-import com.supermap.desktop.process.events.WorkflowChangeListener;
+import com.supermap.desktop.process.events.*;
 import com.supermap.desktop.process.parameter.ParameterDataNode;
 import com.supermap.desktop.process.parameter.interfaces.IConGetter;
 import com.supermap.desktop.process.parameter.interfaces.IParameter;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
+import com.supermap.desktop.process.parameter.interfaces.ISelectionParameter;
 import com.supermap.desktop.process.parameter.interfaces.datas.InputData;
 import com.supermap.desktop.process.parameter.interfaces.datas.OutputData;
+import com.supermap.desktop.process.parameter.interfaces.datas.types.BasicTypes;
+import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
+import com.supermap.desktop.process.parameter.interfaces.datas.types.Type;
 import com.supermap.desktop.utilities.StringUtilities;
 
 import javax.swing.*;
@@ -138,37 +137,42 @@ public class InputParametersManager {
 		}
 	}
 
-	public void add(final String name, final IParameter... parameter) {
-		ParameterSwitch parameterSwitch = new ParameterSwitch();
-		parameterSwitch.setParameters(parameters);
-
-		final ParameterComboBox parameterComboBox = new ParameterComboBox();
-		parameterComboBox.setIConGetter(newConGetter());
-		parameterComboBox.setParameters(parameters);
-		parameterComboBox.setDescribe(name + ":");
-//		reloadParameterComboBox(parameterComboBox, parameters.getInputs().getData(name).getType());
-		parameterComboBox.addPropertyListener(this.parameterComboBoxPropertyChangeListener);
-		this.paramsMap.put(name, parameterComboBox);
-
-		ParameterCombine combine = new ParameterCombine();
-		combine.setDescribe(name);
-		combine.addParameters(parameterComboBox);
-		ArrayList<IParameter> sources = new ArrayList<>();
-		if (parameter.length == 1) {
-			parameterSwitch.add("0", parameter[0]);
+	public void add(final String name, Type type, final IParameter... parameter) {
+		InputParameterDataNode inputParameterDataNode;
+		// 可根据inputParametre的参数类型，设置各种形式的工作流连接-yuanR2017.9.22
+		if (type instanceof BasicTypes) {
+			inputParameterDataNode = new InputParameterDataNode(name, type, null, parameter);
 		} else {
-			ParameterCombine parameterCombine = new ParameterCombine();
-			parameterCombine.setParameters(parameters);
-			parameterCombine.addParameters(parameter);
-			parameterSwitch.add("0", parameterCombine);
+			ParameterSwitch parameterSwitch = new ParameterSwitch();
+			parameterSwitch.setParameters(parameters);
+
+			final ParameterComboBox parameterComboBox = new ParameterComboBox();
+			parameterComboBox.setIConGetter(newConGetter());
+			parameterComboBox.setParameters(parameters);
+			parameterComboBox.setDescribe(name + ":");
+//		reloadParameterComboBox(parameterComboBox, parameters.getInputs().getData(name).getType());
+			parameterComboBox.addPropertyListener(this.parameterComboBoxPropertyChangeListener);
+			this.paramsMap.put(name, parameterComboBox);
+
+			ParameterCombine combine = new ParameterCombine();
+			combine.setDescribe(name);
+			combine.addParameters(parameterComboBox);
+			ArrayList<IParameter> sources = new ArrayList<>();
+			if (parameter.length == 1) {
+				parameterSwitch.add("0", parameter[0]);
+			} else {
+				ParameterCombine parameterCombine = new ParameterCombine();
+				parameterCombine.setParameters(parameters);
+				parameterCombine.addParameters(parameter);
+				parameterSwitch.add("0", parameterCombine);
+			}
+			parameterSwitch.add("1", combine);
+			parameterSwitch.setParameters(parameters);
+
+			Collections.addAll(sources, parameter);
+			parameters.replace(sources, parameterSwitch);
+			inputParameterDataNode = new InputParameterDataNode(name, type, parameterSwitch, parameter);
 		}
-		parameterSwitch.add("1", combine);
-		parameterSwitch.setParameters(parameters);
-
-		Collections.addAll(sources, parameter);
-		parameters.replace(sources, parameterSwitch);
-
-		InputParameterDataNode inputParameterDataNode = new InputParameterDataNode(name, parameterSwitch, parameter);
 		list.add(inputParameterDataNode);
 	}
 
@@ -183,22 +187,31 @@ public class InputParametersManager {
 		};
 	}
 
+	/**
+	 * 增加：inputParameterDataNode.getType() instanceof BasicTypes-yuanR2017.9.22
+	 * @param toInput
+	 * @param fromOutput
+	 */
 	public void bind(InputData toInput, OutputData fromOutput) {
 		try {
 			isSelecting = true;
 			for (InputParameterDataNode inputParameterDataNode : list) {
 				if (inputParameterDataNode.getName().equals(toInput.getName())) {
-					ParameterComboBox parameterComboBox = (ParameterComboBox) ((ParameterCombine) inputParameterDataNode.getParameterSwitch().getParameterByTag("1")).getParameterList().get(0);
-					inputParameterDataNode.getParameterSwitch().switchParameter("1");
+					if (inputParameterDataNode.getType() instanceof BasicTypes) {
+						((ISelectionParameter) inputParameterDataNode.getParameter()[0]).setSelectedItem(((ISelectionParameter) fromOutput.getParameters().get(0)).getSelectedItem());
+					} else if (inputParameterDataNode.getType() instanceof DatasetTypes) {
+						ParameterComboBox parameterComboBox = (ParameterComboBox) ((ParameterCombine) inputParameterDataNode.getParameterSwitch().getParameterByTag("1")).getParameterList().get(0);
+						inputParameterDataNode.getParameterSwitch().switchParameter("1");
 
-					for (int i = 0; i < parameterComboBox.getItemCount(); i++) {
-						OutputData outputData = (OutputData) parameterComboBox.getItemAt(i).getData();
-						if (outputData == fromOutput) {
-							parameterComboBox.setSelectedItem(parameterComboBox.getItemAt(i));
-							break;
+						for (int i = 0; i < parameterComboBox.getItemCount(); i++) {
+							OutputData outputData = (OutputData) parameterComboBox.getItemAt(i).getData();
+							if (outputData == fromOutput) {
+								parameterComboBox.setSelectedItem(parameterComboBox.getItemAt(i));
+								break;
+							}
 						}
+						break;
 					}
-					break;
 				}
 			}
 		} catch (Exception e) {
@@ -211,18 +224,24 @@ public class InputParametersManager {
 	public void unBind(String name) {
 		for (InputParameterDataNode inputParameterDataNode : list) {
 			if (inputParameterDataNode.getName().equals(name)) {
-				inputParameterDataNode.getParameterSwitch().switchParameter("0");
+				if (inputParameterDataNode.getParameter()[0] instanceof ParameterFile) {
+					((ParameterFile) inputParameterDataNode.getParameter()[0]).setSelectedItem("");
+				} else {
+					inputParameterDataNode.getParameterSwitch().switchParameter("0");
+				}
 			}
 		}
 	}
 
 	class InputParameterDataNode {
 		String name;
+		Type type;
 		IParameter[] parameter;
 		ParameterSwitch parameterSwitch;
 
-		public InputParameterDataNode(String name, ParameterSwitch parameterSwitch, IParameter... parameter) {
+		public InputParameterDataNode(String name, Type type, ParameterSwitch parameterSwitch, IParameter... parameter) {
 			this.name = name;
+			this.type = type;
 			this.parameter = parameter;
 			this.parameterSwitch = parameterSwitch;
 		}
@@ -233,6 +252,14 @@ public class InputParametersManager {
 
 		public void setName(String name) {
 			this.name = name;
+		}
+
+		public Type getType() {
+			return type;
+		}
+
+		public void setType(Type type) {
+			this.type = type;
 		}
 
 		public IParameter[] getParameter() {
