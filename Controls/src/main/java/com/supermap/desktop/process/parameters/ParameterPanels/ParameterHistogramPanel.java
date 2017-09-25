@@ -97,6 +97,7 @@ public class ParameterHistogramPanel extends SwingPanel implements IParameterPan
 		checkBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				histogramPanel.setGridHistogram(null);
 				labelCount.setVisible(checkBox.isSelected());
 				labelFunction.setVisible(checkBox.isSelected());
 				numCount.setVisible(checkBox.isSelected());
@@ -156,16 +157,16 @@ public class ParameterHistogramPanel extends SwingPanel implements IParameterPan
 
 		@Override
 		protected void paintComponent(Graphics g) {
-			if (null == gridHistogram) {
-				return;
-			}
-			super.paintComponent(g);
-			int width = getWidth();
-			int height = 300;
-			int groupCount = gridHistogram.getGroupCount();
-			HistogramSegmentInfo[] infos = gridHistogram.getSegmentInfos();
-			g.setColor(Color.WHITE);
-			g.fillRect(0, 0, width, height);
+            super.paintComponent(g);
+            int width = getWidth();
+            int height = 300;
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, width, height);
+            if (null == gridHistogram) {
+                return;
+            }
+            int groupCount = gridHistogram.getGroupCount();
+            HistogramSegmentInfo[] infos = gridHistogram.getSegmentInfos();
 
 			g.setFont(new Font(null, Font.PLAIN, 15));
 			g.setColor(Color.BLACK);
