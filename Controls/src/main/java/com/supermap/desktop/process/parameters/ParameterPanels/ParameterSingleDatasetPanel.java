@@ -60,6 +60,7 @@ public class ParameterSingleDatasetPanel extends SwingPanel implements IParamete
 			isSelectingItem = false;
 			if (isDeleted && datasetComboBox.getItemCount() > 0) {
 				datasetComboBox.setSelectedIndex(0);
+				//parameterSingleDataset.setSelectedItem(datasetComboBox.getSelectedDataset());
 			}
 		}
 	};
@@ -109,6 +110,9 @@ public class ParameterSingleDatasetPanel extends SwingPanel implements IParamete
 
 		this.datasetComboBox.setShowNullValue(parameterSingleDataset.isShowNullValue());
 		this.datasetComboBox.setSupportedDatasetTypes(datasetTypes);
+		if (parameterSingleDataset.getPixelFormat() != null) {
+			this.datasetComboBox.setPixelFormats(parameterSingleDataset.getPixelFormat());
+		}
 		if (this.datasource != null) {
 			Dataset selectedItem = parameterSingleDataset.getSelectedItem();
 			if (selectedItem != null) {
@@ -264,6 +268,7 @@ public class ParameterSingleDatasetPanel extends SwingPanel implements IParamete
 				}
 			}
 		});
+		addDatasourceListener(this.datasource);
 	}
 
 	private void workspaceChanged() {

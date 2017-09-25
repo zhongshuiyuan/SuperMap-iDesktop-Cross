@@ -208,6 +208,7 @@ public class MetaProcessDEMBuild extends MetaProcess {
 			lakeDataset.setDatasource(datasetVector.getDatasource());
 		}
 		comboBoxLakeField.setFieldType(fieldType);
+		comboBoxLakeField.setShowNullValue(true);
 
 		if (datasetVector != null) {
 			clipDatasource.setSelectedItem(datasetVector.getDatasource());
@@ -308,6 +309,12 @@ public class MetaProcessDEMBuild extends MetaProcess {
 				double cellSize = Double.parseDouble(textFieldCellSize.getSelectedItem());
 				textFieldRowCount.setSelectedItem((int) (bounds.getHeight() / cellSize));
 				textFieldColumnCount.setSelectedItem((int) (bounds.getWidth() / cellSize));
+			}
+		});
+		lakeDataset.addPropertyListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				comboBoxLakeField.setShowNullValue(lakeDataset.getSelectedItem() == null);
 			}
 		});
 	}

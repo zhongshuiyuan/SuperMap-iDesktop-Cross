@@ -69,6 +69,7 @@ public class MetaProcessZonalStatistics extends MetaProcess {
 		valueDataset = new ParameterSingleDataset(DatasetType.GRID);
 		zonalDatasource = new ParameterDatasourceConstrained();
 		zonalDataset = new ParameterSingleDataset(DatasetType.GRID, DatasetType.REGION);
+		zonalDataset.setPixelFormat(new PixelFormat[]{PixelFormat.UBIT1, PixelFormat.UBIT4, PixelFormat.UBIT8, PixelFormat.UBIT16});
 		resultDatasource = new ParameterDatasourceConstrained();
 		resultDatasource.setReadOnlyNeeded(false);
 		resultDatasetGrid = new ParameterTextField(ProcessProperties.getString("String_Label_StatisticResult_Grid"));
@@ -203,8 +204,8 @@ public class MetaProcessZonalStatistics extends MetaProcess {
 				zonalStatisticsAnalystParameter.setZonalFieldName(comboBoxZonalField.getFieldName());
 			}
 			zonalStatisticsAnalystParameter.setTargetDatasource(resultDatasource.getSelectedItem());
-			zonalStatisticsAnalystParameter.setTargetTableName(resultDatasource.getSelectedItem().getDatasets().getAvailableDatasetName(resultTable.getSelectedItem().toString()));
-			zonalStatisticsAnalystParameter.setTargetDatasetName(resultDatasource.getSelectedItem().getDatasets().getAvailableDatasetName(resultDatasetGrid.getSelectedItem().toString()));
+			zonalStatisticsAnalystParameter.setTargetTableName(resultDatasource.getSelectedItem().getDatasets().getAvailableDatasetName(resultTable.getSelectedItem()));
+			zonalStatisticsAnalystParameter.setTargetDatasetName(resultDatasource.getSelectedItem().getDatasets().getAvailableDatasetName(resultDatasetGrid.getSelectedItem()));
 			StatisticsAnalyst.addSteppedListener(steppedListener);
 			ZonalStatisticsAnalystResult result = StatisticsAnalyst.zonalStatisticsOnRasterValue(zonalStatisticsAnalystParameter);
 			isSuccessful = result != null;

@@ -6,6 +6,7 @@ import com.supermap.data.DatasetVector;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
 import com.supermap.desktop.process.ProcessProperties;
+import com.supermap.desktop.process.parameter.interfaces.datas.types.BasicTypes;
 import com.supermap.desktop.ui.OutputFrame;
 
 /**
@@ -21,11 +22,8 @@ public class MetaProcessHighOrLowClustering extends MetaProcessAnalyzingPatterns
 
 	@Override
 	protected void initHook() {
-//		parameterResult = new ParameterTextArea();
-//		ParameterCombine parameterCombine = new ParameterCombine();
-//		parameterCombine.addParameters(parameterResult);
-//		parameterCombine.setDescribe(ProcessProperties.getString("String_result"));
-//		parameters.addParameters(parameterCombine);
+		// 支持将空间权重矩阵文件当做导入数据-yuanR
+		parameters.addInputParameters(INPUT_SPATIALWEIGHTMATRIXFILE, BasicTypes.STRING, parameterPatternsParameter.getParameterFile());
 	}
 
 	@Override
