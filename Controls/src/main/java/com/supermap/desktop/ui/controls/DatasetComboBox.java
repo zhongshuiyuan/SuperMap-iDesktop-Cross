@@ -401,12 +401,16 @@ public class DatasetComboBox extends JComboBox<Dataset> {
         }
         DatasetType type = dataset.getType();
         if (datasetTypes == null) {
-            addItem(dataset);
+            if (!this.datasets.contains(dataset.getName())) {
+                addItem(dataset);
+            }
             return true;
         }
         for (DatasetType datasetType : datasetTypes) {
             if (type == datasetType) {
-                addItem(dataset);
+                if (!this.datasets.contains(dataset.getName())) {
+                    addItem(dataset);
+                }
                 return true;
             }
         }
