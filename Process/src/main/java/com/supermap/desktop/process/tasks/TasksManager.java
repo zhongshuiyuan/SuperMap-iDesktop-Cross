@@ -48,20 +48,9 @@ public class TasksManager {
 	private final Lock lock = new ReentrantLock();
 	private volatile int status = WORKFLOW_STATE_NORMAL;
 
-//	private IWorkflowExecutor executor;
-
 	private Timer scheduler;
 	private Workflow workflow;
 	private Map<IProcess, ProcessWorker> workersMap = new ConcurrentHashMap<>();
-
-//	private Vector<IProcess> waiting = new Vector<>();
-//	private Vector<IProcess> ready = new Vector<>();
-//	private Vector<IProcess> running = new Vector<>();
-//	private Vector<IProcess> completed = new Vector<>();
-//	private Vector<IProcess> cancelled = new Vector<>();
-//	private Vector<IProcess> exception = new Vector<>();
-//	private Vector<IProcess> warning = new Vector<>();
-//	private Map<Integer, Vector<IProcess>> workerQueueMaps = new HashMap<>();
 
 	private EventListenerList listenerList = new EventListenerList();
 
@@ -100,7 +89,6 @@ public class TasksManager {
 		loadWorkflow(workflow);
 
 		this.scheduler = new Timer(500, new SchedulerActionListener());
-//		this.executor = new DefaultWorkflowExecutor();
 		this.workflow.addWorkflowChangeListener(this.workflowChangeListener);
 	}
 
@@ -135,14 +123,6 @@ public class TasksManager {
 				WORKER_STATE_RUNNING,
 				WORKER_STATE_WAITING};
 	}
-
-//	public IWorkflowExecutor getExecutor() {
-//		return executor;
-//	}
-//
-//	public void setExecutor(IWorkflowExecutor executor) {
-//		this.executor = executor;
-//	}
 
 	private void processAdded(IProcess process) {
 		addNewProcess(process);
