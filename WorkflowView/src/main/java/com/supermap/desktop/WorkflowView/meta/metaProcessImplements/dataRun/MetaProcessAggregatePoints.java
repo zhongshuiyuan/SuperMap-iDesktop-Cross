@@ -42,6 +42,7 @@ public class MetaProcessAggregatePoints extends MetaProcess {
 	private ParameterSaveDataset saveDataset;
 
 	public MetaProcessAggregatePoints() {
+		setTitle(ProcessProperties.getString("String_AggregatePoints"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -163,10 +164,5 @@ public class MetaProcessAggregatePoints extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.AGGREGATE_POINTS;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_AggregatePoints");
 	}
 }
