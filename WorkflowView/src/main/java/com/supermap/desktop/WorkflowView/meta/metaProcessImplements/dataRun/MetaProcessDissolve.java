@@ -51,6 +51,7 @@ public class MetaProcessDissolve extends MetaProcess {
 
 
 	public MetaProcessDissolve() {
+		setTitle(ProcessProperties.getString("String_Form_Dissolve"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -220,10 +221,5 @@ public class MetaProcessDissolve extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.DISSOLVE;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Form_Dissolve");
 	}
 }

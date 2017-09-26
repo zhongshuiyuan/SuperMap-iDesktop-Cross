@@ -31,6 +31,7 @@ public class MetaProcessSingleQuery extends MetaProcess {
 	private ParameterComboBox parameterQueryTypeComboBox;
 
 	public MetaProcessSingleQuery() {
+		setTitle(ProcessProperties.getString("String_SingleQuery"));
 		initComponents();
 		initComponentState();
 	}
@@ -75,12 +76,6 @@ public class MetaProcessSingleQuery extends MetaProcess {
 		parameterClipDataType.setSupportDatasetType(DatasetType.POINT, DatasetType.LINE, DatasetType.REGION);
 		parameterIServerLogin.setDataType(parameterInputDataType.supportDatasetType);
 		parameterIServerLogin.setAnalystDatasetTypes(parameterClipDataType.supportDatasetType);
-	}
-
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_SingleQuery");
 	}
 
 	@Override

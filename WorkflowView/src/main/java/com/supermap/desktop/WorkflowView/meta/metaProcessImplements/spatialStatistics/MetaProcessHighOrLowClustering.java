@@ -13,11 +13,9 @@ import com.supermap.desktop.ui.OutputFrame;
  * @author XiaJT
  */
 public class MetaProcessHighOrLowClustering extends MetaProcessAnalyzingPatterns {
-//	private ParameterTextArea parameterResult;
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_highOrLowClustering");
+	//	private ParameterTextArea parameterResult;
+	public MetaProcessHighOrLowClustering() {
+		setTitle(ProcessProperties.getString("String_highOrLowClustering"));
 	}
 
 	@Override

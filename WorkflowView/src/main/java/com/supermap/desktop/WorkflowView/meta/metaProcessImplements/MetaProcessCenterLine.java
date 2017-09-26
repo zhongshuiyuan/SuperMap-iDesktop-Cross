@@ -29,8 +29,6 @@ public abstract class MetaProcessCenterLine extends MetaProcess {
 
 	public abstract String getSonKey();
 
-	public abstract String getSonTitle();
-
 	private ParameterDatasourceConstrained sourceDatasource;
 	private ParameterSingleDataset dataset;
 
@@ -143,10 +141,5 @@ public abstract class MetaProcessCenterLine extends MetaProcess {
 	@Override
 	public String getKey() {
 		return getSonKey();
-	}
-
-	@Override
-	public String getTitle() {
-		return getSonTitle();
 	}
 }

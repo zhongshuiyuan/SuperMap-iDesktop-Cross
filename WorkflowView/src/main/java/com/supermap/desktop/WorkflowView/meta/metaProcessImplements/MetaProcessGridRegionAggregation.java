@@ -32,6 +32,7 @@ public class MetaProcessGridRegionAggregation extends MetaProcess {
 	private ParameterDefaultValueTextField parameterWeightIndex = new ParameterDefaultValueTextField().setDescribe(ProcessProperties.getString("String_Index"));
 
 	public MetaProcessGridRegionAggregation() {
+		setTitle(ProcessProperties.getString("String_GridRegionAggregation"));
 		initParameters();
 		initComponentLayout();
 	}
@@ -74,12 +75,6 @@ public class MetaProcessGridRegionAggregation extends MetaProcess {
 				parameterCombineSetting
 		);
 		parameters.getOutputs().addData("GridRegionAggregationResult", ProcessOutputResultProperties.getString("String_NetworkRegionAnalysisResult"), Type.UNKOWN);
-	}
-
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_GridRegionAggregation");
 	}
 
 	@Override

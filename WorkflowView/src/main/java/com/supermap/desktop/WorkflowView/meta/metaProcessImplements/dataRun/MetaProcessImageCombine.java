@@ -34,6 +34,7 @@ public class MetaProcessImageCombine extends MetaProcess {
 	private ParameterSaveDataset resultDataset;
 
 	public MetaProcessImageCombine() {
+		setTitle(ProcessProperties.getString("String_ImageCombine"));
 		initParameters();
 		initParametersState();
 		initParameterConstraint();
@@ -149,10 +150,5 @@ public class MetaProcessImageCombine extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.IMAGE_COMBINE;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_ImageCombine");
 	}
 }

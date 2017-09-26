@@ -36,6 +36,7 @@ public class MetaProcessAppendRow extends MetaProcess {
 	private ParameterCheckBox checkBox;
 
 	public MetaProcessAppendRow() {
+		setTitle(ProcessProperties.getString("String_AppendRows"));
 		initParameters();
 		initParameterConstraint();
 		registerListener();
@@ -94,11 +95,6 @@ public class MetaProcessAppendRow extends MetaProcess {
 				}
 			}
 		});
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_AppendRows");
 	}
 
 	@Override

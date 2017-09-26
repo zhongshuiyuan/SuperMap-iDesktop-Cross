@@ -20,6 +20,7 @@ public class MetaProcessNetWorkToLine extends MetaProcessPointLineRegion {
 
 	public MetaProcessNetWorkToLine() {
 		super(DatasetType.NETWORK, DatasetType.LINE);
+		setTitle(ProcessProperties.getString("String_Title_NetworkToLine"));
 	}
 
 	@Override
@@ -71,10 +72,4 @@ public class MetaProcessNetWorkToLine extends MetaProcessPointLineRegion {
 	public String getKey() {
 		return MetaKeys.CONVERSION_NETWORK_TO_LINE;
 	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_NetworkToLine");
-	}
-
 }

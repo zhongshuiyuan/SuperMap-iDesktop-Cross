@@ -14,6 +14,7 @@ import java.util.Map;
 public class MetaProcessRegion3DTo2D extends MetaProcess3DTo2D {
 	public MetaProcessRegion3DTo2D() {
 		super(DatasetType.REGION3D, DatasetType.REGION);
+		setTitle(ProcessProperties.getString("String_Title_Region3DTo2D"));
 	}
 
 	@Override
@@ -27,7 +28,7 @@ public class MetaProcessRegion3DTo2D extends MetaProcess3DTo2D {
 	}
 
 	@Override
-	protected  String getOutputResultName(){
+	protected String getOutputResultName() {
 		return ProcessOutputResultProperties.getString("String_3DRegionResult");
 	}
 
@@ -38,7 +39,7 @@ public class MetaProcessRegion3DTo2D extends MetaProcess3DTo2D {
 			for (int i = 0; i < geoRegion3D.getPartCount(); i++) {
 				Point3Ds point3Ds = geoRegion3D.getPart(i);
 				Point2Ds point2Ds = new Point2Ds();
-				double zValue=0;
+				double zValue = 0;
 				for (int j = 0; j < point3Ds.getCount(); j++) {
 					point2Ds.add(new Point2D(point3Ds.getItem(j).getX(), point3Ds.getItem(j).getY()));
 					zValue += point3Ds.getItem(j).getZ();
@@ -56,10 +57,5 @@ public class MetaProcessRegion3DTo2D extends MetaProcess3DTo2D {
 	@Override
 	public String getKey() {
 		return MetaKeys.CONVERSION_REGION3D_TO_2D;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_Region3DTo2D");
 	}
 }

@@ -21,6 +21,10 @@ public class MetaProcessHotSpotAnalyst extends MetaProcessAnalyzingPatterns {
 	private final static String OUTPUT_DATASET = "HotSpotResult";
 	private ParameterSaveDataset parameterSaveDataset;
 
+	public MetaProcessHotSpotAnalyst() {
+		setTitle(ProcessProperties.getString("String_hotSpotAnalyst"));
+	}
+
 	@Override
 	protected void initHook() {
 		dataset.setDatasetTypes(DatasetType.REGION, DatasetType.POINT, DatasetType.LINE);
@@ -34,11 +38,6 @@ public class MetaProcessHotSpotAnalyst extends MetaProcessAnalyzingPatterns {
 		parameters.addOutputParameters(OUTPUT_DATASET, ProcessOutputResultProperties.getString("String_Result_Analyst"), DatasetTypes.VECTOR, parameterCombine);
 		// 支持将空间权重矩阵文件当做导入数据-yuanR
 		parameters.addInputParameters(INPUT_SPATIALWEIGHTMATRIXFILE, BasicTypes.STRING, parameterPatternsParameter.getParameterFile());
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_hotSpotAnalyst");
 	}
 
 	@Override

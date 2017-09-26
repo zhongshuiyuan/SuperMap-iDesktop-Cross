@@ -37,6 +37,7 @@ public class MetaProcessDataUpdate extends MetaProcess {
 	private ParameterDatasetChooseTable chooseTable;
 
 	public MetaProcessDataUpdate() {
+		setTitle(ProcessProperties.getString("String_RasterDataUpdate"));
 		initParameters();
 		initParametersState();
 		initParameterConstraint();
@@ -143,11 +144,6 @@ public class MetaProcessDataUpdate extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.DATA_UPDATE;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_RasterDataUpdate");
 	}
 
 	@Override

@@ -3,12 +3,7 @@ package com.supermap.desktop.WorkflowView.meta.metaProcessImplements.gridAnalyst
 import com.supermap.analyst.spatialanalyst.SolarRadiation;
 import com.supermap.analyst.spatialanalyst.SolarRadiationParameter;
 import com.supermap.analyst.spatialanalyst.SolarRadiationResult;
-import com.supermap.data.CoordSysTranslator;
-import com.supermap.data.Dataset;
-import com.supermap.data.DatasetGrid;
-import com.supermap.data.DatasetType;
-import com.supermap.data.Point2Ds;
-import com.supermap.data.PrjCoordSysType;
+import com.supermap.data.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
@@ -18,12 +13,7 @@ import com.supermap.desktop.process.constraint.ipls.DatasourceConstraint;
 import com.supermap.desktop.process.constraint.ipls.EqualDatasourceConstraint;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
-import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
-import com.supermap.desktop.process.parameter.ipls.ParameterDatasource;
-import com.supermap.desktop.process.parameter.ipls.ParameterDatasourceConstrained;
-import com.supermap.desktop.process.parameter.ipls.ParameterNumber;
-import com.supermap.desktop.process.parameter.ipls.ParameterSingleDataset;
-import com.supermap.desktop.process.parameter.ipls.ParameterTextField;
+import com.supermap.desktop.process.parameter.ipls.*;
 import com.supermap.desktop.process.parameters.ParameterPanels.SolarRadiation.ParameterCheckboBoxAndTextField;
 import com.supermap.desktop.process.parameters.ParameterPanels.SolarRadiation.ParameterSolarRadiationAnalysisType;
 import com.supermap.desktop.properties.CommonProperties;
@@ -55,6 +45,7 @@ public class MetaProcessSolarRadiation extends MetaProcess {
 	private ParameterCheckboBoxAndTextField checkboBoxAndTextFieldDuration;
 
 	public MetaProcessSolarRadiation() {
+		setTitle(ProcessProperties.getString("String_SolarRadiation"));
 		initParameters();
 		initParametersState();
 		initParameterConstraint();
@@ -105,7 +96,7 @@ public class MetaProcessSolarRadiation extends MetaProcess {
 			this.checkboBoxAndTextFieldDirection.setSelectedItem(dataset.getDatasource().getDatasets().getAvailableDatasetName("result_Direction"));
 			this.checkboBoxAndTextFieldDiffuse.setSelectedItem(dataset.getDatasource().getDatasets().getAvailableDatasetName("result_Diffuse"));
 			this.checkboBoxAndTextFieldDuration.setSelectedItem(dataset.getDatasource().getDatasets().getAvailableDatasetName("result_Duration"));
-			changeLatitude((DatasetGrid)dataset);
+			changeLatitude((DatasetGrid) dataset);
 		}
 		this.resultDatasource.setReadOnlyNeeded(false);
 		this.parameterNumberLatitude.setMinValue(-90);
@@ -142,7 +133,7 @@ public class MetaProcessSolarRadiation extends MetaProcess {
 
 	}
 
-	private void changeLatitude(DatasetGrid datasetGrid){
+	private void changeLatitude(DatasetGrid datasetGrid) {
 		if (datasetGrid.getPrjCoordSys().getGeoCoordSys() != null) {
 			if (datasetGrid.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
 				Point2Ds point2Ds = new Point2Ds();
@@ -222,10 +213,5 @@ public class MetaProcessSolarRadiation extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.SOLAR_RADIATION;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_SolarRadiation");
 	}
 }

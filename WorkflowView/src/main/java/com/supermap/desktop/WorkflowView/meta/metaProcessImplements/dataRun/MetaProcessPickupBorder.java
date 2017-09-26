@@ -33,6 +33,7 @@ public class MetaProcessPickupBorder extends MetaProcess {
 
 
 	public MetaProcessPickupBorder() {
+		setTitle(CommonProperties.getString("String_PickupBorder"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -128,10 +129,5 @@ public class MetaProcessPickupBorder extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.PICKUP_BORDER;
-	}
-
-	@Override
-	public String getTitle() {
-		return CommonProperties.getString("String_PickupBorder");
 	}
 }

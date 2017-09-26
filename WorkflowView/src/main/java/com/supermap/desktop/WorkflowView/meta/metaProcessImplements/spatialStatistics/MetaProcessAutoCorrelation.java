@@ -11,14 +11,14 @@ import com.supermap.desktop.ui.OutputFrame;
 
 /**
  * @author XiaJT
- * 空间自相关分析
+ *         空间自相关分析
  */
 public class MetaProcessAutoCorrelation extends MetaProcessAnalyzingPatterns {
 
 //	private ParameterTextArea parameterResult;
 
 	public MetaProcessAutoCorrelation() {
-		super();
+		setTitle(ProcessProperties.getString("String_AutoCorrelation"));
 	}
 
 
@@ -27,12 +27,6 @@ public class MetaProcessAutoCorrelation extends MetaProcessAnalyzingPatterns {
 		// 支持将空间权重矩阵文件当做导入数据-yuanR
 		parameters.addInputParameters(INPUT_SPATIALWEIGHTMATRIXFILE, BasicTypes.STRING, parameterPatternsParameter.getParameterFile());
 	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_AutoCorrelation");
-	}
-
 
 	protected boolean doWork(DatasetVector datasetVector) {
 		AnalyzingPatterns.addSteppedListener(steppedListener);

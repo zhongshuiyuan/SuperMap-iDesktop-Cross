@@ -28,6 +28,10 @@ public class MetaProcessWatershed extends MetaProcessHydrology {
 	private ParameterTextArea textAreaSQL;
 	private ParameterSQLExpression buttonSQL;
 
+	public MetaProcessWatershed() {
+		setTitle(ProcessProperties.getString("String_Title_Watershed"));
+	}
+
 	@Override
 	protected void initField() {
 		INPUT_DATA = ProcessProperties.getString("String_GroupBox_FlowDirectionData");
@@ -58,7 +62,7 @@ public class MetaProcessWatershed extends MetaProcessHydrology {
 		settingCombine.addParameters(textAreaSQL, emptyCombine);
 		buttonSQL.setAnchor(GridBagConstraints.EAST);
 
-		Dataset dataset = DatasetUtilities.getDefaultDataset(DatasetType.GRID,DatasetType.POINT);
+		Dataset dataset = DatasetUtilities.getDefaultDataset(DatasetType.GRID, DatasetType.POINT);
 		if (dataset != null) {
 			pointsDatasource.setSelectedItem(dataset.getDatasource());
 			pointsDataset.setSelectedItem(dataset);
@@ -75,7 +79,7 @@ public class MetaProcessWatershed extends MetaProcessHydrology {
 				if (pointsDataset.getSelectedItem() != null && evt.getNewValue() instanceof DatasetGrid) {
 					textAreaSQL.setEnabled(false);
 					buttonSQL.setEnabled(false);
-				} else if(pointsDataset.getSelectedItem() != null && evt.getNewValue() instanceof DatasetVector){
+				} else if (pointsDataset.getSelectedItem() != null && evt.getNewValue() instanceof DatasetVector) {
 					textAreaSQL.setEnabled(true);
 					buttonSQL.setEnabled(true);
 					buttonSQL.setSelectDataset((Dataset) evt.getNewValue());
@@ -91,8 +95,8 @@ public class MetaProcessWatershed extends MetaProcessHydrology {
 			}
 		});
 
-		parameters.setParameters(sourceCombine, weightCombine,settingCombine, resultCombine);
-		parameters.addInputParameters(POUR_POINTS_DATA, new DatasetTypes("",DatasetTypes.GRID.getValue()|DatasetTypes.POINT.getValue()), weightCombine);
+		parameters.setParameters(sourceCombine, weightCombine, settingCombine, resultCombine);
+		parameters.addInputParameters(POUR_POINTS_DATA, new DatasetTypes("", DatasetTypes.GRID.getValue() | DatasetTypes.POINT.getValue()), weightCombine);
 	}
 
 	@Override
@@ -116,26 +120,26 @@ public class MetaProcessWatershed extends MetaProcessHydrology {
 
 		DatasetGrid result = null;
 		if (srcPourPoints instanceof DatasetGrid) {
-			result= HydrologyAnalyst.watershed(src, (DatasetGrid) srcPourPoints, resultDataset.getResultDatasource(),
+			result = HydrologyAnalyst.watershed(src, (DatasetGrid) srcPourPoints, resultDataset.getResultDatasource(),
 					resultDataset.getResultDatasource().getDatasets().getAvailableDatasetName(resultDataset.getDatasetName()));
 		} else {
 			Recordset recordset;
 			if (textAreaSQL.getSelectedItem() != null || !textAreaSQL.isEnabled) {
-				recordset = ((DatasetVector)srcPourPoints).query(textAreaSQL.getSelectedItem().toString(), CursorType.STATIC);
+				recordset = ((DatasetVector) srcPourPoints).query(textAreaSQL.getSelectedItem().toString(), CursorType.STATIC);
 			} else {
-				recordset = ((DatasetVector)srcPourPoints).getRecordset(false, CursorType.STATIC);
+				recordset = ((DatasetVector) srcPourPoints).getRecordset(false, CursorType.STATIC);
 			}
 			Point2Ds point2Ds = new Point2Ds();
 			while (!recordset.isEOF()) {
 				GeoPoint geoPoint = (GeoPoint) recordset.getGeometry();
-				point2Ds.add(new Point2D(geoPoint.getX(),geoPoint.getY()));
+				point2Ds.add(new Point2D(geoPoint.getX(), geoPoint.getY()));
 				geoPoint.dispose();
 				recordset.moveNext();
 			}
 			recordset.close();
 			recordset.dispose();
 
-			result= HydrologyAnalyst.watershed(src, point2Ds, resultDataset.getResultDatasource(),
+			result = HydrologyAnalyst.watershed(src, point2Ds, resultDataset.getResultDatasource(),
 					resultDataset.getResultDatasource().getDatasets().getAvailableDatasetName(resultDataset.getDatasetName()));
 		}
 
@@ -150,10 +154,5 @@ public class MetaProcessWatershed extends MetaProcessHydrology {
 	@Override
 	public String getKey() {
 		return MetaKeys.WATERSHED;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_Watershed");
 	}
 }

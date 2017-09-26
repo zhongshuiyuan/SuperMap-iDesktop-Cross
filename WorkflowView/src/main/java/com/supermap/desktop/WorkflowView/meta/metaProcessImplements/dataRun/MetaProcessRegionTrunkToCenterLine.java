@@ -27,6 +27,7 @@ public class MetaProcessRegionTrunkToCenterLine extends MetaProcess {
 	private ParameterSaveDataset saveDataset;
 
 	public MetaProcessRegionTrunkToCenterLine() {
+		setTitle(CommonProperties.getString("String_RegionTrunkToCenterLine"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -110,10 +111,5 @@ public class MetaProcessRegionTrunkToCenterLine extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.REGION_TRUNK_TO_CENTERLINE;
-	}
-
-	@Override
-	public String getTitle() {
-		return CommonProperties.getString("String_RegionTrunkToCenterLine");
 	}
 }

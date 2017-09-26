@@ -38,6 +38,7 @@ public class MetaProcessSqlQuery extends MetaProcess {
 	};
 
 	public MetaProcessSqlQuery() {
+		setTitle(ProcessProperties.getString("String_SqlQuery"));
 		initMetaInfo();
 	}
 
@@ -81,11 +82,6 @@ public class MetaProcessSqlQuery extends MetaProcess {
 		EqualDatasourceConstraint equalDatasourceConstraint = new EqualDatasourceConstraint();
 		equalDatasourceConstraint.constrained(datasource, ParameterDatasource.DATASOURCE_FIELD_NAME);
 		equalDatasourceConstraint.constrained(dataset, ParameterSingleDataset.DATASOURCE_FIELD_NAME);
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_SqlQuery");
 	}
 
 	@Override

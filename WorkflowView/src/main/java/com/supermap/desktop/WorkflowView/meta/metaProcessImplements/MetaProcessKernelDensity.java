@@ -37,6 +37,7 @@ public class MetaProcessKernelDensity extends MetaProcess {
 
 
 	public MetaProcessKernelDensity() {
+		setTitle(ProcessProperties.getString("String_KernelDensityAnalyst"));
 		initComponents();
 	}
 
@@ -98,11 +99,6 @@ public class MetaProcessKernelDensity extends MetaProcess {
 				parameterCombineAlaysis
 		);
 		parameters.getOutputs().addData("KernelDensityResult", ProcessOutputResultProperties.getString("String_KernelsDensityAnalysisResult"), Type.UNKOWN);
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_KernelDensityAnalyst");
 	}
 
 	@Override

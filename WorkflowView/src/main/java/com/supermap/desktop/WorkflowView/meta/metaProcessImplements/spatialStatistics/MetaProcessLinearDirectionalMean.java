@@ -4,8 +4,8 @@ import com.supermap.analyst.spatialstatistics.SpatialMeasure;
 import com.supermap.data.DatasetVector;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
-import com.supermap.desktop.process.ProcessProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
+import com.supermap.desktop.process.ProcessProperties;
 
 /**
  * Created by YuanR on 2017/7/6
@@ -15,7 +15,7 @@ import com.supermap.desktop.WorkflowView.meta.MetaKeys;
 public class MetaProcessLinearDirectionalMean extends MetaProcessSpatialMeasure {
 
 	public MetaProcessLinearDirectionalMean() {
-		super();
+		setTitle(ProcessProperties.getString("String_LinearDirectionalMean"));
 	}
 
 	protected void initHook() {
@@ -45,11 +45,6 @@ public class MetaProcessLinearDirectionalMean extends MetaProcessSpatialMeasure 
 			SpatialMeasure.removeSteppedListener(steppedListener);
 		}
 		return isSuccessful;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_LinearDirectionalMean");
 	}
 
 	@Override

@@ -30,6 +30,10 @@ public class MetaProcessCalculateHillShade extends MetaProcessCalTerrain {
 	// 高程缩放系数
 	private ParameterNumber parameterZFactor;
 
+	public MetaProcessCalculateHillShade() {
+		setTitle(ProcessProperties.getString("String_CalculateHillShade"));
+	}
+
 	@Override
 	protected void initHook() {
 
@@ -77,12 +81,6 @@ public class MetaProcessCalculateHillShade extends MetaProcessCalTerrain {
 	@Override
 	protected String getDefaultResultName() {
 		return "result_calculateHillShade";
-	}
-
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_CalculateHillShade");
 	}
 
 	@Override

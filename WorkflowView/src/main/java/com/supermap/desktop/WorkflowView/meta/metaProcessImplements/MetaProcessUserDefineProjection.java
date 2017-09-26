@@ -9,10 +9,8 @@ import com.supermap.desktop.process.ProcessProperties;
  */
 public class MetaProcessUserDefineProjection extends MetaProcess {
 
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_UserDefineProjection");
+	public MetaProcessUserDefineProjection() {
+		setTitle(ProcessProperties.getString("String_UserDefineProjection"));
 	}
 
 	@Override

@@ -31,6 +31,7 @@ public class MetaProcessBasicStatistics extends MetaProcess {
 	private ParameterHistogram histogram;
 
 	public MetaProcessBasicStatistics() {
+		setTitle(ProcessProperties.getString("String_Title_BasicStatistics"));
 		initParameters();
 		initParameterState();
 		initParameterConstraint();
@@ -47,7 +48,7 @@ public class MetaProcessBasicStatistics extends MetaProcess {
 		sourceCombine.addParameters(sourceDatasource, sourceDataset);
 		ParameterCombine resultCombine = new ParameterCombine();
 		resultCombine.setDescribe(ProcessProperties.getString("String_GroupBox_StatisticsResult"));
-		resultCombine.addParameters(textAreaResult,histogram);
+		resultCombine.addParameters(textAreaResult, histogram);
 
 		parameters.setParameters(sourceCombine, resultCombine);
 		this.parameters.addInputParameters(INPUT_DATA, DatasetTypes.GRID, sourceCombine);
@@ -80,11 +81,6 @@ public class MetaProcessBasicStatistics extends MetaProcess {
 	}
 
 	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_BasicStatistics");
-	}
-
-	@Override
 	public boolean execute() {
 		boolean isSuccessful = false;
 		try {
@@ -102,20 +98,20 @@ public class MetaProcessBasicStatistics extends MetaProcess {
 			double mean = basicStatisticsAnalystResult.getMean();
 			double std = basicStatisticsAnalystResult.getStandardDeviation();
 			double var = Math.pow(std, 2);
-			textAreaResult.setSelectedItem(ProcessProperties.getString("String_Result_MaxValue")+max+"\n"+
-			                               ProcessProperties.getString("String_Result_MinValue")+min+"\n"+
-			                               ProcessProperties.getString("String_Result_Mean")+mean+"\n"+
-			                               ProcessProperties.getString("String_Result_StandardDeviation")+std+"\n"+
-			                               ProcessProperties.getString("String_Result_Variance")+var);
+			textAreaResult.setSelectedItem(ProcessProperties.getString("String_Result_MaxValue") + max + "\n" +
+					ProcessProperties.getString("String_Result_MinValue") + min + "\n" +
+					ProcessProperties.getString("String_Result_Mean") + mean + "\n" +
+					ProcessProperties.getString("String_Result_StandardDeviation") + std + "\n" +
+					ProcessProperties.getString("String_Result_Variance") + var);
 			StatisticsCollection statisticsCollection = new StatisticsCollection(max, min, mean, std, var);
 			if (histogram.isCreate()) {
-				histogram.setSelectedItem(StatisticsAnalyst.createHistogram(src,histogram.getGroupCount(),histogram.getFunctionType()));
+				histogram.setSelectedItem(StatisticsAnalyst.createHistogram(src, histogram.getGroupCount(), histogram.getFunctionType()));
 			}
 			this.getParameters().getOutputs().getData(OUTPUT_DATA).setValue(statisticsCollection);
 		} catch (Exception e) {
 			Application.getActiveApplication().getOutput().output(e.getMessage());
 			e.printStackTrace();
-		}finally {
+		} finally {
 			StatisticsAnalyst.removeSteppedListener(steppedListener);
 		}
 

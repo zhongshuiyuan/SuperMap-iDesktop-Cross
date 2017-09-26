@@ -13,12 +13,7 @@ import com.supermap.desktop.process.constraint.ipls.DatasourceConstraint;
 import com.supermap.desktop.process.parameter.ParameterDataNode;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
-import com.supermap.desktop.process.parameter.ipls.ParameterButton;
-import com.supermap.desktop.process.parameter.ipls.ParameterCheckBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
-import com.supermap.desktop.process.parameter.ipls.ParameterComboBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterSaveDataset;
-import com.supermap.desktop.process.parameter.ipls.ParameterTextArea;
+import com.supermap.desktop.process.parameter.ipls.*;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.RasterAlgebraExpressionXml;
 import com.supermap.desktop.ui.RasterAlgebraOperationDialog;
@@ -62,6 +57,7 @@ public class MetaProcessAlgebraOperation extends MetaProcessGridAnalyst {
 	private ParameterDataNode parameterDataNodeUbit32 = new ParameterDataNode(PixelFormatUtilities.toString(PixelFormat.UBIT32), PixelFormat.UBIT32);
 
 	public MetaProcessAlgebraOperation() {
+		setTitle(ProcessProperties.getString("String_RasterAlgebraOperation"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -250,11 +246,6 @@ public class MetaProcessAlgebraOperation extends MetaProcessGridAnalyst {
 	@Override
 	public IParameters getParameters() {
 		return parameters;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_RasterAlgebraOperation");
 	}
 
 	@Override

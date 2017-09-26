@@ -49,6 +49,7 @@ public class MetaProcessVectorResample extends MetaProcess {
 	private ParameterNumber parameterVertexTolerance;
 
 	public MetaProcessVectorResample() {
+		setTitle(ProcessProperties.getString("String_VectorResample"));
 		initParameters();
 		initComponentState();
 		initParameterConstraint();
@@ -216,11 +217,6 @@ public class MetaProcessVectorResample extends MetaProcess {
 	@Override
 	public IParameters getParameters() {
 		return parameters;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_VectorResample");
 	}
 
 	@Override
