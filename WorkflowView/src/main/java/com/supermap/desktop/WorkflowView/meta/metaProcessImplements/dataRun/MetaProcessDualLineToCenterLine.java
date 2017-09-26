@@ -18,11 +18,13 @@ public class MetaProcessDualLineToCenterLine extends MetaProcessCenterLine {
 		return "result_DualLineToCenterLine";
 	}
 
-	public String getSonKey(){
+	@Override
+	public String getKey() {
 		return MetaKeys.DUALLINE_TO_CENTERLINE;
 	}
 
-	public String getSonTitle(){
-		return CommonProperties.getString("String_DualLineToCenterLine");
+	@Override
+	public String getTitle() {
+		return  CommonProperties.getString("String_DualLineToCenterLine");
 	}
 }

@@ -17,11 +17,13 @@ public class MetaProcessRegionToCenterLine extends MetaProcessCenterLine {
 		return "result_RegionToCenterLine";
 	}
 
-	public String getSonKey(){
+	@Override
+	public String getKey() {
 		return MetaKeys.REGION_TO_CENTERLINE;
 	}
 
-	public String getSonTitle(){
-		return CommonProperties.getString("String_RegionToCenterLine");
+	@Override
+	public String getTitle() {
+		return  CommonProperties.getString("String_RegionToCenterLine");
 	}
 }
