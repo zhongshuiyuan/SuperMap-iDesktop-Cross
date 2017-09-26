@@ -9,6 +9,7 @@ import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
 import com.supermap.desktop.WorkflowView.meta.metaProcessImplements.spatialStatistics.MetaProcessAbstractExport;
 import com.supermap.desktop.controls.ControlsProperties;
+import com.supermap.desktop.implement.UserDefineType.ExportSettingExcel;
 import com.supermap.desktop.implement.UserDefineType.ExportSettingGPX;
 import com.supermap.desktop.process.ProcessProperties;
 import com.supermap.desktop.process.events.RunningEvent;
@@ -157,7 +158,7 @@ public class MetaProcessExportVector extends MetaProcessAbstractExport {
 			//默认设置为导出表头
 			this.exportFieldName.setSelectedItem(true);
 			if (((Dataset) newExportSetting.getSourceData()).getType().equals(DatasetType.POINT)) {
-				this.exportPointAsWKT.setEnabled(true);
+				this.exportPointAsWKT.setEnabled(!(newExportSetting instanceof ExportSettingExcel));
 				this.exportPointAsWKT.setSelectedItem(String.valueOf(((ExportSettingCSV) newExportSetting).GetIsExportPointAsWKT()));
 			}
 		}

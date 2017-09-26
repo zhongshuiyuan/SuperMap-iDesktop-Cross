@@ -33,7 +33,7 @@ public class ExportsSetDialog extends SmDialog implements IPanelModel {
 	private JRadioButton radioButtonOK;
 	private JRadioButton radioButtonNO;
 	private JCheckBox checkBoxExportPath;
-	private FileChooserControl fileChooserControlExportPath;
+	private JFileChooserControl fileChooserControlExportPath;
 	private JButton buttonOK;
 	private JButton buttonCancel;
 	private JPanel panelContent;
@@ -52,19 +52,7 @@ public class ExportsSetDialog extends SmDialog implements IPanelModel {
 			}
 		}
 	};
-	private ActionListener exportPathLitener = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			SmFileChoose tempfileChooser = LocalFileUtilities.createExportFileChooser(fileChooserControlExportPath.getEditor().getText());
-			int state = tempfileChooser.showDefaultDialog();
-			if (state == JFileChooser.APPROVE_OPTION) {
-				String directories = tempfileChooser.getFilePath();
-				if (FileUtilities.isFilePath(directories)) {
-					fileChooserControlExportPath.getEditor().setText(directories);
-				}
-			}
-		}
-	};
+
 	private ActionListener exportsSetListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -82,7 +70,7 @@ public class ExportsSetDialog extends SmDialog implements IPanelModel {
 				}
 			}
 			if (checkBoxExportPath.isSelected()) {
-				targetFilePath = fileChooserControlExportPath.getEditor().getText();
+				targetFilePath = fileChooserControlExportPath.getPath();
 			}
 
 			if (null != targetFileType) {
@@ -96,6 +84,15 @@ public class ExportsSetDialog extends SmDialog implements IPanelModel {
 			}
 
 			ExportsSetDialog.this.dispose();
+		}
+	};
+	private FileChooserPathChangedListener setExportPathListener = new FileChooserPathChangedListener() {
+		@Override
+		public void pathChanged() {
+			String directories = fileChooserControlExportPath.getPath();
+			if (FileUtilities.isFilePath(directories)) {
+				fileChooserControlExportPath.setPath(directories);
+			}
 		}
 	};
 
@@ -176,7 +173,9 @@ public class ExportsSetDialog extends SmDialog implements IPanelModel {
 		this.radioButtonOK = new JRadioButton();
 		this.radioButtonNO = new JRadioButton();
 		this.checkBoxExportPath = new JCheckBox();
-		this.fileChooserControlExportPath = new FileChooserControl();
+		this.fileChooserControlExportPath = new JFileChooserControl();
+		SmFileChoose tempfileChooser = LocalFileUtilities.createExportFileChooser(fileChooserControlExportPath.getPath());
+		fileChooserControlExportPath.setFileChooser(tempfileChooser);
 		this.buttonOK = ComponentFactory.createButtonOK();
 		this.buttonCancel = ComponentFactory.createButtonCancel();
 		CommonUtilities.setComboBoxTheme(comboBoxFileType);
@@ -210,7 +209,7 @@ public class ExportsSetDialog extends SmDialog implements IPanelModel {
 		int size = selectFileInfos.size();
 		if (size > 0) {
 			if (1 == size) {
-				fileChooserControlExportPath.getEditor().setText(selectFileInfos.get(0).getFilePath());
+				fileChooserControlExportPath.setPath(selectFileInfos.get(0).getFilePath());
 				return;
 			}
 			String filePath = selectFileInfos.get(0).getFilePath();
@@ -223,7 +222,7 @@ public class ExportsSetDialog extends SmDialog implements IPanelModel {
 				}
 			}
 			if (hasSamePath) {
-				fileChooserControlExportPath.getEditor().setText(filePath);
+				fileChooserControlExportPath.setPath(filePath);
 			}
 		}
 	}
@@ -311,7 +310,7 @@ public class ExportsSetDialog extends SmDialog implements IPanelModel {
 		this.checkBoxExportPath.addItemListener(this.checkBoxListener);
 		this.radioButtonOK.addActionListener(this.radioListener);
 		this.radioButtonNO.addActionListener(this.radioListener);
-		this.fileChooserControlExportPath.getButton().addActionListener(this.exportPathLitener);
+		this.fileChooserControlExportPath.addFileChangedListener(this.setExportPathListener);
 		this.buttonOK.addActionListener(this.exportsSetListener);
 		this.buttonCancel.addActionListener(this.cancelListener);
 		this.addWindowListener(new WindowAdapter() {
@@ -327,7 +326,7 @@ public class ExportsSetDialog extends SmDialog implements IPanelModel {
 		this.checkBoxFileType.removeItemListener(this.checkBoxListener);
 		this.checkBoxOverwirte.removeItemListener(this.checkBoxListener);
 		this.checkBoxExportPath.removeItemListener(this.checkBoxListener);
-		this.fileChooserControlExportPath.getButton().removeActionListener(this.exportPathLitener);
+		this.fileChooserControlExportPath.removePathChangedListener(this.setExportPathListener);
 		this.buttonOK.removeActionListener(this.exportsSetListener);
 		this.buttonCancel.removeActionListener(this.cancelListener);
 	}

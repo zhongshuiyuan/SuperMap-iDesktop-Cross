@@ -71,7 +71,7 @@ public class MetaProcessAlgebraOperation extends MetaProcessGridAnalyst {
 		this.checkBoxIgnoreNoValueCell = new ParameterCheckBox(ControlsProperties.getString("String_IgnoreNoValueRasterCell"));
 		this.textAreaExpression = new ParameterTextArea(ProcessProperties.getString("String_AlgebraOperationExpression"));
 		this.buttonExpression = new ParameterButton(ProcessProperties.getString("String_SetAlgebraOperationExpression"));
-		this.buttonImport = new ParameterButton(ControlsProperties.getString("string_button_import"));
+		this.buttonImport = new ParameterButton(ControlsProperties.getString("String_Button_Import"));
 		this.buttonExport = new ParameterButton(ControlsProperties.getString("String_Button_Export"));
 
 		ParameterCombine parameterCombine = new ParameterCombine(ParameterCombine.HORIZONTAL);

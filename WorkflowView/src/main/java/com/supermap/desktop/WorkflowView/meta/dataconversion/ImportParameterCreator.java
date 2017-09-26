@@ -418,7 +418,7 @@ public class ImportParameterCreator implements IParameterCreator {
 			setPrjCoordSys.methodName = "setTargetPrjCoordSys";
 			parameterRadioButton = new ParameterRadioButton();
 			parameterRadioButton.setLayout(ParameterRadioButton.VATICAL);
-			ParameterDataNode[] parameterDataNodes = {new ParameterDataNode(ProcessProperties.getString("String_setProject"), true), new ParameterDataNode(ProcessProperties.getString("string_importPrjFile"), false)};
+			ParameterDataNode[] parameterDataNodes = {new ParameterDataNode(ProcessProperties.getString("String_setProject"), true), new ParameterDataNode(ControlsProperties.getString("String_ImportPrjFile"), false)};
 			parameterRadioButton.setItems(parameterDataNodes);
 			parameterRadioButton.setSelectedItem(parameterDataNodes[0]);
 			setPrjCoordSys.parameter = parameterRadioButton;
@@ -428,11 +428,11 @@ public class ImportParameterCreator implements IParameterCreator {
 			String moduleName = "ImportPrjFileFromProcess";
 			if (!SmFileChoose.isModuleExist(moduleName)) {
 				String fileFilters = SmFileChoose.buildFileFilters(
-						SmFileChoose.createFileFilter(ProcessProperties.getString("String_ImportPrjFiles"), "prj", "xml"),
-						SmFileChoose.createFileFilter(ProcessProperties.getString("String_ImportPrjFileShape"), "prj"),
-						SmFileChoose.createFileFilter(ProcessProperties.getString("String_ImportPrjFileXml"), "xml"));
+						SmFileChoose.createFileFilter(ControlsProperties.getString("String_ImportPrjFiles"), "prj", "xml"),
+						SmFileChoose.createFileFilter(ControlsProperties.getString("String_ImportPrjFileShape"), "prj"),
+						SmFileChoose.createFileFilter(ControlsProperties.getString("String_ImportPrjFileXml"), "xml"));
 				SmFileChoose.addNewNode(fileFilters, CommonProperties.getString("String_DefaultFilePath"),
-						ProcessProperties.getString("string_importPrjFile"), moduleName, "OpenMany");
+						ControlsProperties.getString("String_ImportPrjFile"), moduleName, "OpenMany");
 			}
 
 			parameterChooseFile = new ParameterFile();

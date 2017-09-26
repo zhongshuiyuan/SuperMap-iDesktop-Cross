@@ -43,9 +43,8 @@ public class MetaProcessKernelDensity extends MetaProcess {
 
 	private void initComponents() {
 		parameterInputDataType.setDescribe(ProcessProperties.getString("String_FileInputPath"));
-		parameterIServerLogin.setInputDataType(this.parameterInputDataType);
+		parameterInputDataType.setiServerLogin(parameterIServerLogin);
 		parameterInputDataType.setSupportDatasetType(DatasetType.POINT);
-		parameterIServerLogin.setDataType(parameterInputDataType.supportDatasetType);
 		ParameterDataNode parameterDataNode = new ParameterDataNode(ProcessProperties.getString("String_KernelDensity"), "1");
 		parameterComboBoxAnalyseType.setRequisite(true);
 		parameterComboBoxAnalyseType.setItems(parameterDataNode);

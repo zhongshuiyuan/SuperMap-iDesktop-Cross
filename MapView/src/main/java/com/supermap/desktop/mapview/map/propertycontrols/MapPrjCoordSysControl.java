@@ -23,7 +23,7 @@ import java.awt.event.ItemListener;
 public class MapPrjCoordSysControl extends AbstractPropertyControl {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private JCheckBox checkBoxIsDynamicProjection;
@@ -48,13 +48,13 @@ public class MapPrjCoordSysControl extends AbstractPropertyControl {
 	};
 
 	private ActionListener ButtonProjectionSettingListener = new ActionListener() {
-		
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			ButtonProjectionSettingClicked();
 		}
 	};
-	
+
 	/**
 	 * Create the panel.
 	 */
@@ -70,9 +70,9 @@ public class MapPrjCoordSysControl extends AbstractPropertyControl {
 		this.textFieldCoordUnit.setText(getMap().getPrjCoordSys().getCoordUnit().toString());
 		this.textAreaCoordInfo.setText(PrjCoordSysUtilities.getDescription(getMap().getPrjCoordSys()));
 		IForm form = Application.getActiveApplication().getActiveForm();
-		if(form != null && form instanceof FormMap){
-			FormMap formMap = (FormMap)form;
-			((SmTextField)formMap.getStatusbar().getComponent(PRJCOORSYS)).setText(getMap().getPrjCoordSys().getName());
+		if (form != null && form instanceof FormMap) {
+			FormMap formMap = (FormMap) form;
+			((SmTextField) formMap.getStatusbar().getComponent(PRJCOORSYS)).setText(getMap().getPrjCoordSys().getName());
 		}
 		getMap().refresh();
 	}
@@ -106,7 +106,7 @@ public class MapPrjCoordSysControl extends AbstractPropertyControl {
 				.addComponent(this.labelCoordUnit)
 				.addComponent(this.textFieldCoordUnit, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addComponent(this.textAreaCoordInfo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
-		
+
 		groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
 				.addGroup(groupLayout.createParallelGroup(Alignment.CENTER)
 						.addComponent(this.checkBoxIsDynamicProjection)
@@ -176,12 +176,12 @@ public class MapPrjCoordSysControl extends AbstractPropertyControl {
 			Application.getActiveApplication().getOutput().output(e2);
 		}
 	}
-	
-	private void ButtonProjectionSettingClicked(){
+
+	private void ButtonProjectionSettingClicked() {
 		try {
 			JDialogPrjCoordSysSettings prjSettings = new JDialogPrjCoordSysSettings();
 			prjSettings.setPrjCoordSys(currentPrjCoorSys);
-			if(prjSettings.showDialog() == DialogResult.OK){
+			if (prjSettings.showDialog() == DialogResult.OK) {
 				this.currentPrjCoorSys = prjSettings.getPrjCoordSys();
 				verify();
 			}
