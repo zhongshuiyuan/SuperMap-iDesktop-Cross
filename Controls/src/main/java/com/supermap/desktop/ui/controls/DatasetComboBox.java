@@ -122,7 +122,7 @@ public class DatasetComboBox extends JComboBox<Dataset> {
                 }
             }
         }
-        if(this.datasets.getCount()!=0) {
+        if(this.datasets!=null &&this.datasets.getCount()!=0) {
             setSelectedIndex(selectIndex);
         }
     }
