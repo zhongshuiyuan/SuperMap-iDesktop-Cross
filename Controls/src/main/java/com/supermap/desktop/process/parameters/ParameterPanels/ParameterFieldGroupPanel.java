@@ -6,7 +6,6 @@ import com.supermap.desktop.process.parameter.interfaces.IParameter;
 import com.supermap.desktop.process.parameter.interfaces.ParameterPanelDescribe;
 import com.supermap.desktop.process.parameter.ipls.ParameterFieldGroup;
 import com.supermap.desktop.ui.controls.GridBagConstraintsHelper;
-import com.supermap.desktop.ui.controls.smTables.TableFactory;
 import com.supermap.desktop.ui.controls.smTables.tables.TableFieldNameCaptionType;
 
 import javax.swing.*;
@@ -23,7 +22,7 @@ import java.beans.PropertyChangeListener;
 public class ParameterFieldGroupPanel extends SwingPanel {
 	private ParameterFieldGroup parameterFieldGroup;
 	private JLabel label = new JLabel();
-	private TableFieldNameCaptionType tableFieldNameCaptionType = (TableFieldNameCaptionType) TableFactory.getTable("FieldNameCaptionType");
+	private TableFieldNameCaptionType tableFieldNameCaptionType = new  TableFieldNameCaptionType();
 
 	public ParameterFieldGroupPanel(IParameter parameter) {
 		super(parameter);

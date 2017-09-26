@@ -10,7 +10,6 @@ import com.supermap.desktop.tabularview.TabularViewProperties;
 import com.supermap.desktop.ui.controls.DatasourceComboBox;
 import com.supermap.desktop.ui.controls.SmDialog;
 import com.supermap.desktop.ui.controls.button.SmButton;
-import com.supermap.desktop.ui.controls.smTables.TableFactory;
 import com.supermap.desktop.ui.controls.smTables.tables.TableFieldNameCaptionType;
 import com.supermap.desktop.utilities.CoreResources;
 import com.supermap.desktop.utilities.EncodeTypeUtilities;
@@ -36,7 +35,6 @@ public class JDialogOutputDataset extends SmDialog {
 	private JToolBar toolBar;
 	private JButton buttonSelectAll;
 	private JButton buttonSelectInverse;
-	//private JButton buttonDelete;
 	private JButton buttonSelectAllSystemField;
 	private JButton buttonSelectAllNonSystemField;
 	private JScrollPane scrollPane;
@@ -53,7 +51,6 @@ public class JDialogOutputDataset extends SmDialog {
 	private SmButton buttonOK;
 	private SmButton buttonCancel;
 	private TableFieldNameCaptionType tableFieldNameCaptionType;
-	//private TableFieldName tableFieldName;
 	private IFormTabular tabular;
 	private final String urlStr = "/coreresources/ToolBar/";
 	private static final int MIN_SIZE = 23;
@@ -104,11 +101,9 @@ public class JDialogOutputDataset extends SmDialog {
 		this.checkBoxIsSaveRows = new JCheckBox();
 		this.buttonOK = new SmButton();
 		this.buttonCancel = new SmButton();
-		this.tableFieldNameCaptionType = (TableFieldNameCaptionType) TableFactory.getTable("FieldNameCaptionType");
+		this.tableFieldNameCaptionType = new TableFieldNameCaptionType();
 		this.tableFieldNameCaptionType.setShowSystemField(true);
 		this.tableFieldNameCaptionType.setDataset(this.tabular.getDataset());
-		//this.tableFieldName = (TableFieldName) TableFactory.getTable("FieldName");
-		//this.tableFieldName.setDatasetVector( this.tabular.getDataset());
 		this.scrollPane.setViewportView(this.tableFieldNameCaptionType);
 		this.checkBoxIsSaveRows.setSelected(true);
 		this.smTextFieldLegit.setText(this.datasourceComboBox.getSelectedDatasource().getDatasets().getAvailableDatasetName("NewDataset"));
