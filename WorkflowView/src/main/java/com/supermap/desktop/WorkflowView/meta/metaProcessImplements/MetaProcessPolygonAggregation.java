@@ -38,9 +38,8 @@ public class MetaProcessPolygonAggregation extends MetaProcess {
 	private void initComponents() {
 		//设置输入数据
 		parameterInputDataType.setDescribe(ProcessProperties.getString("String_FileInputPath"));
-		parameterIServerLogin.setInputDataType(this.parameterInputDataType);
-		//设置分析数据
-		parameterIServerLogin.setAnalystDataType(this.parameterAnalystDataType);
+		parameterInputDataType.setiServerLogin(parameterIServerLogin);
+		parameterAnalystDataType.setiServerLogin(parameterIServerLogin);
 		ParameterDataNode parameterDataNode = new ParameterDataNode(ProcessProperties.getString("String_PolygonAggregationType"), "SUMMARYREGION");
 		parameterAggregationType.setRequisite(true);
 		parameterAggregationType.setItems(parameterDataNode);
@@ -66,15 +65,12 @@ public class MetaProcessPolygonAggregation extends MetaProcess {
 	}
 
 	private void initComponentState() {
-		parameterAnalystDataType.parameterDataInputWay.removeAllItems();
-		parameterAnalystDataType.parameterDataInputWay.setItems(new ParameterDataNode(ProcessProperties.getString("String_BigDataStore"), "3"),
+		parameterAnalystDataType.resetInputItems(new ParameterDataNode(ProcessProperties.getString("String_BigDataStore"), "3"),
 				new ParameterDataNode(ProcessProperties.getString("String_UDBFile"), "1"), new ParameterDataNode(ProcessProperties.getString("String_PG"), "2"));
 		parameterAnalystDataType.parameterSwitch.switchParameter("3");
 		parameterAnalystDataType.setBool(true);
 		parameterInputDataType.setSupportDatasetType(DatasetType.POINT);
 		parameterAnalystDataType.setSupportDatasetType(DatasetType.REGION);
-		parameterIServerLogin.setDataType(parameterInputDataType.supportDatasetType);
-		parameterIServerLogin.setAnalystDatasetTypes(parameterAnalystDataType.supportDatasetType);
 	}
 
 
