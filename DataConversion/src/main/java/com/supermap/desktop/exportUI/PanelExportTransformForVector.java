@@ -8,6 +8,7 @@ import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.controls.utilities.ComponentUIUtilities;
 import com.supermap.desktop.dataconversion.DataConversionProperties;
 import com.supermap.desktop.iml.ExportFileInfo;
+import com.supermap.desktop.implement.UserDefineType.ExportSettingExcel;
 import com.supermap.desktop.implement.UserDefineType.ExportSettingGPX;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.StateChangeEvent;
@@ -271,10 +272,57 @@ public class PanelExportTransformForVector extends PanelExportTransform {
 			this.comboBoxCADVersion.setEnabled(true);
 			this.checkBoxExportExternalData.setSelectedEx(externalDataSelectAll(panels));
 			this.checkBoxExportExternalRecord.setSelectedEx(externalRecordSelectAll(panels));
-			this.checkBoxExportPointAsWKT.setSelectedEx(exportPointAsWKTSelectAll(panels));
-			this.checkBoxExportFieldName.setSelectedEx(exportFieldNameSelectAll(panels));
 			this.comboBoxCADVersion.setSelectedItem(selectSameItem(panels));
 		}
+		Boolean exportPointAsWKTSelectAll = exportPointAsWKTSelectAll(panels);
+		Boolean exportFieldNameSelectAll = exportFieldNameSelectAll(panels);
+		this.checkBoxExportFieldName.setEnabled(fieladNameEnabledAll(panels));
+		this.checkBoxExportPointAsWKT.setEnabled(pointAsWKTEnabledAll(panels));
+		this.buttonExpression.setEnabled(sqlExpressionEnabledAll(panels));
+		this.checkBoxExportPointAsWKT.setSelectedEx(exportPointAsWKTSelectAll);
+		this.checkBoxExportFieldName.setSelectedEx(exportFieldNameSelectAll);
+	}
+
+	private boolean pointAsWKTEnabledAll(ArrayList<PanelExportTransform> panels) {
+		boolean result = false;
+		int selectCount = 0;
+		for (PanelExportTransform tempPanel : panels) {
+			if (((PanelExportTransformForVector) tempPanel).getCheckBoxExportPointAsWKT().isEnabled()) {
+				selectCount++;
+			}
+		}
+		if (selectCount == panels.size()) {
+			result = true;
+		}
+		return result;
+	}
+
+	private boolean fieladNameEnabledAll(ArrayList<PanelExportTransform> panels) {
+		boolean result = false;
+		int selectCount = 0;
+		for (PanelExportTransform tempPanel : panels) {
+			if (((PanelExportTransformForVector) tempPanel).getCheckBoxExportFieldName().isEnabled()) {
+				selectCount++;
+			}
+		}
+		if (selectCount == panels.size()) {
+			result = true;
+		}
+		return result;
+	}
+
+	private boolean sqlExpressionEnabledAll(ArrayList<PanelExportTransform> panels) {
+		boolean result = false;
+		int selectCount = 0;
+		for (PanelExportTransform tempPanel : panels) {
+			if (((PanelExportTransformForVector) tempPanel).getButtonExpression().isEnabled()) {
+				selectCount++;
+			}
+		}
+		if (selectCount == panels.size()) {
+			result = true;
+		}
+		return result;
 	}
 
 	private Boolean exportFieldNameSelectAll(ArrayList<PanelExportTransform> panels) {
@@ -430,7 +478,7 @@ public class PanelExportTransformForVector extends PanelExportTransform {
 			((ExportSettingCSV) tempExportSetting).setIsExportFieldName(true);
 			if (((Dataset) tempExportSetting.getSourceData()).getType().equals(DatasetType.POINT)
 					|| ((Dataset) tempExportSetting.getSourceData()).getType().equals(DatasetType.POINT3D)) {
-				this.checkBoxExportPointAsWKT.setEnabled(true);
+				this.checkBoxExportPointAsWKT.setEnabled(!(tempExportSetting instanceof ExportSettingExcel));
 				this.checkBoxExportPointAsWKT.setSelected(((ExportSettingCSV) tempExportSetting).GetIsExportPointAsWKT());
 			}
 		}
@@ -505,6 +553,11 @@ public class PanelExportTransformForVector extends PanelExportTransform {
 	}
 
 	public void setUnEnabled() {
+		this.checkBoxExportExternalData.setSelected(false);
+		this.checkBoxExportExternalRecord.setSelected(false);
+		this.checkBoxExportPointAsWKT.setSelected(false);
+		this.checkBoxExportFieldName.setSelected(false);
+
 		this.checkBoxExportExternalData.setEnabled(false);
 		this.checkBoxExportExternalRecord.setEnabled(false);
 		this.checkBoxExportPointAsWKT.setEnabled(false);
@@ -530,7 +583,14 @@ public class PanelExportTransformForVector extends PanelExportTransform {
 
 	@Override
 	public void removeEvents() {
-
+		this.checkBoxExportExternalData.removeStateChangeListener(this.externalDataListener);
+		this.checkBoxExportExternalRecord.removeStateChangeListener(this.externalRecordListener);
+		this.checkBoxExportPointAsWKT.removeStateChangeListener(this.exportPointAsWKTListener);
+		this.checkBoxExportFieldName.removeStateChangeListener(this.exportFieldNameListener);
+		this.charsetComboBox.removeItemListener(this.charsetListener);
+		this.comboBoxCADVersion.removeItemListener(this.cadVersionListener);
+		this.textAreaExpression.getDocument().removeDocumentListener(this.expressionListener);
+		this.buttonExpression.removeActionListener(this.buttonExpressionListener);
 	}
 
 	public TristateCheckBox getCheckBoxExportExternalData() {
@@ -555,5 +615,9 @@ public class PanelExportTransformForVector extends PanelExportTransform {
 
 	public TristateCheckBox getCheckBoxExportFieldName() {
 		return checkBoxExportFieldName;
+	}
+
+	public JButton getButtonExpression() {
+		return buttonExpression;
 	}
 }

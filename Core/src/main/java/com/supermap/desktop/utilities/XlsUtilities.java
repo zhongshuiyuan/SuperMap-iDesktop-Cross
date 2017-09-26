@@ -163,8 +163,7 @@ public class XlsUtilities {
 					for (int j = 0; j < columnCount; j++) {
 						fieldInfo = new FieldInfo();
 						fieldInfo.setType(FieldType.TEXT);
-						String name = "NewField" + "_" + sheet.getRow(0).getCell(j).getStringCellValue();
-						name = "NewField" + "_" + sheet.getRow(0).getCell(j).getStringCellValue();
+						String name = sheet.getRow(0).getCell(j).getStringCellValue();
 						fieldInfo.setName(name);
 						fieldInfos.add(fieldInfo);
 						fieldNames.add(name);
@@ -193,13 +192,13 @@ public class XlsUtilities {
 					row = sheet.getRow(j);
 					map.clear();
 					for (int k = 0; k < columnCount; k++) {
-						if (row.getCell(k).getCellType()==XSSFCell.CELL_TYPE_STRING) {
+						if (row.getCell(k).getCellType() == XSSFCell.CELL_TYPE_STRING) {
 							map.put(fieldNames.get(k), row.getCell(k).getStringCellValue());
-						}else if(row.getCell(k).getCellType()==XSSFCell.CELL_TYPE_BOOLEAN){
+						} else if (row.getCell(k).getCellType() == XSSFCell.CELL_TYPE_BOOLEAN) {
 							map.put(fieldNames.get(k), row.getCell(k).getBooleanCellValue());
-						}else if(row.getCell(k).getCellType()==XSSFCell.CELL_TYPE_NUMERIC){
+						} else if (row.getCell(k).getCellType() == XSSFCell.CELL_TYPE_NUMERIC) {
 							map.put(fieldNames.get(k), row.getCell(k).getNumericCellValue());
-						}else if(row.getCell(k).getCellType()==XSSFCell.CELL_TYPE_FORMULA){
+						} else if (row.getCell(k).getCellType() == XSSFCell.CELL_TYPE_FORMULA) {
 							map.put(fieldNames.get(k), row.getCell(k).getCellFormula());
 						}
 					}
@@ -279,7 +278,7 @@ public class XlsUtilities {
 					for (int j = 0; j < columnCount; j++) {
 						fieldInfo = new FieldInfo();
 						fieldInfo.setType(FieldType.TEXT);
-						String name = "NewField" + "_" + sheet.getRow(0).getCell(j).getStringCellValue();
+						String name = sheet.getRow(0).getCell(j).getStringCellValue();
 						fieldInfo.setName(name);
 						fieldInfos.add(fieldInfo);
 						fieldNames.add(name);
@@ -586,7 +585,4 @@ public class XlsUtilities {
 		importXlsFile(datasource, "test2.xls", false);
 	}
 
-	public static void stepped(ImportSteppedEvent importSteppedEvent) {
-
-	}
 }

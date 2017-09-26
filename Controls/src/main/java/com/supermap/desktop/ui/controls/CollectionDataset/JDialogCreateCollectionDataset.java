@@ -140,13 +140,13 @@ public class JDialogCreateCollectionDataset extends SmDialog {
 		formProgress.doWork(new CreateCollectionCallable(JDialogCreateCollectionDataset.this));
 	}
 
-	public boolean hasDataset(DatasetVector datasetVector, String alias, String name) {
+	public boolean hasDataset(DatasetVector datasetVector, String dataBase, String name) {
 
 		boolean result = false;
 		ArrayList<CollectionDatasetInfo> datasetInfos = datasetVector.getCollectionDatasetInfos();
 		for (int i = 0, size = datasetInfos.size(); i < size; i++) {
 			if (datasetInfos.get(i).getDatasetName().equals(name)
-					&& datasetInfos.get(i).getDatasourceConnectInfo().getAlias().equals(alias)
+					&& datasetInfos.get(i).getDatasourceConnectInfo().getDatabase().equals(dataBase)
 					&& null != DatasourceUtilities.getDatasource(datasetInfos.get(i).getDatasourceConnectInfo())) {
 				result = true;
 				break;
@@ -323,35 +323,50 @@ public class JDialogCreateCollectionDataset extends SmDialog {
 		//删除集合
 		try {
 			int[] selectRows = tableDatasetDisplay.getSelectedRows();
+			if (null == datasetVector || tableModel.getDatasetInfos().size() == 0) {
+				//新建时直接移除
+				tableModel.removeRows(selectRows);
+				setRowSelection();
+				return;
+			}
+
+
 			if (null != datasetVector) {
 				if (datasetVector.getDatasource().isReadOnly()) {
 					Application.getActiveApplication().getOutput().output(MessageFormat.format(CommonProperties.getString("String_VectorCollectionDatasourceReadOnly"), datasetVector.getName()));
 					return;
 				}
 				ArrayList<CollectionDatasetInfo> collectionInfos = this.datasetVector.getCollectionDatasetInfos();
-				if (selectRows.length > 1
-						&& new SmOptionPane().showConfirmDialog(MessageFormat.format(CommonProperties.getString("String_RemoveDatasetsFromVectorColleciton"), datasetVector.getName(), selectRows.length)) == JOptionPane.OK_OPTION) {
-					for (int i = 0, size = collectionInfos.size(); i < size; i++) {
-						for (int j = 0, length = selectRows.length; j < length; j++) {
-							String datasetName = tableModel.getTagValueAt(selectRows[j]).getName();
-							if (collectionInfos.get(i).getDatasetName().equals(datasetName)) {
-								delete(collectionInfos, i, datasetName);
+				if (selectRows.length > 1) {
+					if (new SmOptionPane().showConfirmDialog(MessageFormat.format(CommonProperties.getString("String_RemoveDatasetsFromVectorColleciton"), datasetVector.getName(), selectRows.length)) == JOptionPane.OK_OPTION) {
+						for (int i = 0, size = collectionInfos.size(); i < size; i++) {
+							for (int j = 0, length = selectRows.length; j < length; j++) {
+								String datasetName = tableModel.getTagValueAt(selectRows[j]).getName();
+								if (collectionInfos.get(i).getDatasetName().equals(datasetName)) {
+									delete(collectionInfos, i, datasetName);
+								}
 							}
 						}
+						tableModel.removeRows(selectRows);
 					}
 				} else {
-					for (int i = 0, size = collectionInfos.size(); i < size; i++) {
-						String datasetName = tableModel.getTagValueAt(selectRows[0]).getName();
-						if (collectionInfos.get(i).getDatasetName().equals(datasetName)
-								&& new SmOptionPane().showConfirmDialog(MessageFormat.format(CommonProperties.getString("String_RemoveDatasetFromVectorCollection"), datasetVector.getName(), datasetName)) == JOptionPane.OK_OPTION) {
-							delete(collectionInfos, i, datasetName);
+					boolean isDeleteRow = false;
+					for (int i = collectionInfos.size() - 1; i >= 0; i--) {
+						DatasetInfo datasetInfo = tableModel.getTagValueAt(selectRows[0]);
+						if (hasDataset(datasetVector, datasetInfo.getDataBase(), datasetInfo.getName())) {
+							if (new SmOptionPane().showConfirmDialog(MessageFormat.format(CommonProperties.getString("String_RemoveDatasetFromVectorCollection"), datasetVector.getName(), datasetInfo.getDataBase())) == JOptionPane.OK_OPTION) {
+								delete(collectionInfos, i, datasetInfo.getName());
+								isDeleteRow = true;
+							}
+						} else {
+							isDeleteRow = true;
 						}
 					}
+					if (isDeleteRow) {
+						tableModel.removeRows(selectRows);
+					}
 				}
-			}
-			tableModel.removeRows(selectRows);
-			if (tableModel.getRowCount() > 0) {
-				tableDatasetDisplay.setRowSelectionInterval(tableModel.getRowCount() - 1, tableModel.getRowCount() - 1);
+				setRowSelection();
 			}
 		} catch (Exception e) {
 			Application.getActiveApplication().getOutput().output(e);
@@ -364,6 +379,13 @@ public class JDialogCreateCollectionDataset extends SmDialog {
 					}
 				}
 			});
+		}
+
+	}
+
+	private void setRowSelection() {
+		if (tableModel.getRowCount() > 0) {
+			tableDatasetDisplay.setRowSelectionInterval(tableModel.getRowCount() - 1, tableModel.getRowCount() - 1);
 		}
 	}
 
@@ -641,7 +663,7 @@ public class JDialogCreateCollectionDataset extends SmDialog {
 		initPanelBasicInfoLayout();
 		if (isSetDatasetCollectionCount) {
 			this.getContentPane().setLayout(new GridBagLayout());
-			this.getContentPane().add(this.panelTableInfo, new GridBagConstraintsHelper(0, 0, 10, 1).setAnchor(GridBagConstraints.CENTER).setFill(GridBagConstraints.BOTH).setWeight(1, 1).setInsets(10, 10, 5, 0));
+			this.getContentPane().add(this.panelTableInfo, new GridBagConstraintsHelper(0, 0, 10, 1).setAnchor(GridBagConstraints.CENTER).setFill(GridBagConstraints.BOTH).setWeight(1, 1).setInsets(10, 10, 5, 10));
 			this.getContentPane().add(this.checkBoxCloseDialog, new GridBagConstraintsHelper(0, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setFill(GridBagConstraints.NONE).setWeight(0, 0).setInsets(0, 10, 10, 10));
 			this.getContentPane().add(this.buttonOK, new GridBagConstraintsHelper(8, 1, 1, 1).setAnchor(GridBagConstraints.EAST).setFill(GridBagConstraints.NONE).setWeight(1, 0).setInsets(0, 10, 10, 10));
 			this.getContentPane().add(this.buttonCancel, new GridBagConstraintsHelper(9, 1, 1, 1).setAnchor(GridBagConstraints.EAST).setFill(GridBagConstraints.NONE).setWeight(0, 0).setInsets(0, 0, 10, 10));

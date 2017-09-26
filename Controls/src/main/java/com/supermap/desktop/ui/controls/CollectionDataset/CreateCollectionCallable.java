@@ -4,13 +4,11 @@ import com.supermap.data.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.progress.Interface.UpdateProgressCallable;
-import com.supermap.desktop.properties.CoreProperties;
 import com.supermap.desktop.ui.UICommonToolkit;
 import com.supermap.desktop.utilities.DatasourceUtilities;
 
 import javax.swing.*;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 
 /**
  * Created by xie on 2017/8/16.
@@ -37,36 +35,38 @@ public class CreateCollectionCallable extends UpdateProgressCallable {
 				vector = datasource.getDatasets().create(info);
 //				vector.setCharset(CharsetUtilities.valueOf(parent.charsetComboBox.getSelectedItem().toString()));
 			}
-			ArrayList<DatasetInfo> datasetInfos = parent.tableModel.getDatasetInfos();
-			if (0 == datasetInfos.size()) {
+			int rowCount = parent.tableDatasetDisplay.getRowCount();
+			if (0 == rowCount) {
 				updateProgressTotal(100, "success", 100, "success");
 			}
-			int size = datasetInfos.size();
 			int collecionSize = vector.getCollectionDatasetCount();
 			int count = 0;
-			for (int i = 0; i < size; i++) {
-				if (null != vector && parent.hasDataset(vector, datasetInfos.get(i).getAlias(), datasetInfos.get(i).getName())) {
+			DatasetInfo datasetInfo;
+			for (int i = rowCount - 1; i >= 0; i--) {
+				datasetInfo = parent.tableModel.getTagValueAt(i);
+				if (null != vector && parent.hasDataset(vector, datasetInfo.getDataBase(), datasetInfo.getName())) {
 					//需不需要添加已经存在的数据集？
 //					Application.getActiveApplication().getOutput().output(MessageFormat.format(CommonProperties.getString("String_DatasetExistInCollection"), datasetInfos.get(i).getDataset().getName(), vector.getName()));
 					continue;
 				}
 //				if ((vector.GetSubCollectionDatasetType() == DatasetType.UNKNOWN) || (vector.GetSubCollectionDatasetType() == datasetInfos.get(i).getDataset().getType())) {
-				Datasource sourceDatasource = Application.getActiveApplication().getWorkspace().getDatasources().get(datasetInfos.get(i).getAlias());
+				Datasource sourceDatasource = Application.getActiveApplication().getWorkspace().getDatasources().get(datasetInfo.getAlias());
 				if (null == sourceDatasource) {
-					Application.getActiveApplication().getOutput().output(CoreProperties.getString("String_GetDatasourceFailed"));
+//					Application.getActiveApplication().getOutput().output(CoreProperties.getString("String_GetDatasourceFailed"));
 					continue;
 				}
-				Dataset dataset = DatasourceUtilities.getDataset(datasetInfos.get(i).getName(), sourceDatasource);
+				Dataset dataset = DatasourceUtilities.getDataset(datasetInfo.getName(), sourceDatasource);
 				boolean result = vector.addCollectionDataset((DatasetVector) dataset);
 				String message = "";
 				if (result) {
-					message = MessageFormat.format(ControlsProperties.getString("String_CollectionDatasetAddSuccess"), vector.getName(), datasetInfos.get(i).getName());
+					message = MessageFormat.format(ControlsProperties.getString("String_CollectionDatasetAddSuccess"), vector.getName(), datasetInfo.getName());
 				} else {
-					message = MessageFormat.format(ControlsProperties.getString("String_CollectionDatasetAddFailed"), vector.getName(), datasetInfos.get(i).getName());
+					message = MessageFormat.format(ControlsProperties.getString("String_CollectionDatasetAddFailed"), vector.getName(), datasetInfo.getName());
+					parent.tableModel.removeRow(i);
 				}
 				parent.tableDatasetDisplay.repaint();
 				Application.getActiveApplication().getOutput().output(message);
-				updateProgressTotal(100, message, (int) (((count + 1.0) / (size - collecionSize)) * 100), message);
+				updateProgressTotal(100, message, (int) (((count + 1.0) / (rowCount - collecionSize)) * 100), message);
 				count++;
 //				}
 			}
@@ -74,7 +74,7 @@ public class CreateCollectionCallable extends UpdateProgressCallable {
 			//取消时异常
 			Application.getActiveApplication().getOutput().output(e);
 		} finally {
-			if (!parent.checkBoxCloseDialog.isEnabled() || parent.checkBoxCloseDialog.isSelected()) {
+			if (!parent.checkBoxCloseDialog.isVisible() || (parent.checkBoxCloseDialog.isVisible() && parent.checkBoxCloseDialog.isSelected())) {
 				parent.dispose();
 			}
 			SwingUtilities.invokeLater(new Runnable() {
