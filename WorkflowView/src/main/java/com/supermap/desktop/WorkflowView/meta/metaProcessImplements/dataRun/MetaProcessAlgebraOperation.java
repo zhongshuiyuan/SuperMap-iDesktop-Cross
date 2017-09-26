@@ -13,12 +13,7 @@ import com.supermap.desktop.process.constraint.ipls.DatasourceConstraint;
 import com.supermap.desktop.process.parameter.ParameterDataNode;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
-import com.supermap.desktop.process.parameter.ipls.ParameterButton;
-import com.supermap.desktop.process.parameter.ipls.ParameterCheckBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
-import com.supermap.desktop.process.parameter.ipls.ParameterComboBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterSaveDataset;
-import com.supermap.desktop.process.parameter.ipls.ParameterTextArea;
+import com.supermap.desktop.process.parameter.ipls.*;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.RasterAlgebraExpressionXml;
 import com.supermap.desktop.ui.RasterAlgebraOperationDialog;
@@ -75,7 +70,7 @@ public class MetaProcessAlgebraOperation extends MetaProcessGridAnalyst {
 		this.checkBoxIgnoreNoValueCell = new ParameterCheckBox(ControlsProperties.getString("String_IgnoreNoValueRasterCell"));
 		this.textAreaExpression = new ParameterTextArea(ProcessProperties.getString("String_AlgebraOperationExpression"));
 		this.buttonExpression = new ParameterButton(ProcessProperties.getString("String_SetAlgebraOperationExpression"));
-		this.buttonImport = new ParameterButton(ControlsProperties.getString("string_button_import"));
+		this.buttonImport = new ParameterButton(ControlsProperties.getString("String_Button_Import"));
 		this.buttonExport = new ParameterButton(ControlsProperties.getString("String_Button_Export"));
 
 		ParameterCombine parameterCombine = new ParameterCombine(ParameterCombine.HORIZONTAL);
