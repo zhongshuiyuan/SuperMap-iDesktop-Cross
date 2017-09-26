@@ -38,10 +38,10 @@ public class MetaProcessSingleQuery extends MetaProcess {
 	private void initComponents() {
 		//设置输入数据
 		parameterInputDataType.setDescribe(ProcessProperties.getString("String_FileInputPath"));
-		parameterIServerLogin.setInputDataType(this.parameterInputDataType);
+		parameterInputDataType.setiServerLogin(parameterIServerLogin);
 		//设置查询数据
 		parameterClipDataType.setDescribe(ProcessProperties.getString("String_QueryData"));
-		parameterIServerLogin.setAnalystDataType(this.parameterClipDataType);
+		parameterClipDataType.setiServerLogin(parameterIServerLogin);
 		//设置分析参数
 		parameterQueryTypeComboBox = new ParameterComboBox(CoreProperties.getString("String_AnalystType"));
 		parameterQueryTypeComboBox.setRequisite(true);
@@ -66,15 +66,12 @@ public class MetaProcessSingleQuery extends MetaProcess {
 	}
 
 	private void initComponentState() {
-		parameterClipDataType.parameterDataInputWay.removeAllItems();
-		parameterClipDataType.parameterDataInputWay.setItems(new ParameterDataNode(ProcessProperties.getString("String_BigDataStore"), "3"),
+		parameterClipDataType.resetInputItems(new ParameterDataNode(ProcessProperties.getString("String_BigDataStore"), "3"),
 				new ParameterDataNode(ProcessProperties.getString("String_UDBFile"), "1"), new ParameterDataNode(ProcessProperties.getString("String_PG"), "2"));
 		parameterClipDataType.parameterSwitch.switchParameter("3");
 		parameterClipDataType.setBool(true);
 		parameterInputDataType.setSupportDatasetType(DatasetType.POINT, DatasetType.LINE, DatasetType.REGION);
 		parameterClipDataType.setSupportDatasetType(DatasetType.POINT, DatasetType.LINE, DatasetType.REGION);
-		parameterIServerLogin.setDataType(parameterInputDataType.supportDatasetType);
-		parameterIServerLogin.setAnalystDatasetTypes(parameterClipDataType.supportDatasetType);
 	}
 
 
