@@ -15,6 +15,7 @@ import com.supermap.desktop.process.util.ParameterUtil;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.controls.DatasetComboBox;
 import com.supermap.desktop.ui.controls.GridBagConstraintsHelper;
+import com.supermap.desktop.utilities.DatasourceUtilities;
 
 import javax.swing.*;
 import java.awt.*;
@@ -102,7 +103,11 @@ public class ParameterSingleDatasetPanel extends SwingPanel implements IParamete
 		this.labelDataset.setText(getDescribe());
 		this.datasetTypes = parameterSingleDataset.getDatasetTypes();
 		this.datasource = parameterSingleDataset.getDatasource();
-		if (this.datasource != null) {
+		if (this.datasource == null) {
+			this.datasource = DatasourceUtilities.getDefaultResultDatasource();
+			parameterSingleDataset.setDatasource(this.datasource);
+		}
+		if (this.datasource!=null) {
 			this.datasetComboBox = new DatasetComboBox(this.datasource.getDatasets());
 		} else {
 			this.datasetComboBox = new DatasetComboBox();

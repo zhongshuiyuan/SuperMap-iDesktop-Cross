@@ -325,13 +325,17 @@ public class JDialogOutputDataset extends SmDialog {
 			DatasetVector result = this.datasourceComboBox.getSelectedDatasource().getDatasets().create(datasetVectorInfo);
 			isSuccessful = (result != null);
 
+			if (!this.comboBoxResultType.getSelectedItem().equals(CommonProperties.getString("String_AttrsTable"))
+					&& this.tabular.getDataset().getPrjCoordSys()!=null){
+				result.setPrjCoordSys(this.tabular.getDataset().getPrjCoordSys().clone());
+			}
+			result.setDescription(this.tabular.getDataset().getDescription());
 			if (this.tableFieldNameCaptionType.getSelectedFields() != null && this.tableFieldNameCaptionType.getSelectedFields().length != 0) {
 				FieldInfos resultFieldInfos = result.getFieldInfos();
 				FieldInfo[] selectedFieldInfo = this.tableFieldNameCaptionType.getSelectedFields();
 				for (int i = 0; i < selectedFieldInfo.length; i++) {
 					try{
 						resultFieldInfos.add(selectedFieldInfo[i].clone());
-						//System.out.println(selectedFieldInfo[i].getName());
 					}catch (Exception e){
 						FieldInfo fieldInfo=new FieldInfo();
 						fieldInfo.setName(NEW_FIELD_NAME_PRE+selectedFieldInfo[i].getName());

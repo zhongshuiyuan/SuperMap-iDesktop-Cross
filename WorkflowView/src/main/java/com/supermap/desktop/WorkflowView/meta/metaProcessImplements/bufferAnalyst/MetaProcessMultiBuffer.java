@@ -54,6 +54,7 @@ public class MetaProcessMultiBuffer extends MetaProcess {
 	private ParameterSaveDataset parameterSaveDataset;
 
 	public MetaProcessMultiBuffer() {
+		setTitle(ProcessProperties.getString("String_MultiBufferAnalyst"));
 		initParameters();
 		initParameterConstraint();
 		initComponentState();
@@ -202,11 +203,6 @@ public class MetaProcessMultiBuffer extends MetaProcess {
 	@Override
 	public IParameterPanel getComponent() {
 		return parameters.getPanel();
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_MultiBufferAnalyst");
 	}
 
 	@Override
