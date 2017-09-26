@@ -7,7 +7,6 @@ import com.supermap.desktop.process.parameter.interfaces.ParameterPanelDescribe;
 import com.supermap.desktop.process.parameter.ipls.ParameterStatisticsFieldGroupForRarefyPoints;
 import com.supermap.desktop.process.parameters.ParameterPanels.SwingPanel;
 import com.supermap.desktop.ui.controls.GridBagConstraintsHelper;
-import com.supermap.desktop.ui.controls.smTables.TableFactory;
 import com.supermap.desktop.ui.controls.smTables.tables.TableRarefyPoints;
 
 import javax.swing.*;
@@ -24,7 +23,7 @@ import java.beans.PropertyChangeListener;
 public class ParameterStatisticsFieldGroupForRarefyPointsPanel extends SwingPanel {
 	private ParameterStatisticsFieldGroupForRarefyPoints parameterStatisticsFieldGroupForRarefyPoints;
 	private JLabel label = new JLabel();
-	private TableRarefyPoints tableRarefyPoints=(TableRarefyPoints) TableFactory.getTable("StatisticsFieldForRarefyPoints");
+	private TableRarefyPoints tableRarefyPoints=new  TableRarefyPoints();
 
 	public ParameterStatisticsFieldGroupForRarefyPointsPanel(IParameter parameter) {
 		super(parameter);

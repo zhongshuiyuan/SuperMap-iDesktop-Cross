@@ -6,6 +6,8 @@ import com.supermap.desktop.ui.controls.smTables.tables.TableRarefyPoints;
 
 /**
  * Created by lixiaoyao on 2017/8/9.
+ *
+ * This class do not use, but first keep, after the idea to see.
  */
 public class TableFactory {
 	public static ITable getTable(String tableKeys) {

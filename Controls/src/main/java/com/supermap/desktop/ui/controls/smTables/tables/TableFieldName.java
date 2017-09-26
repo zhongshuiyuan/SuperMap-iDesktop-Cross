@@ -26,23 +26,6 @@ public class TableFieldName extends JTable implements ITable {
 	private static final int TABLE_COLUMN_CAPTION = 1;
 	ArrayList<String> isNotSystemFields = new ArrayList<String>();
 
-//	private ITableController tableController=new TableControllerAdapter() {
-//		@Override
-//		public void selectAll(ITable iTable) {
-//			super.selectAll(iTable);
-//		}
-//
-//		@Override
-//		public void selectInverse(ITable iTable) {
-//			super.selectInverse(iTable);
-//		}
-//
-//		@Override
-//		public void delete(ITable iTable) {
-//			super.delete(iTable);
-//		}
-//	};
-
 	@Override
 	public ITableController getTableController() {
 		return null;

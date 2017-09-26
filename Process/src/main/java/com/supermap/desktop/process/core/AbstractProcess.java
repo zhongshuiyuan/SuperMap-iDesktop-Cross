@@ -37,7 +37,7 @@ public abstract class AbstractProcess implements IProcess {
 	private Inputs inputs = new Inputs(this);
 	private Outputs outputs = new Outputs(this);
 	private int serialID = 0;
-
+	private String title;
 	private String RUNNING_MESSAGE = ProcessProperties.getString("String_Running");
 	private String COMPLETED_MESSAGE = ProcessProperties.getString("String_Completed");
 	private String FAILED_MESSAGE = ProcessProperties.getString("String_Failed");
@@ -63,6 +63,16 @@ public abstract class AbstractProcess implements IProcess {
 	@Override
 	public int getSerialID() {
 		return this.serialID;
+	}
+
+	@Override
+	public String getTitle() {
+		return this.title;
+	}
+
+	@Override
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	@Override

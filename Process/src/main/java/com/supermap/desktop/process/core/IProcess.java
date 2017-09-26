@@ -28,6 +28,8 @@ public interface IProcess {
 
 	String getTitle();
 
+	void setTitle(String title);
+
 	Inputs getInputs();
 
 	Outputs getOutputs();

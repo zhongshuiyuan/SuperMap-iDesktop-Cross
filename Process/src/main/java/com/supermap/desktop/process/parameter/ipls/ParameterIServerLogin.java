@@ -78,7 +78,7 @@ public class ParameterIServerLogin extends ParameterCombine {
 		});
 	}
 
-	private void loginAndInitInputDataType() {
+	public void loginAndInitInputDataType() {
 		boolean result = login();
 		if (!result) {
 			removeAllDatasets();
