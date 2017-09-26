@@ -14,10 +14,10 @@ public class ColorUtilities {
 	/**
 	 * Regenerate colors according to transparency
 	 * @param oldColor
-	 * @param transparence  Effective range:0————255
+	 * @param transparency  Effective range:0————255
 	 */
-	public static Color resetColor(Color oldColor, int transparence) {
-		Color newColor = new Color((float) (oldColor.getRed() / 255.0), (float) (oldColor.getGreen() / 255.0), (float) (oldColor.getBlue() / 255.0), (float) (1.0 - transparence / 100.0));
+	public static Color resetColor(Color oldColor, int transparency) {
+		Color newColor = new Color((float) (oldColor.getRed() / 255.0), (float) (oldColor.getGreen() / 255.0), (float) (oldColor.getBlue() / 255.0), (float) (1.0 - transparency / 100.0));
 		return newColor;
 	}
 }
