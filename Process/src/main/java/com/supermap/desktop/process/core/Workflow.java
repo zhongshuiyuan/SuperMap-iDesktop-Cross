@@ -4,25 +4,14 @@ import com.supermap.desktop.Application;
 import com.supermap.desktop.Interface.IWorkflow;
 import com.supermap.desktop.process.ProcessManager;
 import com.supermap.desktop.process.ProcessProperties;
-import com.supermap.desktop.process.events.MatrixNodeAddedEvent;
-import com.supermap.desktop.process.events.MatrixNodeAddedListener;
-import com.supermap.desktop.process.events.MatrixNodeAddingEvent;
-import com.supermap.desktop.process.events.MatrixNodeAddingListener;
-import com.supermap.desktop.process.events.MatrixNodeRemovedEvent;
-import com.supermap.desktop.process.events.MatrixNodeRemovedListener;
-import com.supermap.desktop.process.events.MatrixNodeRemovingEvent;
-import com.supermap.desktop.process.events.MatrixNodeRemovingListener;
-import com.supermap.desktop.process.events.RelationAddedListener;
-import com.supermap.desktop.process.events.RelationRemovedListener;
-import com.supermap.desktop.process.events.RelationRemovingListener;
-import com.supermap.desktop.process.events.WorkflowChangeEvent;
-import com.supermap.desktop.process.events.WorkflowChangeListener;
+import com.supermap.desktop.process.events.*;
 import com.supermap.desktop.process.loader.IProcessLoader;
 import com.supermap.desktop.process.readyChecker.ProcessChangeSourceDataChecker;
 import com.supermap.desktop.process.readyChecker.WorkflowProcessReadyChecker;
 import com.supermap.desktop.process.readyChecker.WorkflowRunnableChecker;
 import com.supermap.desktop.utilities.StringUtilities;
 import com.supermap.desktop.utilities.XmlUtilities;
+import org.apache.commons.lang.NullArgumentException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -30,6 +19,7 @@ import javax.swing.event.EventListenerList;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by xie on 2017/3/18.
@@ -42,6 +32,7 @@ public class Workflow implements IWorkflow {
 	private EventListenerList listenerList = new EventListenerList();
 	private MatrixEventHandler handler = new MatrixEventHandler();
 	private ArrayList<IReadyChecker<Workflow>> readyCheckers = new ArrayList<>();
+	private ReentrantLock lock = new ReentrantLock();
 
 	public Workflow(String name) {
 		this.name = name;
@@ -259,11 +250,66 @@ public class Workflow implements IWorkflow {
 	public void addProcess(IProcess process) {
 		process.setWorkflow(this);
 		this.processMatrix.addNode(process);
+		updateSerialID(process);
 	}
 
 	public void removeProcess(IProcess process) {
 		process.setWorkflow(null);
 		this.processMatrix.removeNode(process);
+	}
+
+	private void updateSerialID(IProcess process) {
+		if (process == null) {
+			return;
+		}
+
+		if (process.getKey() == null || process.getKey().trim().isEmpty()) {
+			return;
+		}
+
+		lock.lock();
+		try {
+			int serialID = 0;
+			while (!isSerialIDValid(process, serialID)) {
+				serialID++;
+			}
+
+			process.setSerialID(serialID);
+			if (serialID > 0) {
+				process.setTitle(process.getTitle() + "(" + serialID + ")");
+			}
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	private boolean isSerialIDValid(IProcess process, int serialID) {
+		if (process == null) {
+			throw new NullArgumentException("process");
+		}
+
+		if (process.getKey() == null || process.getKey().trim().isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+
+		boolean isValid = true;
+		lock.lock();
+
+		try {
+			Vector<IProcess> processes = this.processMatrix.getNodes();
+			for (int i = 0, size = processes.size(); i < size; i++) {
+				IProcess p = processes.get(i);
+
+				// 相同 key，的不同节点 serialID 相同，则返回 false
+				if (process.getKey().equals(p.getKey()) && process != p && p.getSerialID() == serialID) {
+					isValid = false;
+					break;
+				}
+			}
+		} finally {
+			lock.unlock();
+		}
+		return isValid;
 	}
 
 	public boolean contains(IProcess process) {
