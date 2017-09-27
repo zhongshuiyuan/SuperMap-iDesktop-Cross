@@ -24,16 +24,16 @@ import java.util.Map;
  * 网络数据集转化为点数据集
  * 网络数据集当中包含点数据集，只需要取出来即可
  */
-public class MetaProcessNetWorkToPoint2D extends MetaProcessTypeConversion {
+public class MetaProcessNetworkToPoint2D extends MetaProcessTypeConversion {
 
-	public MetaProcessNetWorkToPoint2D() {
+	public MetaProcessNetworkToPoint2D() {
 		setTitle(ProcessProperties.getString("String_Title_NetworkToPoint2D"));
 		initParameters();
 		initParameterConstraint();
 	}
 
 	private void initParameters() {
-		OUTPUT_DATA = "NetWorkToPoint2DResult";
+		OUTPUT_DATA = "NetworkToPoint2DResult";
 		inputDatasource = new ParameterDatasourceConstrained();
 		inputDataset = new ParameterSingleDataset(DatasetType.NETWORK);
 		outputData = new ParameterSaveDataset();
