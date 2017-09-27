@@ -249,8 +249,8 @@ public class Workflow implements IWorkflow {
 
 	public void addProcess(IProcess process) {
 		process.setWorkflow(this);
-		this.processMatrix.addNode(process);
 		updateSerialID(process);
+		this.processMatrix.addNode(process);
 	}
 
 	public void removeProcess(IProcess process) {
