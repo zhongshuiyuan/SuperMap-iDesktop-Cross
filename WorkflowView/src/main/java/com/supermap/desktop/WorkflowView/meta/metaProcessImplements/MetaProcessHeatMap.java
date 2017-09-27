@@ -3,7 +3,6 @@ package com.supermap.desktop.WorkflowView.meta.metaProcessImplements;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
 import com.supermap.desktop.WorkflowView.meta.MetaProcess;
-import com.supermap.desktop.lbs.Interface.IServerService;
 import com.supermap.desktop.lbs.params.CommonSettingCombine;
 import com.supermap.desktop.lbs.params.JobResultResponse;
 import com.supermap.desktop.process.ProcessProperties;
@@ -37,6 +36,7 @@ public class MetaProcessHeatMap extends MetaProcess {
 	ParameterTextArea parameterTextAreaOutPut = new ParameterTextArea();
 
 	public MetaProcessHeatMap() {
+		setTitle(ProcessProperties.getString("String_HeatMap"));
 		initMetaInfo();
 	}
 
@@ -92,11 +92,6 @@ public class MetaProcessHeatMap extends MetaProcess {
 				parameterCombineSetting
 		);
 		parameters.getOutputs().addData("HeatMapResult", BasicTypes.STRING);
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_HeatMap");
 	}
 
 	@Override

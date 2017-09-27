@@ -17,6 +17,7 @@ import com.supermap.desktop.properties.CommonProperties;
 public class MetaProcessISORegion extends MetaProcessISO {
 
 	public MetaProcessISORegion() {
+		setTitle(CommonProperties.getString("String_SurfaceISORegion"));
 		OUTPUT_DATA_TYPE = ProcessOutputResultProperties.getString("String_SurfaceAnalyst_ISORegionResult");
 		super.initParameters();
 		super.initParameterConstraint();
@@ -27,11 +28,6 @@ public class MetaProcessISORegion extends MetaProcessISO {
 	@Override
 	protected String getDefaultResultName() {
 		return "result_ISORegion";
-	}
-
-	@Override
-	public String getTitle() {
-		return CommonProperties.getString("String_SurfaceISORegion");
 	}
 
 	@Override

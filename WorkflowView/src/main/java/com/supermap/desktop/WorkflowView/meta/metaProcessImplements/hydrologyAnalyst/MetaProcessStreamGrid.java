@@ -14,14 +14,7 @@ import com.supermap.desktop.process.constraint.ipls.EqualDatasourceConstraint;
 import com.supermap.desktop.process.parameter.ParameterDataNode;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
-import com.supermap.desktop.process.parameter.ipls.ParameterCheckBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
-import com.supermap.desktop.process.parameter.ipls.ParameterComboBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterDatasource;
-import com.supermap.desktop.process.parameter.ipls.ParameterDatasourceConstrained;
-import com.supermap.desktop.process.parameter.ipls.ParameterNumber;
-import com.supermap.desktop.process.parameter.ipls.ParameterSaveDataset;
-import com.supermap.desktop.process.parameter.ipls.ParameterSingleDataset;
+import com.supermap.desktop.process.parameter.ipls.*;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.utilities.DatasetUtilities;
 import com.supermap.desktop.utilities.PixelFormatUtilities;
@@ -42,6 +35,7 @@ public class MetaProcessStreamGrid extends MetaProcessGridAnalyst {
 	private ParameterCheckBox checkBoxZip;
 
 	public MetaProcessStreamGrid() {
+		setTitle(ProcessProperties.getString("String_Title_StreamGrid"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -114,11 +108,6 @@ public class MetaProcessStreamGrid extends MetaProcessGridAnalyst {
 	@Override
 	public String getKey() {
 		return MetaKeys.STREAM_GRID;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_StreamGrid");
 	}
 
 	@Override

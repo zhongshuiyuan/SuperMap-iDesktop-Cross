@@ -5,17 +5,16 @@ import com.supermap.data.Dataset;
 import com.supermap.data.DatasetGrid;
 import com.supermap.data.DatasetType;
 import com.supermap.data.DatasetVector;
-import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
-import com.supermap.desktop.WorkflowView.meta.MetaProcess;
 import com.supermap.desktop.process.ProcessProperties;
-import com.supermap.desktop.process.constraint.ipls.DatasourceConstraint;
 import com.supermap.desktop.process.constraint.ipls.EqualDatasourceConstraint;
-import com.supermap.desktop.process.events.RunningEvent;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
-import com.supermap.desktop.process.parameter.ipls.*;
+import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
+import com.supermap.desktop.process.parameter.ipls.ParameterDatasource;
+import com.supermap.desktop.process.parameter.ipls.ParameterDatasourceConstrained;
+import com.supermap.desktop.process.parameter.ipls.ParameterSingleDataset;
 import com.supermap.desktop.utilities.DatasetUtilities;
 
 /**
@@ -26,6 +25,10 @@ public class MetaProcessFillSink extends MetaProcessHydrology {
 
 	private ParameterDatasourceConstrained sinkDatasource;
 	private ParameterSingleDataset sinkDataset;
+
+	public MetaProcessFillSink() {
+		setTitle(ProcessProperties.getString("String_Title_FillSink"));
+	}
 
 	@Override
 	protected void initField() {
@@ -53,8 +56,8 @@ public class MetaProcessFillSink extends MetaProcessHydrology {
 		sinkCombine.setDescribe(SINK_DATA);
 		sinkCombine.addParameters(sinkDatasource, sinkDataset);
 
-		parameters.setParameters(sourceCombine,sinkCombine,resultCombine);
-		parameters.addInputParameters(SINK_DATA, new DatasetTypes("",DatasetTypes.POINT.getValue()|DatasetTypes.REGION.getValue()), sinkCombine);
+		parameters.setParameters(sourceCombine, sinkCombine, resultCombine);
+		parameters.addInputParameters(SINK_DATA, new DatasetTypes("", DatasetTypes.POINT.getValue() | DatasetTypes.REGION.getValue()), sinkCombine);
 	}
 
 	@Override
@@ -77,10 +80,10 @@ public class MetaProcessFillSink extends MetaProcessHydrology {
 		}
 		DatasetGrid result = null;
 		if (srcSink != null) {
-			result= HydrologyAnalyst.fillSink(src,resultDataset.getResultDatasource(),
-					resultDataset.getResultDatasource().getDatasets().getAvailableDatasetName(resultDataset.getSelectedItem().toString()),srcSink);
+			result = HydrologyAnalyst.fillSink(src, resultDataset.getResultDatasource(),
+					resultDataset.getResultDatasource().getDatasets().getAvailableDatasetName(resultDataset.getSelectedItem().toString()), srcSink);
 		} else {
-			result= HydrologyAnalyst.fillSink(src,resultDataset.getResultDatasource(),
+			result = HydrologyAnalyst.fillSink(src, resultDataset.getResultDatasource(),
 					resultDataset.getResultDatasource().getDatasets().getAvailableDatasetName(resultDataset.getSelectedItem().toString()));
 		}
 		return result;
@@ -94,10 +97,5 @@ public class MetaProcessFillSink extends MetaProcessHydrology {
 	@Override
 	public String getKey() {
 		return MetaKeys.FILL_SINK;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_FillSink");
 	}
 }

@@ -40,6 +40,7 @@ public class MetaProcessAppendFields extends MetaProcess {
 	private ParameterMultiFieldSet multiFieldSet;
 
 	public MetaProcessAppendFields() {
+		setTitle(ProcessProperties.getString("String_AppendFields"));
 		initParameters();
 		initConstraint();
 	}
@@ -168,11 +169,6 @@ public class MetaProcessAppendFields extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.APPEND_FIELDS;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_AppendFields");
 	}
 
 	@Override

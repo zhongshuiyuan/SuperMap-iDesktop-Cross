@@ -13,11 +13,7 @@ import com.supermap.desktop.process.constraint.ipls.DatasourceConstraint;
 import com.supermap.desktop.process.constraint.ipls.EqualDatasourceConstraint;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
-import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
-import com.supermap.desktop.process.parameter.ipls.ParameterDatasourceConstrained;
-import com.supermap.desktop.process.parameter.ipls.ParameterNumber;
-import com.supermap.desktop.process.parameter.ipls.ParameterSaveDataset;
-import com.supermap.desktop.process.parameter.ipls.ParameterSingleDataset;
+import com.supermap.desktop.process.parameter.ipls.*;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.utilities.DatasetUtilities;
 
@@ -44,6 +40,7 @@ public class MetaProcessThinRaster extends MetaProcessGridAnalyst {
 	private ParameterCombine resultData;
 
 	public MetaProcessThinRaster() {
+		setTitle(ProcessProperties.getString("String_Form_GridThinRaster"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -169,10 +166,5 @@ public class MetaProcessThinRaster extends MetaProcessGridAnalyst {
 	@Override
 	public String getKey() {
 		return MetaKeys.THINRASTER;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Form_GridThinRaster");
 	}
 }

@@ -4,18 +4,16 @@ import com.supermap.analyst.terrainanalyst.HydrologyAnalyst;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetGrid;
 import com.supermap.data.DatasetType;
-import com.supermap.data.DatasetVector;
-import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
-import com.supermap.desktop.WorkflowView.meta.MetaProcess;
 import com.supermap.desktop.process.ProcessProperties;
-import com.supermap.desktop.process.constraint.ipls.DatasourceConstraint;
 import com.supermap.desktop.process.constraint.ipls.EqualDatasourceConstraint;
-import com.supermap.desktop.process.events.RunningEvent;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
-import com.supermap.desktop.process.parameter.ipls.*;
+import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
+import com.supermap.desktop.process.parameter.ipls.ParameterDatasource;
+import com.supermap.desktop.process.parameter.ipls.ParameterDatasourceConstrained;
+import com.supermap.desktop.process.parameter.ipls.ParameterSingleDataset;
 import com.supermap.desktop.utilities.DatasetUtilities;
 
 /**
@@ -26,6 +24,10 @@ public class MetaProcessFlowAccumulation extends MetaProcessHydrology {
 
 	private ParameterDatasourceConstrained weightDatasource;
 	private ParameterSingleDataset weightDataset;
+
+	public MetaProcessFlowAccumulation() {
+		setTitle(ProcessProperties.getString("String_Title_FlowAccumulation"));
+	}
 
 	@Override
 	protected void initField() {
@@ -75,7 +77,7 @@ public class MetaProcessFlowAccumulation extends MetaProcessHydrology {
 		} else if (weightDataset.getSelectedItem() != null) {
 			srcWeight = (DatasetGrid) weightDataset.getSelectedItem();
 		}
-		DatasetGrid result = HydrologyAnalyst.flowAccumulation(src,srcWeight,resultDataset.getResultDatasource(),
+		DatasetGrid result = HydrologyAnalyst.flowAccumulation(src, srcWeight, resultDataset.getResultDatasource(),
 				resultDataset.getResultDatasource().getDatasets().getAvailableDatasetName(resultDataset.getSelectedItem().toString()));
 		return result;
 	}
@@ -88,10 +90,5 @@ public class MetaProcessFlowAccumulation extends MetaProcessHydrology {
 	@Override
 	public String getKey() {
 		return MetaKeys.FLOW_ACCUMULATION;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_FlowAccumulation");
 	}
 }

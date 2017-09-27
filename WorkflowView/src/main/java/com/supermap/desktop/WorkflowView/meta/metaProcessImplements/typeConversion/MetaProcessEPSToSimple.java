@@ -23,6 +23,7 @@ import java.util.Map;
  */
 public class MetaProcessEPSToSimple extends MetaProcessTypeConversion {
 	public MetaProcessEPSToSimple() {
+		setTitle(ProcessProperties.getString("String_Title_EPSToSimple"));
 		initParameters();
 		initParameterConstraint();
 		initParameterState();
@@ -77,11 +78,6 @@ public class MetaProcessEPSToSimple extends MetaProcessTypeConversion {
 	@Override
 	public String getKey() {
 		return MetaKeys.CONVERSION_EPS_TO_SIMPLE;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_EPSToSimple");
 	}
 
 	@Override

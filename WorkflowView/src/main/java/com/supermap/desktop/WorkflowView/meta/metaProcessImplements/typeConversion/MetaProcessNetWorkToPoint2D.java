@@ -27,6 +27,7 @@ import java.util.Map;
 public class MetaProcessNetWorkToPoint2D extends MetaProcessTypeConversion {
 
 	public MetaProcessNetWorkToPoint2D() {
+		setTitle(ProcessProperties.getString("String_Title_NetworkToPoint2D"));
 		initParameters();
 		initParameterConstraint();
 	}
@@ -137,10 +138,4 @@ public class MetaProcessNetWorkToPoint2D extends MetaProcessTypeConversion {
 	public String getKey() {
 		return MetaKeys.CONVERSION_NETWORK_TO_POINT2D;
 	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_NetworkToPoint2D");
-	}
-
 }

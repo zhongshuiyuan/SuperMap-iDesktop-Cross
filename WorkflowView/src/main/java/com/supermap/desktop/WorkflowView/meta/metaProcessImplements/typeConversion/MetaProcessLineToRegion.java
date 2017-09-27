@@ -15,6 +15,7 @@ import java.util.Map;
 public class MetaProcessLineToRegion extends MetaProcessPointLineRegion {
 	public MetaProcessLineToRegion() {
 		super(DatasetType.LINE, DatasetType.REGION);
+		setTitle(ProcessProperties.getString("String_Title_LineToRegion"));
 	}
 
 	@Override
@@ -60,10 +61,5 @@ public class MetaProcessLineToRegion extends MetaProcessPointLineRegion {
 	@Override
 	public String getKey() {
 		return MetaKeys.CONVERSION_LINE_TO_REGION;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_LineToRegion");
 	}
 }

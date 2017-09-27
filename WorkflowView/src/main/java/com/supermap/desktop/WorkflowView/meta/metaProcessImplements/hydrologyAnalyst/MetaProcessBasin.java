@@ -13,6 +13,10 @@ import com.supermap.desktop.process.parameter.interfaces.IParameters;
  */
 public class MetaProcessBasin extends MetaProcessHydrology {
 
+	public MetaProcessBasin() {
+		setTitle(ProcessProperties.getString("String_Title_Basin"));
+	}
+
 	@Override
 	public IParameters getParameters() {
 		return super.getParameters();
@@ -49,10 +53,5 @@ public class MetaProcessBasin extends MetaProcessHydrology {
 	@Override
 	public String getKey() {
 		return MetaKeys.BASIN;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_Basin");
 	}
 }

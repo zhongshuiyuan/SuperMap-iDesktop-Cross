@@ -20,7 +20,7 @@ import com.supermap.desktop.utilities.DatasetUtilities;
 
 /**
  * @author XiaJT
- * 平均最近邻分析
+ *         平均最近邻分析
  */
 public class MetaProcessAverageNearestNeighbor extends MetaProcess {
 	private final static String INPUT_SOURCE_DATASET = "SourceDataset";
@@ -34,6 +34,7 @@ public class MetaProcessAverageNearestNeighbor extends MetaProcess {
 //	private ParameterTextArea parameterResult = new ParameterTextArea();
 
 	public MetaProcessAverageNearestNeighbor() {
+		setTitle(ProcessProperties.getString("String_AverageNearestNeighbor"));
 		initParameters();
 		initParameterStates();
 		initParameterConstraint();
@@ -53,14 +54,9 @@ public class MetaProcessAverageNearestNeighbor extends MetaProcess {
 		ParameterCombine parameterCombineSetting = new ParameterCombine();
 		parameterCombineSetting.addParameters(parameterTextFieldArea, parameterComboBox);
 		parameterCombineSetting.setDescribe(CommonProperties.getString("String_GroupBox_ParamSetting"));
-//		// 结果展示
-//		ParameterCombine parameterCombineResult = new ParameterCombine();
-//		parameterCombineResult.setDescribe(ProcessProperties.getString("String_result"));
-//		parameterCombineResult.addParameters(parameterResult);
 
 		parameters.addParameters(parameterCombine, parameterCombineSetting);
 		parameters.addInputParameters(INPUT_SOURCE_DATASET, DatasetTypes.VECTOR, parameterCombine);
-//		parameters.addParameters(parameterCombineResult);
 
 	}
 
@@ -78,11 +74,6 @@ public class MetaProcessAverageNearestNeighbor extends MetaProcess {
 		EqualDatasourceConstraint equalDatasourceConstraint = new EqualDatasourceConstraint();
 		equalDatasourceConstraint.constrained(parameterDatasourceConstrained, ParameterDatasource.DATASOURCE_FIELD_NAME);
 		equalDatasourceConstraint.constrained(parameterSingleDataset, ParameterSingleDataset.DATASOURCE_FIELD_NAME);
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_AverageNearestNeighbor");
 	}
 
 	@Override

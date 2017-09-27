@@ -2,11 +2,7 @@ package com.supermap.desktop.WorkflowView.meta.metaProcessImplements.dataRun;
 
 import com.supermap.analyst.spatialanalyst.EliminateMode;
 import com.supermap.analyst.spatialanalyst.Generalization;
-import com.supermap.data.CursorType;
-import com.supermap.data.Dataset;
-import com.supermap.data.DatasetType;
-import com.supermap.data.DatasetVector;
-import com.supermap.data.Recordset;
+import com.supermap.data.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
@@ -15,12 +11,7 @@ import com.supermap.desktop.process.ProcessProperties;
 import com.supermap.desktop.process.constraint.ipls.EqualDatasourceConstraint;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
-import com.supermap.desktop.process.parameter.ipls.ParameterCheckBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
-import com.supermap.desktop.process.parameter.ipls.ParameterDatasource;
-import com.supermap.desktop.process.parameter.ipls.ParameterDatasourceConstrained;
-import com.supermap.desktop.process.parameter.ipls.ParameterNumber;
-import com.supermap.desktop.process.parameter.ipls.ParameterSingleDataset;
+import com.supermap.desktop.process.parameter.ipls.*;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.utilities.DatasetUtilities;
 
@@ -43,6 +34,7 @@ public class MetaProcessEliminate extends MetaProcess {
 	private ParameterCheckBox checkBoxDelete;
 
 	public MetaProcessEliminate() {
+		setTitle(ProcessProperties.getString("String_Title_Eliminate"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -108,11 +100,6 @@ public class MetaProcessEliminate extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.ELIMINATE;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_Eliminate");
 	}
 
 	@Override

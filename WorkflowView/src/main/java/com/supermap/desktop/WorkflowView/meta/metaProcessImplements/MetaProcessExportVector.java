@@ -66,6 +66,7 @@ public class MetaProcessExportVector extends MetaProcessAbstractExport {
 
 	public MetaProcessExportVector() {
 		this.OUTPUT_DATA_TYPE = ControlsProperties.getString("String_Vector");
+		setTitle(ProcessProperties.getString("String_ExportVector"));
 		initParameters();
 		registerEvents();
 	}
@@ -173,11 +174,6 @@ public class MetaProcessExportVector extends MetaProcessAbstractExport {
 			this.sqlExpression.setEnabled(true);
 			this.expression.setSelectedItem(newExportSetting.getFilter());
 		}
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_ExportVector");
 	}
 
 	@Override

@@ -21,6 +21,7 @@ public class MetaProcessISOLine extends MetaProcessISO {
 	}
 
 	public MetaProcessISOLine() {
+		setTitle(CommonProperties.getString("String_SurfaceISOLine"));
 		OUTPUT_DATA_TYPE = ProcessOutputResultProperties.getString("String_SurfaceAnalyst_ISOLineResult");
 		super.initParameters();
 		super.initParameterConstraint();
@@ -32,13 +33,6 @@ public class MetaProcessISOLine extends MetaProcessISO {
 	protected String getDefaultResultName() {
 		return "result_ISOLine";
 	}
-
-
-	@Override
-	public String getTitle() {
-		return CommonProperties.getString("String_SurfaceISOLine");
-	}
-
 
 	public DatasetVector subExecute(SurfaceExtractParameter surfaceExtractParameter, DatasetGrid dataset, Datasource datasource, String datasetName) {
 		return SurfaceAnalyst.extractIsoline(surfaceExtractParameter, dataset, datasource, datasetName);

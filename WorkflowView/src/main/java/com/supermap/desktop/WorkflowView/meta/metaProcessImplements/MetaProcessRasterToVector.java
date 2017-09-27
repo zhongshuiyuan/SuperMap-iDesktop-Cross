@@ -57,6 +57,7 @@ public class MetaProcessRasterToVector extends MetaProcessGridAnalyst {
 	private ParameterCombine imageDatasetSetting;
 
 	public MetaProcessRasterToVector() {
+		setTitle(ProcessProperties.getString("String_Form_GridToVector"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -205,7 +206,7 @@ public class MetaProcessRasterToVector extends MetaProcessGridAnalyst {
 				} else if (sourceDataset.getSelectedItem() instanceof DatasetImage) {
 					textFieldNoValue.setSelectedItem("16777215");
 				}
-				if (StringUtilities.isNullOrEmpty(textFieldGridField.getSelectedItem())){
+				if (StringUtilities.isNullOrEmpty(textFieldGridField.getSelectedItem())) {
 					textFieldGridField.setSelectedItem("value");
 				}
 			}
@@ -314,10 +315,5 @@ public class MetaProcessRasterToVector extends MetaProcessGridAnalyst {
 	@Override
 	public String getKey() {
 		return MetaKeys.GRIDTOVECTOR;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Form_GridToVector");
 	}
 }

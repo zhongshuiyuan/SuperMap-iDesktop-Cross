@@ -4,8 +4,8 @@ import com.supermap.analyst.spatialstatistics.SpatialMeasure;
 import com.supermap.data.DatasetVector;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
-import com.supermap.desktop.process.ProcessProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
+import com.supermap.desktop.process.ProcessProperties;
 
 /**
  * @author XiaJT
@@ -13,7 +13,7 @@ import com.supermap.desktop.WorkflowView.meta.MetaKeys;
 public class MetaProcessDirectional extends MetaProcessSpatialMeasure {
 
 	public MetaProcessDirectional() {
-		super();
+		setTitle(ProcessProperties.getString("String_Directional"));
 	}
 
 	protected void initHook() {
@@ -43,11 +43,6 @@ public class MetaProcessDirectional extends MetaProcessSpatialMeasure {
 			SpatialMeasure.removeSteppedListener(steppedListener);
 		}
 		return isSuccessful;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Directional");
 	}
 
 	@Override

@@ -43,6 +43,7 @@ public class MetaProcessGeographicWeightedRegression extends MetaProcess {
 	private ParameterSaveDataset parameterSaveDataset = new ParameterSaveDataset();
 
 	public MetaProcessGeographicWeightedRegression() {
+		setTitle(ProcessProperties.getString("String_geographicWeightedRegression"));
 		initParameter();
 		initParameterState();
 		initConstraints();
@@ -144,12 +145,6 @@ public class MetaProcessGeographicWeightedRegression extends MetaProcess {
 		parameterNeighbors.setSelectedItem("2");
 		parameterSaveDataset.setDefaultDatasetName("result_geoWeightedRegression");
 	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_geographicWeightedRegression");
-	}
-
 
 	@Override
 	public boolean execute() {

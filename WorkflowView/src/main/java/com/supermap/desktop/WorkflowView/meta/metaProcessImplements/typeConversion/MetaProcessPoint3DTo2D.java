@@ -14,6 +14,7 @@ import java.util.Map;
 public class MetaProcessPoint3DTo2D extends MetaProcess3DTo2D {
 	public MetaProcessPoint3DTo2D() {
 		super(DatasetType.POINT3D, DatasetType.POINT);
+		setTitle(ProcessProperties.getString("String_Title_Point3DTo2D"));
 	}
 
 	@Override
@@ -27,7 +28,7 @@ public class MetaProcessPoint3DTo2D extends MetaProcess3DTo2D {
 	}
 
 	@Override
-	protected  String getOutputResultName(){
+	protected String getOutputResultName() {
 		return ProcessOutputResultProperties.getString("String_3DPointResult");
 	}
 
@@ -46,10 +47,5 @@ public class MetaProcessPoint3DTo2D extends MetaProcess3DTo2D {
 	@Override
 	public String getKey() {
 		return MetaKeys.CONVERSION_POINT3D_TO_2D;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_Point3DTo2D");
 	}
 }

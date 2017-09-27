@@ -57,6 +57,7 @@ public class MetaProcessAlgebraOperation extends MetaProcessGridAnalyst {
 	private ParameterDataNode parameterDataNodeUbit32 = new ParameterDataNode(PixelFormatUtilities.toString(PixelFormat.UBIT32), PixelFormat.UBIT32);
 
 	public MetaProcessAlgebraOperation() {
+		setTitle(ProcessProperties.getString("String_RasterAlgebraOperation"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -245,11 +246,6 @@ public class MetaProcessAlgebraOperation extends MetaProcessGridAnalyst {
 	@Override
 	public IParameters getParameters() {
 		return parameters;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_RasterAlgebraOperation");
 	}
 
 	@Override

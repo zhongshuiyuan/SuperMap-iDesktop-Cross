@@ -76,6 +76,7 @@ public class MetaProcessOverlayAnalyst extends MetaProcess {
 
 	public MetaProcessOverlayAnalyst(OverlayAnalystType analystType) {
 		this.analystType = analystType;
+		setTitle(analystType.toString());
 		initParameters();
 		initParameterLayout();
 		initParameterConstraint();
@@ -193,11 +194,6 @@ public class MetaProcessOverlayAnalyst extends MetaProcess {
 
 	private void registerEvents() {
 		this.parameterSourceDataset.addPropertyListener(this.propertyChangeListener);
-	}
-
-	@Override
-	public String getTitle() {
-		return analystType.toString();
 	}
 
 	@Override

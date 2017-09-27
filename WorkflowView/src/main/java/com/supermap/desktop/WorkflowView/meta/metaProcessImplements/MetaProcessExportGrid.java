@@ -1,15 +1,7 @@
 package com.supermap.desktop.WorkflowView.meta.metaProcessImplements;
 
 import com.supermap.data.DatasetGrid;
-import com.supermap.data.conversion.ExportSetting;
-import com.supermap.data.conversion.ExportSettingBMP;
-import com.supermap.data.conversion.ExportSettingGIF;
-import com.supermap.data.conversion.ExportSettingJPG;
-import com.supermap.data.conversion.ExportSettingPNG;
-import com.supermap.data.conversion.ExportSettingSIT;
-import com.supermap.data.conversion.ExportSettingTIF;
-import com.supermap.data.conversion.ExportSteppedEvent;
-import com.supermap.data.conversion.ExportSteppedListener;
+import com.supermap.data.conversion.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
 import com.supermap.desktop.WorkflowView.meta.metaProcessImplements.spatialStatistics.MetaProcessAbstractExport;
@@ -17,11 +9,7 @@ import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.process.ProcessProperties;
 import com.supermap.desktop.process.events.RunningEvent;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
-import com.supermap.desktop.process.parameter.ipls.ParameterCheckBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
-import com.supermap.desktop.process.parameter.ipls.ParameterFile;
-import com.supermap.desktop.process.parameter.ipls.ParameterPassword;
-import com.supermap.desktop.process.parameter.ipls.ParameterTextField;
+import com.supermap.desktop.process.parameter.ipls.*;
 import com.supermap.desktop.ui.controls.SmFileChoose;
 import com.supermap.desktop.utilities.DatasetTypeUtilities;
 import com.supermap.desktop.utilities.DatasetUtilities;
@@ -54,6 +42,7 @@ public class MetaProcessExportGrid extends MetaProcessAbstractExport {
 	};
 
 	public MetaProcessExportGrid() {
+		setTitle(ProcessProperties.getString("String_ExportGrid"));
 		this.OUTPUT_DATA_TYPE = ControlsProperties.getString("String_Grid");
 		initParameters();
 		registerEvents();
@@ -139,11 +128,6 @@ public class MetaProcessExportGrid extends MetaProcessAbstractExport {
 			this.password.setEnabled(true);
 			this.confirmPassword.setEnabled(true);
 		}
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_ExportGrid");
 	}
 
 	@Override

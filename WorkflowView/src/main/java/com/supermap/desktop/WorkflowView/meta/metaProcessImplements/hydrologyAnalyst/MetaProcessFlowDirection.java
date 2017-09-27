@@ -34,6 +34,7 @@ public class MetaProcessFlowDirection extends MetaProcessGridAnalyst {
 	private ParameterCheckBox checkBoxCreateDrop;
 
 	public MetaProcessFlowDirection() {
+		setTitle(ProcessProperties.getString("String_Title_FlowDirection"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -136,10 +137,5 @@ public class MetaProcessFlowDirection extends MetaProcessGridAnalyst {
 	@Override
 	public String getKey() {
 		return MetaKeys.FLOW_DIRECTION;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_FlowDirection");
 	}
 }

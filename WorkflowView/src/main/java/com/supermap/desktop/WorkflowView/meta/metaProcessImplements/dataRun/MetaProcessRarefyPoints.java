@@ -45,6 +45,7 @@ public class MetaProcessRarefyPoints extends MetaProcess {
 	private static final double RADIUS_DEGREE = 0.0001 * 100;
 
 	public MetaProcessRarefyPoints() {
+		setTitle(CommonProperties.getString("String_Form_RarefyPoints"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -192,10 +193,5 @@ public class MetaProcessRarefyPoints extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.RAREFY_POINTS;
-	}
-
-	@Override
-	public String getTitle() {
-		return CommonProperties.getString("String_Form_RarefyPoints");
 	}
 }
