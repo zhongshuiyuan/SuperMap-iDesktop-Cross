@@ -5,6 +5,7 @@ import com.supermap.desktop.Application;
 import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.controls.*;
+import com.supermap.desktop.ui.controls.button.SmButton;
 import com.supermap.desktop.ui.controls.prjcoordsys.JDialogPrjCoordSysSettings;
 import com.supermap.desktop.utilities.FileUtilities;
 import com.supermap.desktop.utilities.PrjCoordSysUtilities;
@@ -18,48 +19,62 @@ import java.util.ArrayList;
 /**
  * Created by yuanR on 2017/9/25 0025.
  * 投影转换.目标坐标系面板
+ * 提供三种方式选择投影坐标系：来自数据源、选择、导入文件
+ * 面板主要提供设置好的坐标系
  */
 public class PanelTargetCoordSys extends JPanel {
 	/**
 	 *
 	 */
-	private JRadioButton fromDatasource;
-	private JRadioButton prjSetting;
-	private JRadioButton importPrjFile;
+	private JRadioButton radioButtonFromDatasource;
+	private JRadioButton radioButtonPrjSetting;
+	private JRadioButton radioButtonImportPrjFile;
 	private DatasourceComboBox datasource;
-	private JButton buttonPrjSetting;
+	private SmButton buttonPrjSetting;
 	private JFileChooserControl fileChooser;
 	private PanelCoordSysInfo panelCoordSysInfo;
-	private PrjCoordSys prjCoordSys = null;
-	private PrjCoordSys buttonSetprjCoordSys = null;
+	private PrjCoordSys targetPrjCoordSys = null;
+	private PrjCoordSys buttonSetPrjCoordSys = null;
+	private PrjCoordSys importFilePrjCoordSys = null;
 
+	/**
+	 * 获得设置好的坐标系
+	 *
+	 * @return
+	 */
+	public PrjCoordSys getTargetPrjCoordSys() {
+		return targetPrjCoordSys;
+	}
 
 	private ActionListener actionListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (e.getSource().equals(fromDatasource) || e.getSource().equals(prjSetting) || e.getSource().equals(importPrjFile)) {
-				datasource.setEnabled(fromDatasource.isSelected());
-				buttonPrjSetting.setEnabled(prjSetting.isSelected());
-				fileChooser.setEnabled(importPrjFile.isSelected());
+			if (e.getSource().equals(radioButtonFromDatasource) || e.getSource().equals(radioButtonPrjSetting) || e.getSource().equals(radioButtonImportPrjFile)) {
+				datasource.setEnabled(radioButtonFromDatasource.isSelected());
+				buttonPrjSetting.setEnabled(radioButtonPrjSetting.isSelected());
+				fileChooser.setEnabled(radioButtonImportPrjFile.isSelected());
 				// 坐标系来自数据源
-				if (fromDatasource.isSelected()) {
+				if (radioButtonFromDatasource.isSelected()) {
 					if (datasource.getSelectedDatasource() != null) {
-						prjCoordSys = datasource.getSelectedDatasource().getPrjCoordSys();
+						targetPrjCoordSys = datasource.getSelectedDatasource().getPrjCoordSys();
 					} else {
-						prjCoordSys = null;
+						targetPrjCoordSys = null;
 					}
-				} else if (prjSetting.isSelected()) {
-					prjCoordSys = buttonSetprjCoordSys;
-				} else if (importPrjFile.isSelected()) {
-					prjCoordSys = getPrjCoordSysFromImportFile();
+				} else if (radioButtonPrjSetting.isSelected()) {
+					// 坐标系来自设置，当设置过一次后用buttonSetprjCoordSys记录上次设置的坐标系
+					targetPrjCoordSys = buttonSetPrjCoordSys;
+				} else if (radioButtonImportPrjFile.isSelected()) {
+					// 坐标系来自导入的文件
+					targetPrjCoordSys = importFilePrjCoordSys;
 				}
 				// 点击单选框，
-				setPrjCoordSysInfo(prjCoordSys);
+				setPrjCoordSysInfo(targetPrjCoordSys);
 			} else if (e.getSource().equals(buttonPrjSetting)) {
 				// 当点击了投影设置，并且设置了投影
 				JDialogPrjCoordSysSettings dialogPrjCoordSysSettings = new JDialogPrjCoordSysSettings();
 				if (dialogPrjCoordSysSettings.showDialog() == DialogResult.OK) {
-					setPrjCoordSysInfo(dialogPrjCoordSysSettings.getPrjCoordSys());
+					buttonSetPrjCoordSys = dialogPrjCoordSysSettings.getPrjCoordSys();
+					setPrjCoordSysInfo(buttonSetPrjCoordSys);
 				}
 			}
 		}
@@ -67,12 +82,13 @@ public class PanelTargetCoordSys extends JPanel {
 
 
 	/**
-	 * 当路径
+	 * 当导入文件路径改变时触发监听事件，此时重新获得路径下文件的坐标系
 	 */
 	private FileChooserPathChangedListener exportPathDocumentListener = new FileChooserPathChangedListener() {
 		@Override
 		public void pathChanged() {
-			setPrjCoordSysInfo(getPrjCoordSysFromImportFile());
+			importFilePrjCoordSys = getPrjCoordSysFromImportFile();
+			setPrjCoordSysInfo(importFilePrjCoordSys);
 		}
 	};
 
@@ -82,19 +98,18 @@ public class PanelTargetCoordSys extends JPanel {
 		initializeLayout();
 		initListener();
 		initStates();
-
 	}
 
 
 	private void initializeComponents() {
-		this.fromDatasource = new JRadioButton();
-		this.prjSetting = new JRadioButton();
-		this.importPrjFile = new JRadioButton();
+		this.radioButtonFromDatasource = new JRadioButton();
+		this.radioButtonPrjSetting = new JRadioButton();
+		this.radioButtonImportPrjFile = new JRadioButton();
 
 		ButtonGroup bufferTypeButtonGroup = new ButtonGroup();
-		bufferTypeButtonGroup.add(this.fromDatasource);
-		bufferTypeButtonGroup.add(this.prjSetting);
-		bufferTypeButtonGroup.add(this.importPrjFile);
+		bufferTypeButtonGroup.add(this.radioButtonFromDatasource);
+		bufferTypeButtonGroup.add(this.radioButtonPrjSetting);
+		bufferTypeButtonGroup.add(this.radioButtonImportPrjFile);
 
 		// 获得有投影坐标系的数据源
 		ArrayList<Datasource> datasourceArray = new ArrayList<>();
@@ -107,8 +122,7 @@ public class PanelTargetCoordSys extends JPanel {
 			}
 		}
 		this.datasource = new DatasourceComboBox(datasourceArray);
-		this.buttonPrjSetting = new JButton();
-
+		this.buttonPrjSetting = new SmButton();
 
 		String moduleName = "ImportPrjFile";
 		if (!SmFileChoose.isModuleExist(moduleName)) {
@@ -127,9 +141,9 @@ public class PanelTargetCoordSys extends JPanel {
 	}
 
 	private void initializeResources() {
-		this.fromDatasource.setText(ControlsProperties.getString("String_Label_FromDatasource"));
-		this.prjSetting.setText(ControlsProperties.getString("String_Label_CustomPrjCoordSysSetting"));
-		this.importPrjFile.setText(ControlsProperties.getString("String_Label_ImportPrjCoordSysFile"));
+		this.radioButtonFromDatasource.setText(ControlsProperties.getString("String_Label_FromDatasource"));
+		this.radioButtonPrjSetting.setText(ControlsProperties.getString("String_Label_CustomPrjCoordSysSetting"));
+		this.radioButtonImportPrjFile.setText(ControlsProperties.getString("String_Label_ImportPrjCoordSysFile"));
 		this.buttonPrjSetting.setText(ControlsProperties.getString("String_SetProjection_Caption"));
 		this.panelCoordSysInfo = new PanelCoordSysInfo("");
 	}
@@ -143,9 +157,9 @@ public class PanelTargetCoordSys extends JPanel {
 		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup()
 				.addGroup(groupLayout.createSequentialGroup()
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addComponent(this.fromDatasource)
-								.addComponent(this.prjSetting)
-								.addComponent(this.importPrjFile))
+								.addComponent(this.radioButtonFromDatasource)
+								.addComponent(this.radioButtonPrjSetting)
+								.addComponent(this.radioButtonImportPrjFile))
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(this.datasource)
 								.addComponent(this.buttonPrjSetting)
@@ -155,13 +169,13 @@ public class PanelTargetCoordSys extends JPanel {
 
 		groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(this.fromDatasource)
+						.addComponent(this.radioButtonFromDatasource)
 						.addComponent(this.datasource, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(this.prjSetting)
+						.addComponent(this.radioButtonPrjSetting)
 						.addComponent(this.buttonPrjSetting, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(this.importPrjFile)
+						.addComponent(this.radioButtonImportPrjFile)
 						.addComponent(this.fileChooser, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(this.panelCoordSysInfo))
@@ -171,17 +185,17 @@ public class PanelTargetCoordSys extends JPanel {
 
 	private void initListener() {
 		removeListener();
-		this.fromDatasource.addActionListener(actionListener);
-		this.prjSetting.addActionListener(actionListener);
-		this.importPrjFile.addActionListener(actionListener);
+		this.radioButtonFromDatasource.addActionListener(actionListener);
+		this.radioButtonPrjSetting.addActionListener(actionListener);
+		this.radioButtonImportPrjFile.addActionListener(actionListener);
 		this.buttonPrjSetting.addActionListener(actionListener);
 		this.fileChooser.addFileChangedListener(exportPathDocumentListener);
 	}
 
 	private void removeListener() {
-		this.fromDatasource.removeActionListener(actionListener);
-		this.prjSetting.removeActionListener(actionListener);
-		this.importPrjFile.removeActionListener(actionListener);
+		this.radioButtonFromDatasource.removeActionListener(actionListener);
+		this.radioButtonPrjSetting.removeActionListener(actionListener);
+		this.radioButtonImportPrjFile.removeActionListener(actionListener);
 		this.buttonPrjSetting.removeActionListener(actionListener);
 		this.fileChooser.removePathChangedListener(exportPathDocumentListener);
 
@@ -193,11 +207,11 @@ public class PanelTargetCoordSys extends JPanel {
 	 * 默认使用数据源的坐标系，当打开的数据源没有坐标系时，坐标系获取方式为设置坐标系
 	 */
 	private void initStates() {
-		if (datasource.getSelectedDatasource() != null) {
-			fromDatasource.setSelected(true);
-			setPrjCoordSysInfo(datasource.getSelectedDatasource().getPrjCoordSys());
+		if (this.datasource.getSelectedDatasource() != null) {
+			this.radioButtonFromDatasource.setSelected(true);
+			setPrjCoordSysInfo(this.datasource.getSelectedDatasource().getPrjCoordSys());
 		} else {
-			prjSetting.setSelected(true);
+			this.radioButtonPrjSetting.setSelected(true);
 		}
 	}
 
@@ -207,8 +221,8 @@ public class PanelTargetCoordSys extends JPanel {
 	 * @param prjCoordSysInfo
 	 */
 	private void setPrjCoordSysInfo(PrjCoordSys prjCoordSysInfo) {
-		prjCoordSys = prjCoordSysInfo;
-		panelCoordSysInfo.setCoordInfo(PrjCoordSysUtilities.getDescription(prjCoordSysInfo));
+		this.targetPrjCoordSys = prjCoordSysInfo;
+		this.panelCoordSysInfo.setCoordInfo(PrjCoordSysUtilities.getDescription(prjCoordSysInfo));
 	}
 
 	/**
@@ -218,16 +232,16 @@ public class PanelTargetCoordSys extends JPanel {
 	 */
 	private PrjCoordSys getPrjCoordSysFromImportFile() {
 
-		if (!new File(fileChooser.getPath()).exists()) {
+		if (!new File(this.fileChooser.getPath()).exists()) {
 			return null;
 		} else {
 			PrjCoordSys newPrjCoorSys = new PrjCoordSys();
-			String fileType = FileUtilities.getFileType(fileChooser.getPath());
+			String fileType = FileUtilities.getFileType(this.fileChooser.getPath());
 			boolean isPrjFile;
 			if (fileType.equalsIgnoreCase(".prj")) {
-				isPrjFile = newPrjCoorSys.fromFile(fileChooser.getPath(), PrjFileType.ESRI);
+				isPrjFile = newPrjCoorSys.fromFile(this.fileChooser.getPath(), PrjFileType.ESRI);
 			} else {
-				isPrjFile = newPrjCoorSys.fromFile(fileChooser.getPath(), PrjFileType.SUPERMAP);
+				isPrjFile = newPrjCoorSys.fromFile(this.fileChooser.getPath(), PrjFileType.SUPERMAP);
 			}
 			if (isPrjFile) {
 				return newPrjCoorSys;
@@ -242,14 +256,13 @@ public class PanelTargetCoordSys extends JPanel {
 	 *
 	 * @param isEnable
 	 */
-	private void setPanelEnabled(Boolean isEnable) {
-		this.fromDatasource.setEnabled(isEnable);
-		this.prjSetting.setEnabled(isEnable);
-		this.importPrjFile.setEnabled(isEnable);
+	public void setPanelEnabled(Boolean isEnable) {
+		this.radioButtonFromDatasource.setEnabled(isEnable);
+		this.radioButtonPrjSetting.setEnabled(isEnable);
+		this.radioButtonImportPrjFile.setEnabled(isEnable);
 		this.datasource.setEnabled(isEnable);
 		this.buttonPrjSetting.setEnabled(isEnable);
 		this.fileChooser.setEnabled(isEnable);
 		this.panelCoordSysInfo.setEnabled(isEnable);
-
 	}
 }
