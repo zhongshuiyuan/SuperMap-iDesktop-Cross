@@ -24,10 +24,6 @@ public class ParameterIServerLogin extends ParameterCombine {
 	private ParameterDefaultValueTextField parameterTextFieldUserName = new ParameterDefaultValueTextField(ProcessProperties.getString("String_UserName"));
 	private ParameterPassword parameterTextFieldPassword = new ParameterPassword(ProcessProperties.getString("String_PassWord"));
 	public IServerServiceImpl service;
-//	private ParameterInputDataType inputDataType;
-//	private ParameterInputDataType analystDataType;
-//	private DatasetType[] datasetTypes;
-//	private DatasetType[] analystDatasetTypes;
 
 	public ParameterIServerLogin() {
 		super();
@@ -40,90 +36,9 @@ public class ParameterIServerLogin extends ParameterCombine {
 		registerEvents();
 	}
 
-//	public void setAnalystDatasetTypes(DatasetType[] analystDatasetTypes) {
-//		this.analystDatasetTypes = analystDatasetTypes;
-//	}
-//
-//	public void setAnalystDataType(ParameterInputDataType analystDataType) {
-//		this.analystDataType = analystDataType;
-//	}
-//
-//	public void setInputDataType(ParameterInputDataType inputDataType) {
-//		this.inputDataType = inputDataType;
-//	}
-//
-//	public void setDataType(DatasetType[] datasetType) {
-//		this.datasetTypes = datasetType;
-//	}
-
 	private void registerEvents() {
-//		parameterTextFieldAddress.addPropertyListener(new PropertyChangeListener() {
-//			@Override
-//			public void propertyChange(PropertyChangeEvent evt) {
-//				loginAndInitInputDataType();
-//			}
-//		});
-//		parameterTextFieldUserName.addPropertyListener(new PropertyChangeListener() {
-//			@Override
-//			public void propertyChange(PropertyChangeEvent evt) {
-//				loginAndInitInputDataType();
-//			}
-//		});
-//		parameterTextFieldPassword.addPropertyListener(new PropertyChangeListener() {
-//			@Override
-//			public void propertyChange(PropertyChangeEvent evt) {
-//				loginAndInitInputDataType();
-//			}
-//		});
+
 	}
-
-//	public void loginAndInitInputDataType() {
-//		boolean result = login();
-//		if (!result) {
-//			removeAllDatasets();
-//			return;
-//		}
-//		if (null != IServerLoginInfo.client && null != parameterTextFieldAddress.getSelectedItem()) {
-//			removeAllDatasets();
-//			if (null != inputDataType) {
-//				initBigDataStoreName(inputDataType, datasetTypes);
-//			}
-//			if (null != analystDataType) {
-//				initBigDataStoreName(analystDataType, analystDatasetTypes);
-//			}
-//		}
-//	}
-
-//	private void initBigDataStoreName(ParameterInputDataType inputDataType, DatasetType[] datasetTypes) {
-//		String ipAndPort = parameterTextFieldAddress.getSelectedItem().toString();
-//		String datasetsURL = service.HTTP_STR + ipAndPort + DATASETS_URL;
-//		String resultDatasets = service.query(datasetsURL);
-//		QueryDatasetNamesResult queryDatasetNamesResult = JSON.parseObject(resultDatasets, QueryDatasetNamesResult.class);
-//		ParameterDataNode parameterDataNode = null;
-//		for (int i = 0, size = queryDatasetNamesResult.datasetNames.size(); i < size; i++) {
-//			String resultDataset = service.query(service.HTTP_STR + ipAndPort + DATASETS_URL + "/" + queryDatasetNamesResult.datasetNames.get(i));
-//			QueryDatasetTypeResult queryDatasetTypeResult = JSON.parseObject(resultDataset, QueryDatasetTypeResult.class);
-//			String datasetType = queryDatasetTypeResult.DatasetInfo.type;
-//			for (int j = 0, length = datasetTypes.length; j < length; j++) {
-//				if (datasetTypes[j].name().equalsIgnoreCase(datasetType)) {
-//					parameterDataNode = new ParameterDataNode(queryDatasetNamesResult.datasetNames.get(i), datasetType);
-//					inputDataType.bigDataStoreName.addItem(parameterDataNode);
-//				}
-//			}
-//		}
-//		inputDataType.bigDataStoreName.setSelectedItem(parameterDataNode);
-//	}
-
-
-//	private void removeAllDatasets() {
-//		if (inputDataType.bigDataStoreName.getItems().size() > 0) {
-//			inputDataType.bigDataStoreName.removeAllItems();
-//		}
-//		if (null != analystDataType && analystDataType.bigDataStoreName.getItems().size() > 0) {
-//			analystDataType.bigDataStoreName.removeAllItems();
-//		}
-//	}
-
 
 	public synchronized boolean login() {
 		boolean result = false;
