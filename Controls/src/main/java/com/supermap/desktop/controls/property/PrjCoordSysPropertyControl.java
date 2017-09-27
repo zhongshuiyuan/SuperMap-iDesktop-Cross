@@ -8,7 +8,7 @@ import com.supermap.desktop.ui.controls.DialogResult;
 import com.supermap.desktop.ui.controls.GridBagConstraintsHelper;
 import com.supermap.desktop.ui.controls.button.SmButton;
 import com.supermap.desktop.ui.controls.prjcoordsys.JDialogPrjCoordSysSettings;
-import com.supermap.desktop.ui.controls.prjcoordsys.JDialogPrjCoordSysTranslator;
+import com.supermap.desktop.ui.controls.prjcoordsys.JDialogPrjTransform;
 import com.supermap.desktop.utilities.PrjCoordSysUtilities;
 
 import javax.swing.*;
@@ -230,7 +230,7 @@ public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 	 * yuanR2017.9.27
 	 */
 	private void buttonConvertClicked() {
-		JDialogPrjCoordSysTranslator dialogTranslator = new JDialogPrjCoordSysTranslator();
+		JDialogPrjTransform dialogTranslator = new JDialogPrjTransform();
 		if (dialogTranslator.showDialog() == DialogResult.OK) {
 			fillComponents();
 		}

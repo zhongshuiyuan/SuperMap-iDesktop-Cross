@@ -1,4 +1,4 @@
-package com.supermap.desktop.ui.controls.prjcoordsys.prjCoordSysTransPanels;
+package com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels;
 
 import com.supermap.data.PrjCoordSys;
 

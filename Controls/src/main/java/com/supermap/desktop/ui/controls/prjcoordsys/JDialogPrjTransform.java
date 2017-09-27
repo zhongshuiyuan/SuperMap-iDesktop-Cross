@@ -7,10 +7,10 @@ import com.supermap.desktop.controls.utilities.WorkspaceTreeManagerUIUtilities;
 import com.supermap.desktop.ui.controls.*;
 import com.supermap.desktop.ui.controls.borderPanel.PanelButton;
 import com.supermap.desktop.ui.controls.borderPanel.PanelResultDataset;
-import com.supermap.desktop.ui.controls.prjcoordsys.prjCoordSysTransPanels.DoSome;
-import com.supermap.desktop.ui.controls.prjcoordsys.prjCoordSysTransPanels.PanelCoordSysInfo;
-import com.supermap.desktop.ui.controls.prjcoordsys.prjCoordSysTransPanels.PanelReferSysTransSettings;
-import com.supermap.desktop.ui.controls.prjcoordsys.prjCoordSysTransPanels.PanelTargetCoordSys;
+import com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels.DoSome;
+import com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels.PanelCoordSysInfo;
+import com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels.PanelReferSysTransSettings;
+import com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels.PanelTargetCoordSys;
 import com.supermap.desktop.utilities.DatasetUtilities;
 import com.supermap.desktop.utilities.PrjCoordSysUtilities;
 
@@ -26,7 +26,7 @@ import java.text.MessageFormat;
  * Created by yuanR on 2017/9/25 0025.
  * 投影转换主窗体
  */
-public class JDialogPrjCoordSysTranslator extends SmDialog {
+public class JDialogPrjTransform extends SmDialog {
 
 	/**
 	 *
@@ -138,7 +138,7 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 			} else {
 				dialogResult = DialogResult.CANCEL;
 			}
-			JDialogPrjCoordSysTranslator.this.dispose();
+			JDialogPrjTransform.this.dispose();
 		}
 	};
 
@@ -189,7 +189,7 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 		return result;
 	}
 
-	public JDialogPrjCoordSysTranslator() {
+	public JDialogPrjTransform() {
 		initializeComponents();
 		initializeResources();
 		initializeLayout();
