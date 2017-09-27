@@ -73,6 +73,7 @@ public class MetaProcessDEMBuild extends MetaProcess {
 	private boolean isInterpolateTypeTIN = true;//判定插值方法是否为TIN
 
 	public MetaProcessDEMBuild() {
+		setTitle(ProcessProperties.getString("String_DEMBuild"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -412,10 +413,5 @@ public class MetaProcessDEMBuild extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.DEMBUILD;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_DEMBuild");
 	}
 }

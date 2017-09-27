@@ -26,11 +26,12 @@ import java.awt.*;
  */
 public class MetaProcessCalculateOrthoImage extends MetaProcessCalTerrain {
 	private final static String OUTPUT_DATASET = "CalculateHillShadeResult";
-	//	private ArrayList<DatasetGridBean> datasetGridBeans = new ArrayList<>();
 	private ParameterColor parameterColorNoColor;
 	private ParameterColorsTable parameterColorsTable;
-//	private int selectedDatasetGridBeanNum = -1;
-//	private LayerSettingGrid layerSettingGrid;
+
+	public MetaProcessCalculateOrthoImage() {
+		setTitle(ProcessProperties.getString("String_CalculateOrthoImage"));
+	}
 
 	@Override
 	protected void initHook() {
@@ -41,35 +42,6 @@ public class MetaProcessCalculateOrthoImage extends MetaProcessCalTerrain {
 		parameterColorsTable = new ParameterColorsTable(ProcessProperties.getString("String_Label_ColorTable"));
 		parameterColorsTable.setRequisite(true);
 		parameterColorsTable.setSelectedItem(new Colors());
-//		parameterColorsTable.setActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				DatasetGrid datasetGrid = (DatasetGrid) sourceDataset.getSelectedDataset();
-//				Boolean isExit = false;
-//				for (int i = 0; i < datasetGridBeans.size(); i++) {
-//					if (datasetGrid.equals(datasetGridBeans.get(i).getDatasetGrid())) {
-//						isExit = true;
-//						selectedDatasetGridBeanNum = i;
-//						break;
-//					}
-//				}
-//				if (!isExit) {
-//					DatasetGridBean datasetGridBean = new DatasetGridBean(datasetGrid);
-//					datasetGridBeans.add(datasetGridBean);
-//					selectedDatasetGridBeanNum = datasetGridBeans.size() - 1;
-//				}
-//				if (selectedDatasetGridBeanNum != -1) {
-//					LayerGridParamColorTableDialog layerGridParamColorTableDialog = new LayerGridParamColorTableDialog(
-//							datasetGridBeans.get(selectedDatasetGridBeanNum).getLayerSettingGrid(),
-//							datasetGridBeans.get(selectedDatasetGridBeanNum).getOriginKeys()
-//					);
-//					if (layerGridParamColorTableDialog.showDialog() == DialogResult.OK) {
-//						datasetGridBeans.get(selectedDatasetGridBeanNum).setLayerSettingGrid(layerGridParamColorTableDialog.getCurrentLayerSettingGrid());
-//						layerSettingGrid = layerGridParamColorTableDialog.getCurrentLayerSettingGrid();
-//					}
-//				}
-//			}
-//		});
 
 		ParameterCombine parameterCombineSet = new ParameterCombine();
 		parameterCombineSet.setDescribe(CommonProperties.getString("String_GroupBox_ParamSetting"));
@@ -83,11 +55,6 @@ public class MetaProcessCalculateOrthoImage extends MetaProcessCalTerrain {
 	@Override
 	protected String getDefaultResultName() {
 		return "result_calculateOrthoImage";
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_CalculateOrthoImage");
 	}
 
 	@Override

@@ -36,6 +36,7 @@ public class MetaProcessSimpleDensity extends MetaProcess {
 
 
 	public MetaProcessSimpleDensity() {
+		setTitle(ProcessProperties.getString("String_SimpleDensityAnalyst"));
 		initComponents();
 	}
 
@@ -96,11 +97,6 @@ public class MetaProcessSimpleDensity extends MetaProcess {
 				parameterCombineAlaysis
 		);
 		parameters.getOutputs().addData("SimpleDensityResult", ProcessOutputResultProperties.getString("String_SimpleDensityAnalysisResult"), Type.UNKOWN);
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_SimpleDensityAnalyst");
 	}
 
 	@Override

@@ -34,6 +34,7 @@ public class MetaProcessOverlayanalystgeo extends MetaProcess {
 	private ParameterComboBox parameterOverlayTypeComboBox;
 
 	public MetaProcessOverlayanalystgeo() {
+		setTitle(ProcessProperties.getString("String_overlayanaly"));
 		initComponents();
 		initComponentState();
 	}
@@ -69,12 +70,6 @@ public class MetaProcessOverlayanalystgeo extends MetaProcess {
 		parameterClipDataType.setBool(true);
 		parameterInputDataType.setSupportDatasetType(DatasetType.POINT, DatasetType.LINE, DatasetType.REGION);
 		parameterClipDataType.setSupportDatasetType(DatasetType.REGION);
-	}
-
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_overlayanaly");
 	}
 
 	@Override

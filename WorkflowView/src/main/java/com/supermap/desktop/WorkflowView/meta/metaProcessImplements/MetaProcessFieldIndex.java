@@ -41,6 +41,7 @@ public class MetaProcessFieldIndex extends MetaProcess {
 	private ArrayList<String> indexs = new ArrayList<>();
 
 	public MetaProcessFieldIndex() {
+		setTitle(ProcessProperties.getString("string_checkbox_chckbxFieldIndex"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -182,10 +183,5 @@ public class MetaProcessFieldIndex extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.FIELD_INDEX;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("string_checkbox_chckbxFieldIndex");
 	}
 }

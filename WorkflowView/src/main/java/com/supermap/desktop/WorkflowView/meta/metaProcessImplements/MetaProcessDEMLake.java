@@ -42,6 +42,7 @@ public class MetaProcessDEMLake extends MetaProcess {
 
 
 	public MetaProcessDEMLake() {
+		setTitle(ProcessProperties.getString("String_DEMLake"));
 		initParameters();
 		initParameterConstraint();
 	}
@@ -171,11 +172,6 @@ public class MetaProcessDEMLake extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.DEMLAKE;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_DEMLake");
 	}
 
 	@Override

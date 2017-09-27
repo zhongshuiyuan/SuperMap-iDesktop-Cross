@@ -37,6 +37,7 @@ public class MetaProcessCommonStatistics extends MetaProcess {
 	private ParameterCommonStatisticCombine commonStatisticCombine;
 
 	public MetaProcessCommonStatistics() {
+		setTitle(ProcessProperties.getString("String_Title_CommonStatistics"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -102,11 +103,6 @@ public class MetaProcessCommonStatistics extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.COMMON_STATISTIC;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_CommonStatistics");
 	}
 
 	@Override

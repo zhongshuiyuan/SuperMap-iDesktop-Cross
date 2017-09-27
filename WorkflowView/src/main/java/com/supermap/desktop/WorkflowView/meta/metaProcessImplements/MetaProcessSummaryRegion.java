@@ -42,6 +42,7 @@ public class MetaProcessSummaryRegion extends MetaProcess {
 	private ParameterCheckBox parametersumShape = new ParameterCheckBox(ProcessProperties.getString("String_SumShape"));
 
 	public MetaProcessSummaryRegion() {
+		setTitle(ProcessProperties.getString("String_SummaryRegion"));
 		initComponents();
 		initComponentState();
 		initComponentLayout();
@@ -150,11 +151,6 @@ public class MetaProcessSummaryRegion extends MetaProcess {
 				parameterWeightedFields, switchWeightedFields, parametersumShape);
 		parameters.addParameters(parameterIServerLogin, parameterInputDataType, parameterCombineSetting);
 		parameters.getOutputs().addData("SummaryRegionResult", ProcessOutputResultProperties.getString("String_BoundsAnalysisResult"), Type.UNKOWN);
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_SummaryRegion");
 	}
 
 	@Override

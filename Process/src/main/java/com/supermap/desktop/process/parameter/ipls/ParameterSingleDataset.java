@@ -22,7 +22,7 @@ public class ParameterSingleDataset extends AbstractParameter implements ISelect
 	private Dataset selectedItem;
 	//	@ParameterField(name = DATASET_TYPES_FIELD_NAME) not ready
 	private DatasetType[] datasetTypes;
-	private PixelFormat[] pixelFormats=null;//栅格数据集像素类型
+	private PixelFormat[] pixelFormats = null;//栅格数据集像素类型
 	@ParameterField(name = DATASOURCE_FIELD_NAME)
 	private Datasource datasource;
 	private String describe = CommonProperties.getString(CommonProperties.Label_Dataset);
@@ -37,6 +37,7 @@ public class ParameterSingleDataset extends AbstractParameter implements ISelect
 
 	/**
 	 * 是否为必填参数和是否显示未空值有关
+	 *
 	 * @return
 	 */
 	@Override

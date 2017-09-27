@@ -4,15 +4,10 @@ import com.supermap.analyst.terrainanalyst.HydrologyAnalyst;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetGrid;
 import com.supermap.data.DatasetType;
-import com.supermap.data.DatasetVector;
-import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
-import com.supermap.desktop.WorkflowView.meta.MetaProcess;
 import com.supermap.desktop.process.ProcessProperties;
-import com.supermap.desktop.process.constraint.ipls.DatasourceConstraint;
 import com.supermap.desktop.process.constraint.ipls.EqualDatasourceConstraint;
-import com.supermap.desktop.process.events.RunningEvent;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
 import com.supermap.desktop.process.parameter.ipls.*;
@@ -27,6 +22,10 @@ public class MetaProcessPourPoints extends MetaProcessHydrology {
 	private ParameterDatasourceConstrained flowDatasource;
 	private ParameterSingleDataset flowDataset;
 	private ParameterNumber numberThreshold;
+
+	public MetaProcessPourPoints() {
+		setTitle(ProcessProperties.getString("String_Title_PourPoints"));
+	}
 
 	@Override
 	protected void initField() {
@@ -82,7 +81,7 @@ public class MetaProcessPourPoints extends MetaProcessHydrology {
 			srcFlow = (DatasetGrid) flowDataset.getSelectedItem();
 		}
 		int areaLimit = Integer.parseInt(numberThreshold.getSelectedItem().toString());
-		DatasetGrid result = HydrologyAnalyst.pourPoints(src,srcFlow,areaLimit, resultDataset.getResultDatasource(),
+		DatasetGrid result = HydrologyAnalyst.pourPoints(src, srcFlow, areaLimit, resultDataset.getResultDatasource(),
 				resultDataset.getResultDatasource().getDatasets().getAvailableDatasetName(resultDataset.getSelectedItem().toString()));
 
 		return result;
@@ -96,10 +95,5 @@ public class MetaProcessPourPoints extends MetaProcessHydrology {
 	@Override
 	public String getKey() {
 		return MetaKeys.POUR_POINTS;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_PourPoints");
 	}
 }

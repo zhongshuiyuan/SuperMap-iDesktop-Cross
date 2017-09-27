@@ -25,6 +25,7 @@ import java.util.Map;
 public class MetaProcessSimpleToCAD extends MetaProcessTypeConversion {
 
 	public MetaProcessSimpleToCAD() {
+		setTitle(ProcessProperties.getString("String_Title_SimpleToCAD"));
 		initParameters();
 		initParameterConstraint();
 	}
@@ -135,10 +136,5 @@ public class MetaProcessSimpleToCAD extends MetaProcessTypeConversion {
 	@Override
 	public String getKey() {
 		return MetaKeys.CONVERSION_SIMPLE_TO_CAD;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_SimpleToCAD");
 	}
 }

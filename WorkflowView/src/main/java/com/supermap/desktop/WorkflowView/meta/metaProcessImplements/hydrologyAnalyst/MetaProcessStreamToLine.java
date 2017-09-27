@@ -16,6 +16,10 @@ import com.supermap.desktop.process.parameter.interfaces.datas.types.Type;
  * Created By Chens on 2017/8/29 0029
  */
 public class MetaProcessStreamToLine extends MetaProcessStreamOrder {
+	public MetaProcessStreamToLine() {
+		setTitle(ProcessProperties.getString("String_Title_StreamToLine"));
+	}
+
 	@Override
 	protected Type getOutputType() {
 		return DatasetTypes.LINE;
@@ -60,10 +64,5 @@ public class MetaProcessStreamToLine extends MetaProcessStreamOrder {
 	@Override
 	public String getKey() {
 		return MetaKeys.STREAM_TO_LINE;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_StreamToLine");
 	}
 }

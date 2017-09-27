@@ -30,6 +30,7 @@ public class MetaProcessPolygonAggregation extends MetaProcess {
 	private ParameterDefaultValueTextField parameterWeightIndex = new ParameterDefaultValueTextField().setDescribe(ProcessProperties.getString("String_Index"));
 
 	public MetaProcessPolygonAggregation() {
+		setTitle(ProcessProperties.getString("String_PolygonAggregation"));
 		initComponents();
 		initComponentLayout();
 		initComponentState();
@@ -71,12 +72,6 @@ public class MetaProcessPolygonAggregation extends MetaProcess {
 		parameterAnalystDataType.setBool(true);
 		parameterInputDataType.setSupportDatasetType(DatasetType.POINT);
 		parameterAnalystDataType.setSupportDatasetType(DatasetType.REGION);
-	}
-
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_PolygonAggregation");
 	}
 
 	@Override

@@ -31,6 +31,7 @@ public class MetaProcessThiessenPolygon extends MetaProcess {
 	private ParameterSaveDataset resultDataset;
 
 	public MetaProcessThiessenPolygon() {
+		setTitle(ProcessProperties.getString("String_Form_ThiessenPolygon"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -100,11 +101,6 @@ public class MetaProcessThiessenPolygon extends MetaProcess {
 	@Override
 	public IParameters getParameters() {
 		return parameters;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Form_ThiessenPolygon");
 	}
 
 	@Override

@@ -15,6 +15,10 @@ import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+/**
+ * 原先的缓冲区分析结果设置面板，用新的结果设置面板代替：PanelResultDataset
+ * yuanR2017.9.26
+ */
 public class PanelResultData extends JPanel {
 
 	/**
@@ -30,16 +34,8 @@ public class PanelResultData extends JPanel {
 		return comboBoxResultDataDatasource;
 	}
 
-	public void setComboBoxResultDataDatasource(DatasourceComboBox comboBoxResultDataDatasource) {
-		this.comboBoxResultDataDatasource = comboBoxResultDataDatasource;
-	}
-
 	public JTextField getTextFieldResultDataDataset() {
 		return textFieldResultDataDataset;
-	}
-
-	public void setTextFieldResultDataDataset(JTextField textFieldResultDataDataset) {
-		this.textFieldResultDataDataset = textFieldResultDataDataset;
 	}
 
 	public PanelResultData() {
@@ -81,9 +77,9 @@ public class PanelResultData extends JPanel {
 
 	}
 
-	private void setComponentName(){
-		ComponentUIUtilities.setName(this.comboBoxResultDataDatasource,"PanelResultData_comboBoxResultDataDatasource");
-		ComponentUIUtilities.setName(this.textFieldResultDataDataset,"PanelResultData_textFieldResultDataDataset");
+	private void setComponentName() {
+		ComponentUIUtilities.setName(this.comboBoxResultDataDatasource, "PanelResultData_comboBoxResultDataDatasource");
+		ComponentUIUtilities.setName(this.textFieldResultDataDataset, "PanelResultData_textFieldResultDataDataset");
 	}
 
 	private void setPanelResultDataLayout() {
@@ -100,17 +96,17 @@ public class PanelResultData extends JPanel {
 						.addComponent(this.labelDatasource)
 						.addComponent(this.labelDataset))
 				.addGroup(panelResultDataLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(this.comboBoxResultDataDatasource,5,5,Short.MAX_VALUE)
-						.addComponent(this.textFieldResultDataDataset,5,5,Short.MAX_VALUE)));
-		
+						.addComponent(this.comboBoxResultDataDatasource, 5, 5, Short.MAX_VALUE)
+						.addComponent(this.textFieldResultDataDataset, 5, 5, Short.MAX_VALUE)));
+
 		panelResultDataLayout.setVerticalGroup(panelResultDataLayout.createSequentialGroup()
 				.addGroup(panelResultDataLayout.createParallelGroup(Alignment.CENTER)
 						.addComponent(this.labelDatasource)
-						.addComponent(this.comboBoxResultDataDatasource,GroupLayout.PREFERRED_SIZE,GroupLayout.PREFERRED_SIZE,GroupLayout.PREFERRED_SIZE))
+						.addComponent(this.comboBoxResultDataDatasource, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addGroup(panelResultDataLayout.createParallelGroup(Alignment.CENTER)
 						.addComponent(this.labelDataset)
-						.addComponent(this.textFieldResultDataDataset,GroupLayout.PREFERRED_SIZE,GroupLayout.PREFERRED_SIZE,GroupLayout.PREFERRED_SIZE))
-				.addGap(5,5,Short.MAX_VALUE));
+						.addComponent(this.textFieldResultDataDataset, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addGap(5, 5, Short.MAX_VALUE));
 		//@formatter:on
 	}
 

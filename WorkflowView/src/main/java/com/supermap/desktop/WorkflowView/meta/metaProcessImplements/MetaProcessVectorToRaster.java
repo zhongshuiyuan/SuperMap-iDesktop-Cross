@@ -2,17 +2,7 @@ package com.supermap.desktop.WorkflowView.meta.metaProcessImplements;
 
 import com.supermap.analyst.spatialanalyst.ConversionAnalyst;
 import com.supermap.analyst.spatialanalyst.ConversionAnalystParameter;
-import com.supermap.data.CursorType;
-import com.supermap.data.Dataset;
-import com.supermap.data.DatasetGrid;
-import com.supermap.data.DatasetType;
-import com.supermap.data.DatasetVector;
-import com.supermap.data.FieldInfo;
-import com.supermap.data.FieldType;
-import com.supermap.data.GeoRegion;
-import com.supermap.data.PixelFormat;
-import com.supermap.data.Recordset;
-import com.supermap.data.Rectangle2D;
+import com.supermap.data.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
@@ -23,14 +13,7 @@ import com.supermap.desktop.process.constraint.ipls.EqualDatasourceConstraint;
 import com.supermap.desktop.process.parameter.ParameterDataNode;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
-import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
-import com.supermap.desktop.process.parameter.ipls.ParameterComboBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterDatasource;
-import com.supermap.desktop.process.parameter.ipls.ParameterDatasourceConstrained;
-import com.supermap.desktop.process.parameter.ipls.ParameterFieldComboBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterNumber;
-import com.supermap.desktop.process.parameter.ipls.ParameterSaveDataset;
-import com.supermap.desktop.process.parameter.ipls.ParameterSingleDataset;
+import com.supermap.desktop.process.parameter.ipls.*;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.utilities.DatasetUtilities;
 import com.supermap.desktop.utilities.PixelFormatUtilities;
@@ -77,6 +60,7 @@ public class MetaProcessVectorToRaster extends MetaProcessGridAnalyst {
 	private ParameterDataNode parameterDataNodeUbit32 = new ParameterDataNode(PixelFormatUtilities.toString(PixelFormat.UBIT32), PixelFormat.UBIT32);
 
 	public MetaProcessVectorToRaster() {
+		setTitle(ProcessProperties.getString("String_Form_VectorToGrid"));
 		initParameters();
 		initParametersState();
 		initParameterConstraint();
@@ -290,10 +274,5 @@ public class MetaProcessVectorToRaster extends MetaProcessGridAnalyst {
 	@Override
 	public String getKey() {
 		return MetaKeys.VECTORTOGRID;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Form_VectorToGrid");
 	}
 }

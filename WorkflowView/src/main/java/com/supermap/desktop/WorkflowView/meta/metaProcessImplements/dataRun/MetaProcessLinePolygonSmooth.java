@@ -36,6 +36,7 @@ public class MetaProcessLinePolygonSmooth extends MetaProcess {
 
 
 	public MetaProcessLinePolygonSmooth() {
+		setTitle(ProcessProperties.getString("String_LinePolygonSmooth"));
 		initParameters();
 		initComponentState();
 		initParameterConstraint();
@@ -128,11 +129,6 @@ public class MetaProcessLinePolygonSmooth extends MetaProcess {
 	@Override
 	public IParameters getParameters() {
 		return this.parameters;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_LinePolygonSmooth");
 	}
 
 	@Override

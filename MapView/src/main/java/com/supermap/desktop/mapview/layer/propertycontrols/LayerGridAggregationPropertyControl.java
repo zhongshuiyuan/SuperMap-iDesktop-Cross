@@ -9,7 +9,6 @@ import com.supermap.desktop.DefaultValues;
 import com.supermap.desktop.Interface.ISmTextFieldLegit;
 import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.controls.colorScheme.ColorsComboBox;
-import com.supermap.desktop.implement.DefaultComboBoxUI;
 import com.supermap.desktop.mapview.MapViewProperties;
 import com.supermap.desktop.mapview.layer.propertymodel.LayerGridAggregationPropertyModel;
 import com.supermap.desktop.ui.SMSpinner;
@@ -38,9 +37,9 @@ public class LayerGridAggregationPropertyControl extends AbstractLayerPropertyCo
 
 	private static final long serialVersionUID = 1L;
 	private JLabel labelGridField;
-	private JComboBox comboBoxGridField;
+	private SmComboBox comboBoxGridField;
 	private JLabel labelGridType;
-	private JComboBox comboBoxGridType;
+	private SmComboBox comboBoxGridType;
 	private JLabel labelLength;
 	private SmTextFieldLegit textFieldLength;
 	private JLabel labelPixel;
@@ -58,7 +57,7 @@ public class LayerGridAggregationPropertyControl extends AbstractLayerPropertyCo
 	private JButton buttonSetingLabel;
 	private JPanel panelBorderStyle;
 	private JLabel labelLineType;
-	private JComboBox comboBoxLineType;
+	private SmComboBox comboBoxLineType;
 	private JLabel labelLineColor;
 	private ComponentDropDown componentDropDownLineColor;
 	private JLabel labelBorderTransparence;
@@ -91,11 +90,9 @@ public class LayerGridAggregationPropertyControl extends AbstractLayerPropertyCo
 	protected void initializeComponents() {
 		this.setBorder(BorderFactory.createTitledBorder("parameterSetting"));
 		this.labelGridField = new JLabel("GridField");
-		this.comboBoxGridField = new JComboBox();
-		this.comboBoxGridField.setUI(new DefaultComboBoxUI());
+		this.comboBoxGridField = new SmComboBox();
 		this.labelGridType = new JLabel("GridType");
-		this.comboBoxGridType = new JComboBox();
-		this.comboBoxGridType.setUI(new DefaultComboBoxUI());
+		this.comboBoxGridType = new SmComboBox();
 		this.labelLength = new JLabel("Length");
 		this.textFieldLength = new SmTextFieldLegit();
 		this.labelPixel = new JLabel("Pixel");
@@ -113,7 +110,7 @@ public class LayerGridAggregationPropertyControl extends AbstractLayerPropertyCo
 		this.buttonSetingLabel = new JButton("SetingLabel");
 		this.panelBorderStyle = new JPanel();
 		this.labelLineType = new JLabel("LineType");
-		this.comboBoxLineType = new JComboBox();
+		this.comboBoxLineType = new SmComboBox();
 		this.labelLineColor = new JLabel("LineColor");
 		this.componentDropDownLineColor = new ComponentDropDown(ComponentDropDown.COLOR_TYPE);
 		this.labelBorderTransparence = new JLabel("BorderTransparence");

@@ -16,15 +16,16 @@ import java.util.Map;
  * Created by yuanR on 2017/8/8  .
  * 网络数据集转换为线数据集
  */
-public class MetaProcessNetWorkToLine extends MetaProcessPointLineRegion {
+public class MetaProcessNetworkToLine extends MetaProcessPointLineRegion {
 
-	public MetaProcessNetWorkToLine() {
+	public MetaProcessNetworkToLine() {
 		super(DatasetType.NETWORK, DatasetType.LINE);
+		setTitle(ProcessProperties.getString("String_Title_NetworkToLine"));
 	}
 
 	@Override
 	protected void initHook() {
-		OUTPUT_DATA = "NetWorkToLineResult";
+		OUTPUT_DATA = "NetworkToLineResult";
 	}
 
 	@Override
@@ -71,10 +72,4 @@ public class MetaProcessNetWorkToLine extends MetaProcessPointLineRegion {
 	public String getKey() {
 		return MetaKeys.CONVERSION_NETWORK_TO_LINE;
 	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_NetworkToLine");
-	}
-
 }
