@@ -146,8 +146,8 @@ public class JDialogCreateCollectionDataset extends SmDialog {
 		ArrayList<CollectionDatasetInfo> datasetInfos = datasetVector.getCollectionDatasetInfos();
 		for (int i = 0, size = datasetInfos.size(); i < size; i++) {
 			if (datasetInfos.get(i).getDatasetName().equals(name)
-					&& (datasetInfos.get(i).getDatasourceConnectInfo().getDatabase().equals(dataBase) || datasetInfos.get(i).getDatasourceConnectInfo().getAlias().equals(alias))
-					&& null != DatasourceUtilities.getDatasource(datasetInfos.get(i).getDatasourceConnectInfo())) {
+					&& (datasetInfos.get(i).getDatasourceConnectInfo().getDatabase().equals(dataBase)
+					|| datasetInfos.get(i).getDatasourceConnectInfo().getAlias().equals(alias))) {
 				result = true;
 				break;
 			}
