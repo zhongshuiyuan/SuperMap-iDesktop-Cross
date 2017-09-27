@@ -48,6 +48,7 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 	private ParameterSaveDataset parameterSaveDataset;
 
 	public MetaProcessProjectionTransform() {
+		setTitle(ProcessProperties.getString("String_ProjectionTransform"));
 		initParameters();
 		initParameterConstraint();
 		initParameterListeners();
@@ -145,10 +146,6 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 
 	}
 
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_ProjectionTransform");
-	}
 
 	@Override
 	public IParameterPanel getComponent() {
