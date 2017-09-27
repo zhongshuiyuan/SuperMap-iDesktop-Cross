@@ -218,11 +218,11 @@ public class PanelTransformFor3D extends PanelTransform {
 		this.fileChooserControlImportPrjFile = new JFileChooserControl();
 		if (!SmFileChoose.isModuleExist("ImportPrjFile")) {
 			String fileFilters = SmFileChoose.buildFileFilters(
-					SmFileChoose.createFileFilter(DataConversionProperties.getString("String_ImportPrjFiles"), "prj", "xml"),
-					SmFileChoose.createFileFilter(DataConversionProperties.getString("String_ImportPrjFileShape"), "prj"),
-					SmFileChoose.createFileFilter(DataConversionProperties.getString("String_ImportPrjFileXml"), "xml"));
+					SmFileChoose.createFileFilter(ControlsProperties.getString("String_ImportPrjFiles"), "prj", "xml"),
+					SmFileChoose.createFileFilter(ControlsProperties.getString("String_ImportPrjFileShape"), "prj"),
+					SmFileChoose.createFileFilter(ControlsProperties.getString("String_ImportPrjFileXml"), "xml"));
 			SmFileChoose.addNewNode(fileFilters, CommonProperties.getString("String_DefaultFilePath"),
-					DataConversionProperties.getString("string_importPrjFile"), "ImportPrjFile", "OpenMany");
+					ControlsProperties.getString("string_importPrjFile"), "ImportPrjFile", "OpenMany");
 		}
 		SmFileChoose fileChooser = new SmFileChoose("ImportPrjFile");
 		this.fileChooserControlImportPrjFile.setFileChooser(fileChooser);
@@ -400,18 +400,18 @@ public class PanelTransformFor3D extends PanelTransform {
 		this.fileChooserControlImportPrjFile.addFileChangedListener(this.importPrjFileListener);
 	}
 
-    @Override
-    public void initResources() {
-        this.setBorder(new TitledBorder(DataConversionProperties.getString("string_border_panelTransform")));
-        this.labelRotationType.setText(DataConversionProperties.getString("string_rotationType"));
-        this.labelPositionX.setText(DataConversionProperties.getString("string_label_lblx"));
-        this.labelPositionY.setText(DataConversionProperties.getString("string_label_lbly"));
-        this.labelPositionZ.setText(DataConversionProperties.getString("string_label_lblz"));
-        this.checkBoxSplitForMore.setText(DataConversionProperties.getString("string_splitForMore"));
-        this.radioButtonImportPrjFile.setText(ControlsProperties.getString("String_ImportPrjFile"));
-        this.radioButtonPrjSet.setText(ControlsProperties.getString("String_SetProjection_Caption"));
-        this.buttonPrjSet.setText(ControlsProperties.getString("String_Button_Setting"));
-    }
+	@Override
+	public void initResources() {
+		this.setBorder(new TitledBorder(DataConversionProperties.getString("string_border_panelTransform")));
+		this.labelRotationType.setText(DataConversionProperties.getString("string_rotationType"));
+		this.labelPositionX.setText(DataConversionProperties.getString("string_label_lblx"));
+		this.labelPositionY.setText(DataConversionProperties.getString("string_label_lbly"));
+		this.labelPositionZ.setText(DataConversionProperties.getString("string_label_lblz"));
+		this.checkBoxSplitForMore.setText(DataConversionProperties.getString("string_splitForMore"));
+		this.radioButtonImportPrjFile.setText(ControlsProperties.getString("String_ImportPrjFile"));
+		this.radioButtonPrjSet.setText(ControlsProperties.getString("String_SetProjection_Caption"));
+		this.buttonPrjSet.setText(ControlsProperties.getString("String_Button_Setting"));
+	}
 
 	public JTextField getTextFieldPositionX() {
 		return textFieldPositionX;
