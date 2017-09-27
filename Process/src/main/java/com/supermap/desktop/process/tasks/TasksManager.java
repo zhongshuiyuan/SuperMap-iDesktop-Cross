@@ -48,13 +48,12 @@ public class TasksManager {
 	private final Lock lock = new ReentrantLock();
 	private volatile int status = WORKFLOW_STATE_NORMAL;
 
+	private boolean isCancel = false;
 	private Timer scheduler;
 	private Workflow workflow;
-	private Map<IProcess, ProcessWorker> workersMap = new ConcurrentHashMap<>();
-
-	private EventListenerList listenerList = new EventListenerList();
-
 	private TaskStateManager taskStateManager;
+	private EventListenerList listenerList = new EventListenerList();
+	private Map<IProcess, ProcessWorker> workersMap = new ConcurrentHashMap<>();
 
 	private WorkflowChangeListener workflowChangeListener = new WorkflowChangeListener() {
 		@Override
@@ -81,7 +80,6 @@ public class TasksManager {
 			}
 		}
 	};
-	private boolean isCancel = false;
 
 	public TasksManager(Workflow workflow) {
 		this.workflow = workflow;
@@ -251,7 +249,6 @@ public class TasksManager {
 						if (!isCancel) {
 							workersMap.get(process).execute();
 						} else {
-							process.setStatus(RunningStatus.CANCELLED);
 							workersMap.get(process).cancel();
 						}
 					}

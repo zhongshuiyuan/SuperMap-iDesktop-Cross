@@ -34,18 +34,26 @@ public class ProcessWorker extends Worker<SingleProgress> {
 		return this.process.run();
 	}
 
+	@Override
+	public void cancel() {
+		this.process.cancel();
+	}
+
+	@Override
+	public boolean isCancelled() {
+
+		// 保证任何时候 process 的取消状态都与 worker 相同
+		return this.process.isCancelled();
+	}
+
 	private class RunningHandler implements RunningListener {
 		@Override
 		public void running(RunningEvent e) {
 			try {
-				if (isCancelled()) {
-					e.setCancel(true);
+				if (e.isIndeterminate()) {
+					update(new SingleProgress(e.getMessage()));
 				} else {
-					if (e.isIndeterminate()) {
-						update(new SingleProgress(e.getMessage()));
-					} else {
-						update(new SingleProgress(e.getProgress(), e.getMessage(), CoreProperties.getString("String_Remain") + ":" + Time.toString(e.getRemainTime(), TimeType.SECOND)));
-					}
+					update(new SingleProgress(e.getProgress(), e.getMessage(), CoreProperties.getString("String_Remain") + ":" + Time.toString(e.getRemainTime(), TimeType.SECOND)));
 				}
 			} catch (Exception e1) {
 				e.setCancel(true);

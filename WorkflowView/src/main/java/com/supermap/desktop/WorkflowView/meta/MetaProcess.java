@@ -42,8 +42,11 @@ public abstract class MetaProcess extends AbstractProcess {
 			fireRunning(event);
 
 			if (event.isCancel()) {
-				steppedEvent.setCancel(true);
 				cancel();
+			}
+
+			if (getStatus() == RunningStatus.CANCELLING) {
+				steppedEvent.setCancel(true);
 			}
 		}
 	};
