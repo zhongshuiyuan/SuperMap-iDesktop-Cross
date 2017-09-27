@@ -4,12 +4,10 @@ import com.supermap.analyst.terrainanalyst.HydrologyAnalyst;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetGrid;
 import com.supermap.data.DatasetType;
-import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
 import com.supermap.desktop.process.ProcessProperties;
 import com.supermap.desktop.process.constraint.ipls.EqualDatasourceConstraint;
-import com.supermap.desktop.process.events.RunningEvent;
 import com.supermap.desktop.process.parameter.ParameterDataNode;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
@@ -25,6 +23,10 @@ public class MetaProcessFlowLength extends MetaProcessHydrology {
 	private ParameterComboBox comboBoxMethod;
 	private ParameterDatasourceConstrained weightDatasource;
 	private ParameterSingleDataset weightDataset;
+
+	public MetaProcessFlowLength() {
+		setTitle(ProcessProperties.getString("String_Title_FlowLength"));
+	}
 
 	@Override
 	protected void initField() {
@@ -55,8 +57,8 @@ public class MetaProcessFlowLength extends MetaProcessHydrology {
 			weightDataset.setDatasource(datasetGrid.getDatasource());
 		}
 		weightDataset.setShowNullValue(true);
-		comboBoxMethod.setItems(new ParameterDataNode(ProcessProperties.getString("String_Item_DownStream"),0),
-				new ParameterDataNode(ProcessProperties.getString("String_Item_UpStream"),1));
+		comboBoxMethod.setItems(new ParameterDataNode(ProcessProperties.getString("String_Item_DownStream"), 0),
+				new ParameterDataNode(ProcessProperties.getString("String_Item_UpStream"), 1));
 
 		parameters.setParameters(sourceCombine, weightCombine, settingCombine, resultCombine);
 		parameters.addInputParameters(WEIGHT_DATA, DatasetTypes.GRID, settingCombine);
@@ -81,7 +83,7 @@ public class MetaProcessFlowLength extends MetaProcessHydrology {
 			srcWeight = (DatasetGrid) weightDataset.getSelectedItem();
 		}
 		boolean upStream = comboBoxMethod.getItemAt(1).equals(comboBoxMethod.getSelectedItem());
-		DatasetGrid result = HydrologyAnalyst.flowLength(src,srcWeight,upStream,resultDataset.getResultDatasource(),
+		DatasetGrid result = HydrologyAnalyst.flowLength(src, srcWeight, upStream, resultDataset.getResultDatasource(),
 				resultDataset.getResultDatasource().getDatasets().getAvailableDatasetName(resultDataset.getSelectedItem().toString()));
 
 		return result;
@@ -95,10 +97,5 @@ public class MetaProcessFlowLength extends MetaProcessHydrology {
 	@Override
 	public String getKey() {
 		return MetaKeys.FLOW_LENGTH;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_FlowLength");
 	}
 }

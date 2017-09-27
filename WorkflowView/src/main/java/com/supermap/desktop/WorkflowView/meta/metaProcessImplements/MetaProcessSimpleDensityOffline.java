@@ -68,6 +68,7 @@ public class MetaProcessSimpleDensityOffline extends MetaProcess {
 	};
 
 	public MetaProcessSimpleDensityOffline() {
+		setTitle(ProcessProperties.getString("String_SimpleDensityAnalyst"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -224,10 +225,5 @@ public class MetaProcessSimpleDensityOffline extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.SIMPLE_DENSITY_OFFLINE;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_SimpleDensityAnalyst");
 	}
 }

@@ -45,6 +45,7 @@ public class MetaProcessGridResample extends MetaProcess {
 
 
 	public MetaProcessGridResample() {
+		setTitle(ProcessProperties.getString("String_Title_GridResample"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -136,11 +137,6 @@ public class MetaProcessGridResample extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.GRID_RESAMPLE;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_GridResample");
 	}
 
 	@Override

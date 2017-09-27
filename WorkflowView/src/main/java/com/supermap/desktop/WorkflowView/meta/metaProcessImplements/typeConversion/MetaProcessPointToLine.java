@@ -26,6 +26,7 @@ public class MetaProcessPointToLine extends MetaProcessTypeConversion {
 	private ParameterFieldComboBox comboBoxConnect;
 
 	public MetaProcessPointToLine() {
+		setTitle(ProcessProperties.getString("String_Title_PointToLine"));
 		initParameters();
 		initParameterConstraint();
 	}
@@ -82,11 +83,6 @@ public class MetaProcessPointToLine extends MetaProcessTypeConversion {
 	@Override
 	public String getKey() {
 		return MetaKeys.CONVERSION_POINT_TO_LINE;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_PointToLine");
 	}
 
 	@Override

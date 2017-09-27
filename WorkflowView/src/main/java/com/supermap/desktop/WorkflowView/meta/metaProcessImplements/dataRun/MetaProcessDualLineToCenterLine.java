@@ -10,21 +10,20 @@ import com.supermap.desktop.properties.CommonProperties;
  */
 public class MetaProcessDualLineToCenterLine extends MetaProcessCenterLine {
 
+	public MetaProcessDualLineToCenterLine() {
+		setTitle(CommonProperties.getString("String_DualLineToCenterLine"));
+	}
+
 	public DatasetType getSonDatasetType() {
 		return DatasetType.LINE;
 	}
 
-	public String getResultDatasetName(){
+	public String getResultDatasetName() {
 		return "result_DualLineToCenterLine";
 	}
 
 	@Override
 	public String getKey() {
 		return MetaKeys.DUALLINE_TO_CENTERLINE;
-	}
-
-	@Override
-	public String getTitle() {
-		return  CommonProperties.getString("String_DualLineToCenterLine");
 	}
 }

@@ -67,6 +67,7 @@ public class MetaProcessKernelDensityOffline extends MetaProcess {
 	};
 
 	public MetaProcessKernelDensityOffline() {
+		setTitle(ProcessProperties.getString("String_KernelDensityAnalyst"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -226,10 +227,5 @@ public class MetaProcessKernelDensityOffline extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.KERNEL_DENSITY_OFFLINE;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_KernelDensityAnalyst");
 	}
 }

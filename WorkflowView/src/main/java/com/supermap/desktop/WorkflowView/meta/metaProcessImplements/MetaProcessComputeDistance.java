@@ -49,6 +49,7 @@ public class MetaProcessComputeDistance extends MetaProcess {
 	private ParameterSaveDataset resultDataset;
 
 	public MetaProcessComputeDistance() {
+		setTitle(ProcessProperties.getString("String_Form_ComputeDistance"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -256,11 +257,6 @@ public class MetaProcessComputeDistance extends MetaProcess {
 	@Override
 	public IParameters getParameters() {
 		return parameters;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Form_ComputeDistance");
 	}
 
 	@Override

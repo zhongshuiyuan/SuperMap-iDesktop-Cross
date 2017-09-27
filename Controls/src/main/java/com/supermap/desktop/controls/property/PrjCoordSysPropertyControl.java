@@ -23,7 +23,7 @@ import java.awt.event.ActionListener;
 public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final int DEFAULT_COMPONENT_WIDTH = 120;
@@ -165,6 +165,7 @@ public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 		this.buttonSet.setText(ControlsProperties.getString("String_ProjectionInfoControl_ButtonResetProjectionInfo"));
 		this.buttonConvert.setText(ControlsProperties.getString("String_ProjectionInfoControl_ButtonProjectionConversion"));
 	}
+
 	private void setComponentName() {
 		ComponentUIUtilities.setName(this.labelName, "PrjCoordSysPropertyControl_labelName");
 		ComponentUIUtilities.setName(this.textFieldName, "PrjCoordSysPropertyControl_textFieldName");
@@ -177,6 +178,7 @@ public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 		ComponentUIUtilities.setName(this.buttonSet, "PrjCoordSysPropertyControl_buttonSet");
 		ComponentUIUtilities.setName(this.buttonConvert, "PrjCoordSysPropertyControl_buttonConvert");
 	}
+
 	public void initButtonState() {
 		// 目前看来，复制，转换，设置是否能使用是一致的。
 		this.buttonConvert.setEnabled(covertFlag);
@@ -221,11 +223,13 @@ public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 	}
 
 	private void buttonConvertClicked() {
+		//todo YUANR
 		JDialogPrjCoordSysTranslator dialogTranslator = new JDialogPrjCoordSysTranslator(prjHandle.getPrj());
 		if (dialogTranslator.showDialog() == DialogResult.OK) {
-			this.prjHandle.convert(dialogTranslator.getMethod(), dialogTranslator.getParameter(), dialogTranslator.getTargetPrj());
+			//this.prjHandle.convert(dialogTranslator.getMethod(), dialogTranslator.getParameter(), dialogTranslator.getTargetPrj());
 			fillComponents();
 		}
+
 	}
 
 	private void setControlsEnabled() {

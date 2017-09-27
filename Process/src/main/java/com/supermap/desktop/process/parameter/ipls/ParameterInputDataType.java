@@ -1,8 +1,13 @@
 package com.supermap.desktop.process.parameter.ipls;
 
+import com.alibaba.fastjson.JSON;
 import com.supermap.data.*;
 import com.supermap.desktop.Application;
+import com.supermap.desktop.lbs.IServerServiceImpl;
 import com.supermap.desktop.lbs.params.CommonSettingCombine;
+import com.supermap.desktop.lbs.params.IServerLoginInfo;
+import com.supermap.desktop.lbs.params.QueryDatasetNamesResult;
+import com.supermap.desktop.lbs.params.QueryDatasetTypeResult;
 import com.supermap.desktop.process.ProcessProperties;
 import com.supermap.desktop.process.ProcessResources;
 import com.supermap.desktop.process.parameter.ParameterDataNode;
@@ -23,7 +28,8 @@ import java.io.File;
  * Created by caolp on 2017-07-27.
  */
 public class ParameterInputDataType extends ParameterCombine {
-	public ParameterComboBox parameterDataInputWay = new ParameterComboBox(ProcessProperties.getString("String_DataInputWay"));
+	private IServerServiceImpl service;
+	private ParameterComboBox parameterDataInputWay = new ParameterComboBox(ProcessProperties.getString("String_DataInputWay"));
 	private ParameterHDFSPath parameterHDFSPath = new ParameterHDFSPath();
 
 	private ParameterTextField parameterDataSourceType = new ParameterTextField(ProcessProperties.getString("String_DataSourceType"));
@@ -52,6 +58,8 @@ public class ParameterInputDataType extends ParameterCombine {
 	public DatasetType[] supportDatasetType;
 	private Boolean bool = false;
 	private ParameterCombine parameterCombine1;
+	private static final String DATASETS_URL = "/iserver/services/datacatalog/rest/datacatalog/relationship/datasets";
+	private ParameterIServerLogin iServerLogin;
 
 	public ParameterInputDataType() {
 		super();
@@ -128,6 +136,15 @@ public class ParameterInputDataType extends ParameterCombine {
 				}
 			}
 		});
+		bigDataStoreName.addPropertyListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (evt.getPropertyName().equals("LeftButtonClicked"))
+					loginAndInitInputDataType();
+			}
+		});
+
+
 		parameterButton.setActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -177,6 +194,51 @@ public class ParameterInputDataType extends ParameterCombine {
 			}
 
 		});
+	}
+
+	public void loginAndInitInputDataType() {
+		boolean result = iServerLogin.login();
+		this.service = iServerLogin.service;
+		if (!result) {
+			removeAllDatasets();
+			return;
+		}
+		if (null != IServerLoginInfo.client && null != parameterTextFieldAddress.getSelectedItem()) {
+			removeAllDatasets();
+			initBigDataStoreName();
+		}
+	}
+
+	private void initBigDataStoreName() {
+		String ipAndPort = parameterTextFieldAddress.getSelectedItem().toString();
+		String datasetsURL = service.HTTP_STR + ipAndPort + DATASETS_URL;
+		String resultDatasets = service.query(datasetsURL);
+		QueryDatasetNamesResult queryDatasetNamesResult = JSON.parseObject(resultDatasets, QueryDatasetNamesResult.class);
+		ParameterDataNode parameterDataNode = null;
+		for (int i = 0, size = queryDatasetNamesResult.datasetNames.size(); i < size; i++) {
+			String resultDataset = service.query(service.HTTP_STR + ipAndPort + DATASETS_URL + "/" + queryDatasetNamesResult.datasetNames.get(i));
+			QueryDatasetTypeResult queryDatasetTypeResult = JSON.parseObject(resultDataset, QueryDatasetTypeResult.class);
+			String datasetType = queryDatasetTypeResult.DatasetInfo.type;
+			for (int j = 0, length = supportDatasetType.length; j < length; j++) {
+				if (supportDatasetType[j].name().equalsIgnoreCase(datasetType)) {
+					parameterDataNode = new ParameterDataNode(queryDatasetNamesResult.datasetNames.get(i), datasetType);
+					bigDataStoreName.addItem(parameterDataNode);
+				}
+			}
+		}
+		bigDataStoreName.setSelectedItem(parameterDataNode);
+	}
+
+
+	private void removeAllDatasets() {
+		if (bigDataStoreName.getItems().size() > 0) {
+			bigDataStoreName.removeAllItems();
+		}
+	}
+
+	public void resetInputItems(ParameterDataNode... items) {
+		parameterDataInputWay.removeAllItems();
+		parameterDataInputWay.setItems(items);
 	}
 
 	private void initComponents() {
@@ -366,6 +428,10 @@ public class ParameterInputDataType extends ParameterCombine {
 
 	public void setBool(Boolean bool) {
 		this.bool = bool;
+	}
+
+	public void setiServerLogin(ParameterIServerLogin iServerLogin) {
+		this.iServerLogin = iServerLogin;
 	}
 }
 

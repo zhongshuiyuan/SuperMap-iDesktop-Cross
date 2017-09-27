@@ -23,6 +23,7 @@ public class MetaProcessTextToField extends MetaProcessTypeConversion {
 	private ParameterFieldComboBox parameterFieldComboBox;
 
 	public MetaProcessTextToField() {
+		setTitle(ProcessProperties.getString("String_Title_TextToField"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -143,10 +144,5 @@ public class MetaProcessTextToField extends MetaProcessTypeConversion {
 	@Override
 	public String getKey() {
 		return MetaKeys.CONVERSION_TEXT_TO_FILED;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_TextToField");
 	}
 }

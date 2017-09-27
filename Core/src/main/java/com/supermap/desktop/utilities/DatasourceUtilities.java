@@ -1,16 +1,7 @@
 package com.supermap.desktop.utilities;
 
-import com.supermap.data.Dataset;
-import com.supermap.data.DatasetVector;
-import com.supermap.data.Datasets;
-import com.supermap.data.Datasource;
-import com.supermap.data.DatasourceConnectionInfo;
-import com.supermap.data.Datasources;
-import com.supermap.data.EngineInfo;
-import com.supermap.data.EngineType;
-import com.supermap.data.ErrorInfo;
+import com.supermap.data.*;
 import com.supermap.data.Toolkit;
-import com.supermap.data.Workspace;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.CommonToolkit;
 import com.supermap.desktop.properties.CoreProperties;

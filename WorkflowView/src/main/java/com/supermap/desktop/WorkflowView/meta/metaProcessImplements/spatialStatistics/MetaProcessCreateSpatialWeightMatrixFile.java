@@ -26,6 +26,10 @@ public class MetaProcessCreateSpatialWeightMatrixFile extends MetaProcessAnalyzi
 	private static final String OUTPUT_DATA = "CreateSpatialWeightMatrixFileResult";
 	private ParameterFile parameterFile;
 
+	public MetaProcessCreateSpatialWeightMatrixFile() {
+		setTitle(ProcessProperties.getString("String_CreateSpatialWeightMatrixFile"));
+	}
+
 	@Override
 	protected void initHook() {
 		dataset.setDatasetTypes(DatasetType.REGION, DatasetType.POINT, DatasetType.LINE);
@@ -59,11 +63,6 @@ public class MetaProcessCreateSpatialWeightMatrixFile extends MetaProcessAnalyzi
 		parameterCombine.setDescribe(CommonProperties.getString("String_ResultSet"));
 		parameters.addParameters(parameterCombine);
 		this.parameters.addOutputParameters(OUTPUT_DATA, ProcessOutputResultProperties.getString("String_SpatialWeightMatrixFile"), BasicTypes.STRING, parameterFile);
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_CreateSpatialWeightMatrixFile");
 	}
 
 	@Override

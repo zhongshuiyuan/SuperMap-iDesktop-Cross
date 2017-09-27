@@ -25,6 +25,10 @@ public class MetaProcessStreamOrder extends MetaProcessHydrology {
 	protected ParameterSingleDataset directionDataset;
 	protected ParameterComboBox comboBox;
 
+	public MetaProcessStreamOrder() {
+		setTitle(ProcessProperties.getString("String_Title_StreamOrder"));
+	}
+
 	@Override
 	protected void initField() {
 		INPUT_DATA = ProcessProperties.getString("String_GroupBox_StreamData");
@@ -84,7 +88,7 @@ public class MetaProcessStreamOrder extends MetaProcessHydrology {
 			srcDirection = (DatasetGrid) directionDataset.getSelectedItem();
 		}
 		StreamOrderType type = (StreamOrderType) comboBox.getSelectedData();
-		DatasetGrid result= HydrologyAnalyst.streamOrder(src, srcDirection, type, resultDataset.getResultDatasource(),
+		DatasetGrid result = HydrologyAnalyst.streamOrder(src, srcDirection, type, resultDataset.getResultDatasource(),
 				resultDataset.getResultDatasource().getDatasets().getAvailableDatasetName(resultDataset.getDatasetName()));
 
 		return result;
@@ -93,10 +97,5 @@ public class MetaProcessStreamOrder extends MetaProcessHydrology {
 	@Override
 	public String getKey() {
 		return MetaKeys.STREAM_ORDER;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_StreamOrder");
 	}
 }

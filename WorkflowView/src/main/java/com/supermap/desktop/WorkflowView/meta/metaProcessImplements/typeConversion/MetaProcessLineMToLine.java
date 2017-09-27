@@ -20,6 +20,7 @@ public class MetaProcessLineMToLine extends MetaProcessPointLineRegion {
 
 	public MetaProcessLineMToLine() {
 		super(DatasetType.LINEM, DatasetType.LINE);
+		setTitle(ProcessProperties.getString("String_Title_LineMToLine"));
 	}
 
 	@Override
@@ -70,10 +71,4 @@ public class MetaProcessLineMToLine extends MetaProcessPointLineRegion {
 	public String getKey() {
 		return MetaKeys.CONVERSION_LINEM_TO_LINE;
 	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_LineMToLine");
-	}
-
 }

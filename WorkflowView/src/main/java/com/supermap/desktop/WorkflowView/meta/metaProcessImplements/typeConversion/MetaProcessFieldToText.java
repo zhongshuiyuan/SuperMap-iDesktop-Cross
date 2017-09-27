@@ -27,6 +27,7 @@ public class MetaProcessFieldToText extends MetaProcessTypeConversion {
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
 
 	public MetaProcessFieldToText() {
+		setTitle(ProcessProperties.getString("String_Title_FieldToText"));
 		initParameters();
 		initParameterConstraint();
 	}
@@ -175,10 +176,4 @@ public class MetaProcessFieldToText extends MetaProcessTypeConversion {
 	public String getKey() {
 		return MetaKeys.CONVERSION_FIELD_TO_TEXT;
 	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_FieldToText");
-	}
-
 }

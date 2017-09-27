@@ -30,6 +30,7 @@ public class MetaProcessTabularPointToRegion extends MetaProcessTypeConversion {
 	private ParameterSingleDataset targetDataset;
 
 	public MetaProcessTabularPointToRegion() {
+		setTitle(ProcessProperties.getString("String_Title_TabularPointToRegion"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -203,10 +204,4 @@ public class MetaProcessTabularPointToRegion extends MetaProcessTypeConversion {
 	public String getKey() {
 		return MetaKeys.CONVERSION_TABULARPOINT_TO_REGION;
 	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_TabularPointToRegion");
-	}
-
 }

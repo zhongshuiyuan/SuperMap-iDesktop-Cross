@@ -243,19 +243,19 @@ public class FirstStepPane extends JPanel implements IState {
 	private DocumentListener passwordChangeListener = new DocumentListener() {
 		@Override
 		public void insertUpdate(DocumentEvent e) {
-			updateDBNames();
+//			updateDBNames();
 			fireEnabled(enabled());
 		}
 
 		@Override
 		public void removeUpdate(DocumentEvent e) {
-			updateDBNames();
+//			updateDBNames();
 			fireEnabled(enabled());
 		}
 
 		@Override
 		public void changedUpdate(DocumentEvent e) {
-			updateDBNames();
+//			updateDBNames();
 			fireEnabled(enabled());
 		}
 	};
@@ -290,7 +290,7 @@ public class FirstStepPane extends JPanel implements IState {
 				textFieldServerName.setText(MapViewProperties.getString("MapCache_MongoDB_DefaultServerName"));
 			}
 			mongoDBConnectSate = isDBValidate();
-			updateDBNames();
+//			updateDBNames();
 			fireEnabled(enabled());
 		}
 	};
@@ -465,6 +465,12 @@ public class FirstStepPane extends JPanel implements IState {
 		this.comboBoxSaveType.addItemListener(this.saveTypeListener);
 		this.textFieldServerName.addFocusListener(this.serverNameFocusListener);
 		this.fileChooserControlFileCache.addFileChangedListener(this.chooseCacheFilePathTextChangeListener);
+		this.comboBoxDatabaseName.getComponent(0).addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				updateDBNames();
+			}
+		});
 		((JTextField) this.comboBoxDatabaseName.getEditor().getEditorComponent()).getDocument().addDocumentListener(this.databaseNameChangeListener);
 		this.textFieldUserName.getDocument().addDocumentListener(this.passwordChangeListener);
 		this.textFieldUserPassword.getDocument().addDocumentListener(this.passwordChangeListener);
@@ -497,7 +503,9 @@ public class FirstStepPane extends JPanel implements IState {
 	}
 
 	private void initPanelImageSaveOutputDisplay(String currentShowItem) {
-		if (currentShowItem.equals(MapViewProperties.getString("MapCache_SaveType_Compact")) || currentShowItem.equals(MapViewProperties.getString("MapCache_SaveType_Origin")) || currentShowItem.equals(MapViewProperties.getString("MapCache_SaveType_GeoPackage"))) {
+		if (currentShowItem.equals(MapViewProperties.getString("MapCache_SaveType_Compact"))
+				|| currentShowItem.equals(MapViewProperties.getString("MapCache_SaveType_Origin"))
+				|| currentShowItem.equals(MapViewProperties.getString("MapCache_SaveType_GeoPackage"))) {
 			this.labelServerName.setVisible(false);
 			this.textFieldServerName.setVisible(false);
 			this.labelDatabaseName.setVisible(false);
@@ -566,7 +574,7 @@ public class FirstStepPane extends JPanel implements IState {
 				this.mapCacheBuilder.setStorageType(StorageType.MongoDB);
 			}
 			mongoDBConnectSate = isDBValidate();
-			updateDBNames();
+//			updateDBNames();
 		}
 	}
 
@@ -1122,7 +1130,7 @@ public class FirstStepPane extends JPanel implements IState {
 		if (this.localSplitTable.getRowCount() == 1) {
 			if (this.originMapCacheScale.length > 0) {
 				this.currentMapCacheScale.add(this.originMapCacheScale[0]);
-			} else if (null != Application.getActiveApplication().getActiveForm()) {
+			} else if (null != Application.getActiveApplication().getActiveForm()&&Application.getActiveApplication().getActiveForm() instanceof IFormMap) {
 				this.currentMapCacheScale.add(((IFormMap) Application.getActiveApplication().getActiveForm()).getMapControl().getMap().getScale());
 			} else if (null != CacheUtilities.getWorkspaceSelectedMap()) {
 				this.currentMapCacheScale.add(CacheUtilities.getWorkspaceSelectedMap().getScale());

@@ -14,7 +14,7 @@ import com.supermap.desktop.utilities.DatasetUtilities;
 public class MetaProcessCentralElement extends MetaProcessSpatialMeasure {
 
 	public MetaProcessCentralElement() {
-		super();
+		setTitle(ProcessProperties.getString("String_CentralElement"));
 	}
 
 	protected void initHook() {
@@ -33,7 +33,7 @@ public class MetaProcessCentralElement extends MetaProcessSpatialMeasure {
 			DatasetVector result = SpatialMeasure.measureCentralElement(
 					datasetVector,
 					parameterSaveDataset.getResultDatasource(),
-					DatasetUtilities.getAvailableDatasetName(parameterSaveDataset.getResultDatasource(),parameterSaveDataset.getDatasetName(),null)
+					DatasetUtilities.getAvailableDatasetName(parameterSaveDataset.getResultDatasource(), parameterSaveDataset.getDatasetName(), null)
 					,
 					measureParameter.getMeasureParameter());
 			this.getParameters().getOutputs().getData(OUTPUT_DATASET).setValue(result);
@@ -45,11 +45,6 @@ public class MetaProcessCentralElement extends MetaProcessSpatialMeasure {
 			SpatialMeasure.removeSteppedListener(steppedListener);
 		}
 		return isSuccessful;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_CentralElement");
 	}
 
 	@Override

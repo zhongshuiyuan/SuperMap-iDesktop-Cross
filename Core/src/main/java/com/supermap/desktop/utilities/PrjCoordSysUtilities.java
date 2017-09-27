@@ -11,7 +11,7 @@ public class PrjCoordSysUtilities {
 
 	/**
 	 * 获取所有地理坐标系类型及相应的字符串表示字典
-	 * 
+	 *
 	 * @return
 	 */
 	private PrjCoordSysUtilities() {
@@ -26,27 +26,34 @@ public class PrjCoordSysUtilities {
 	}
 
 	public static String getDescription(PrjCoordSys prjCoordSys) {
+		// 做下安全设置-yuanR
+		if (prjCoordSys == null) {
+			return "";
+		}
 		String result = "";
 		try {
 			if (prjCoordSys.getType() == PrjCoordSysType.PCS_NON_EARTH) {
 				result = CoreProperties.getString("String_NoProjectionParameter") + "----" + prjCoordSys.getCoordUnit().toString();
 			} else {
-				String[] earthFrameOfReferenceinfos = new String[] { CoreProperties.getString("String_GeoCoordSys_GeodeticCoordinateSystem"),
+				String[] earthFrameOfReferenceinfos = new String[]{
+						// 增加EPSG code-yuanR2017.9.25
+						CoreProperties.getString("String_PrjCoordSys_EPSG_Code"),
+						CoreProperties.getString("String_GeoCoordSys_GeodeticCoordinateSystem"),
 						CoreProperties.getString("String_GeoCoordSys_ReferenceSpheroid"), CoreProperties.getString("String_GeoSpheroid_Axis"),
-						CoreProperties.getString("String_GeoSpheroid_Flatten") };
+						CoreProperties.getString("String_GeoSpheroid_Flatten")};
 				ArrayList<String> infoLabels = new ArrayList<String>();
 				if (prjCoordSys.getType() == PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
 					for (String string : earthFrameOfReferenceinfos) {
 						infoLabels.add(string);
 					}
 				} else {
-					String[] prjInfo = new String[] { CoreProperties.getString("String_Projection_ProjectionType"),
+					String[] prjInfo = new String[]{CoreProperties.getString("String_Projection_ProjectionType"),
 							CoreProperties.getString("String_PrjParameter_CenterMeridian"), CoreProperties.getString("String_PrjParameter_CentralParallel"),
 							CoreProperties.getString("String_PrjParameter_StandardParallel1"),
 							CoreProperties.getString("String_PrjParameter_StandardParallel2"), CoreProperties.getString("String_PrjParameter_FalseEasting"),
 							CoreProperties.getString("String_PrjParameter_FalseNorthing"), CoreProperties.getString("String_PrjParameter_ScaleFactor"),
 							CoreProperties.getString("String_PrjParameter_Azimuth"), CoreProperties.getString("String_PrjParameter_FirstPointLongitude"),
-							CoreProperties.getString("String_PrjParameter_SecondPointLongitude"), CoreProperties.getString("String_GeoCoordSys_Name") };
+							CoreProperties.getString("String_PrjParameter_SecondPointLongitude"), CoreProperties.getString("String_GeoCoordSys_Name")};
 
 					for (String string : prjInfo) {
 						infoLabels.add(string);
@@ -79,7 +86,9 @@ public class PrjCoordSysUtilities {
 					 */
 					// @formatter:on
 					text += String.format("%-10s\t", info);
-					if (info.equals(CoreProperties.getString("String_GeoCoordSys_GeodeticCoordinateSystem"))) {
+					if (info.equals(CoreProperties.getString("String_PrjCoordSys_EPSG_Code"))) {
+						text += Integer.toString(prj.getEPSGCode());
+					} else if (info.equals(CoreProperties.getString("String_GeoCoordSys_GeodeticCoordinateSystem"))) {
 						text += prj.getGeoCoordSys().getGeoDatum().getName();
 					} else if (info.equals(CoreProperties.getString("String_GeoCoordSys_ReferenceSpheroid"))) {
 						text += prj.getGeoCoordSys().getGeoDatum().getGeoSpheroid().getName();
@@ -124,7 +133,7 @@ public class PrjCoordSysUtilities {
 
 	/**
 	 * 根据指定的 bounds 以及地理坐标系来获取一个 Albers 投影坐标系，用来做平常坐标的长度计算
-	 * 
+	 *
 	 * @param bounds
 	 * @return
 	 */
@@ -151,7 +160,7 @@ public class PrjCoordSysUtilities {
 
 	/**
 	 * 将指定的 geoLine 对象用指定的投影坐标系统进行转换
-	 * 
+	 *
 	 * @param geoLine
 	 * @param prjCoordSys
 	 */
@@ -171,7 +180,7 @@ public class PrjCoordSysUtilities {
 
 	/**
 	 * 用默认 Albers投影方式在指定的地理坐标系下将 geoLine 从地理坐标转换为投影坐标
-	 * 
+	 *
 	 * @param geoLine
 	 * @param geoCoordSys
 	 */
@@ -183,7 +192,7 @@ public class PrjCoordSysUtilities {
 
 	/**
 	 * 将指定的 geoRegion 对象用指定的投影坐标系统进行转换
-	 * 
+	 *
 	 * @param geoRegion
 	 * @param prjCoordSys
 	 */
@@ -203,7 +212,7 @@ public class PrjCoordSysUtilities {
 
 	/**
 	 * 用默认 Albers投影方式在指定的地理坐标系下将 geoRegion 从地理坐标转换为投影坐标
-	 * 
+	 *
 	 * @param geoRegion
 	 * @param geoCoordSys
 	 */

@@ -10,7 +10,10 @@ import com.supermap.desktop.process.ProcessProperties;
 import com.supermap.desktop.process.constraint.ipls.EqualDatasourceConstraint;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
-import com.supermap.desktop.process.parameter.ipls.*;
+import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
+import com.supermap.desktop.process.parameter.ipls.ParameterDatasource;
+import com.supermap.desktop.process.parameter.ipls.ParameterDatasourceConstrained;
+import com.supermap.desktop.process.parameter.ipls.ParameterSingleDataset;
 import com.supermap.desktop.utilities.DatasetUtilities;
 
 /**
@@ -21,6 +24,10 @@ public class MetaProcessStreamLink extends MetaProcessHydrology {
 
 	private ParameterDatasourceConstrained directionDatasource;
 	private ParameterSingleDataset directionDataset;
+
+	public MetaProcessStreamLink() {
+		setTitle(ProcessProperties.getString("String_Title_StreamLink"));
+	}
 
 	@Override
 	protected void initField() {
@@ -74,7 +81,7 @@ public class MetaProcessStreamLink extends MetaProcessHydrology {
 		} else if (directionDataset.getSelectedItem() != null) {
 			srcDirection = (DatasetGrid) directionDataset.getSelectedItem();
 		}
-		DatasetGrid result= HydrologyAnalyst.streamLink(src, srcDirection, resultDataset.getResultDatasource(),
+		DatasetGrid result = HydrologyAnalyst.streamLink(src, srcDirection, resultDataset.getResultDatasource(),
 				resultDataset.getResultDatasource().getDatasets().getAvailableDatasetName(resultDataset.getDatasetName()));
 
 		return result;
@@ -83,10 +90,5 @@ public class MetaProcessStreamLink extends MetaProcessHydrology {
 	@Override
 	public String getKey() {
 		return MetaKeys.STREAM_LINK;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_StreamLink");
 	}
 }
