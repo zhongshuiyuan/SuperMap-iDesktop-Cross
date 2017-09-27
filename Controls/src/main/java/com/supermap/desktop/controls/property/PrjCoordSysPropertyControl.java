@@ -222,14 +222,18 @@ public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 		}
 	}
 
+	/**
+	 * 投影转换按钮响应事件
+	 * 原投影转换是对树中选中的对象进行投影，支持数据集和数据源
+	 * 現投影转换功能更为独立，在功能内可以任意跟换原数据
+	 * 因此对功能的实现进行修改及优化
+	 * yuanR2017.9.27
+	 */
 	private void buttonConvertClicked() {
-		//todo YUANR
-		JDialogPrjCoordSysTranslator dialogTranslator = new JDialogPrjCoordSysTranslator(prjHandle.getPrj());
+		JDialogPrjCoordSysTranslator dialogTranslator = new JDialogPrjCoordSysTranslator();
 		if (dialogTranslator.showDialog() == DialogResult.OK) {
-			//this.prjHandle.convert(dialogTranslator.getMethod(), dialogTranslator.getParameter(), dialogTranslator.getTargetPrj());
 			fillComponents();
 		}
-
 	}
 
 	private void setControlsEnabled() {

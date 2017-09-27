@@ -2,26 +2,21 @@ package com.supermap.desktop.spatialanalyst.vectoranalyst;
 
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetType;
-import com.supermap.data.Datasource;
 import com.supermap.data.Recordset;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.Interface.IFormMap;
 import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.controls.utilities.ComponentUIUtilities;
 import com.supermap.desktop.spatialanalyst.SpatialAnalystProperties;
-import com.supermap.desktop.ui.UICommonToolkit;
 import com.supermap.desktop.ui.controls.DatasetComboBox;
 import com.supermap.desktop.ui.controls.DatasourceComboBox;
-import com.supermap.desktop.ui.controls.TreeNodeData;
-import com.supermap.desktop.ui.controls.WorkspaceTree;
+import com.supermap.desktop.utilities.DatasetUtilities;
 import com.supermap.desktop.utilities.MapUtilities;
 import com.supermap.mapping.Layer;
 import com.supermap.ui.MapControl;
 
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -129,57 +124,25 @@ public class PanelBufferData extends JPanel {
 					}
 					// 所有图层所指的数据都不存在或者图层对应的数据都不符合线缓冲区面板要求,此时选择tree节点进行缓冲区初始化--yuanR 2017.3.10
 					if (this.recordsetList.size() <= 0) {
-						setWorkspaceTreeNode(datasetType);
+						setWorkspaceTreeNode();
 					}
 				} else {
-					setWorkspaceTreeNode(datasetType);
+					setWorkspaceTreeNode();
 				}
 			} else {
-				setWorkspaceTreeNode(datasetType);
+				setWorkspaceTreeNode();
 			}
 		} else {
-			setWorkspaceTreeNode(datasetType);
+			setWorkspaceTreeNode();
 		}
-
-
 	}
 
-	private void setWorkspaceTreeNode(DatasetType datasetType) {
-		WorkspaceTree workspaceTree = UICommonToolkit.getWorkspaceManager().getWorkspaceTree();
-		TreePath selectedPath = workspaceTree.getSelectionPath();
-		if (selectedPath != null && selectedPath.getLastPathComponent() instanceof DefaultMutableTreeNode) {
-			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
-			TreeNodeData nodeData = (TreeNodeData) selectedNode.getUserObject();
-			if (nodeData.getData() instanceof Datasource) {
-				Datasource selectedDatasource = (Datasource) nodeData.getData();
-				this.getComboBoxBufferDataDatasource().setSelectedDatasource(selectedDatasource);
-				this.getComboBoxBufferDataDataset().setDatasets(selectedDatasource.getDatasets());
-			} else if (nodeData.getData() instanceof Dataset) {
-				Dataset selectedDataset = (Dataset) nodeData.getData();
-				this.getComboBoxBufferDataDatasource().setSelectedDatasource(selectedDataset.getDatasource());
-				this.getComboBoxBufferDataDataset().setDatasets(selectedDataset.getDatasource().getDatasets());
-				if (datasetType.equals(DatasetType.LINE)) {
-					if (selectedDataset.getType() == DatasetType.LINE || selectedDataset.getType() == DatasetType.NETWORK) {
-						this.getComboBoxBufferDataDataset().setSelectedDataset(selectedDataset);
-					}
-				} else {
-					if (selectedDataset.getType() == DatasetType.POINT || selectedDataset.getType() == DatasetType.REGION) {
-						this.getComboBoxBufferDataDataset().setSelectedDataset(selectedDataset);
-					}
-				}
-			} else {
-				initDatasourceAndDataSet();
-			}
-		} else {
-			initDatasourceAndDataSet();
-		}
+	private void setWorkspaceTreeNode() {
+		Dataset dataset = DatasetUtilities.getDefaultDataset();
+		this.getComboBoxBufferDataDatasource().setSelectedDatasource(dataset.getDatasource());
+		this.getComboBoxBufferDataDataset().setDatasets(dataset.getDatasource().getDatasets());
+		this.getComboBoxBufferDataDataset().setSelectedDataset(dataset);
 		this.getCheckBoxGeometrySelect().setEnabled(false);
-	}
-
-	private void initDatasourceAndDataSet() {
-		Datasource defaultDatasource = Application.getActiveApplication().getWorkspace().getDatasources().get(0);
-		this.getComboBoxBufferDataDatasource().setSelectedDatasource(defaultDatasource);
-		this.getComboBoxBufferDataDataset().setDatasets(defaultDatasource.getDatasets());
 	}
 
 	private void setComboBoxDatasetType(DatasetType datasetType) {
