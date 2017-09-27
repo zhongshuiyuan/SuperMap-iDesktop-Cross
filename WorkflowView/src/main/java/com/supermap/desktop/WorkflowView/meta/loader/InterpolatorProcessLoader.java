@@ -39,6 +39,10 @@ public class InterpolatorProcessLoader extends AbstractProcessLoader {
 		} else if (MetaKeys.INTERPOLATOR_KRIGING.equals(getKey())) {
 			result = new MetaProcessInterpolator(InterpolationAlgorithmType.KRIGING);
 		}
+
+		if (result != null && getTitle() != null && !getTitle().isEmpty()) {
+			result.setTitle(getTitle());
+		}
 		return result;
 	}
 }

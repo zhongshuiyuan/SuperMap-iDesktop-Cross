@@ -43,6 +43,10 @@ public class OverlayProcessLoader extends AbstractProcessLoader {
 		} else if (MetaKeys.OVERLAY_ANALYST_XOR.equals(getKey())) {
 			result = new MetaProcessOverlayAnalyst(OverlayAnalystType.XOR);
 		}
+
+		if (result != null && getTitle() != null && !getTitle().isEmpty()) {
+			result.setTitle(getTitle());
+		}
 		return result;
 	}
 }
