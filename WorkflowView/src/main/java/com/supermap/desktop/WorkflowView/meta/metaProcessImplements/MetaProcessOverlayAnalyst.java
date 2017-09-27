@@ -157,6 +157,7 @@ public class MetaProcessOverlayAnalyst extends MetaProcess {
 
 		if (dataset != null) {
 			parameterSourceDatasource.setSelectedItem(dataset.getDatasource());
+			parameterSourceDataset.setDatasource(dataset.getDatasource());
 			parameterSourceDataset.setSelectedItem(dataset);
 			if (!dataset.getDatasource().isReadOnly()) {
 				parameterResultDatasource.setSelectedItem(dataset.getDatasource());

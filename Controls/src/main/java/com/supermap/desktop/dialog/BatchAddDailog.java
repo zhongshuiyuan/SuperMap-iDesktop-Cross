@@ -111,6 +111,7 @@ public class BatchAddDailog extends SmDialog {
                 double currentStepValue = (Double.valueOf(endValueText.getText()) - Double.valueOf(startValueText.getText())) / (currentSeriesNum - 1);
                 inputStepLength = currentStepValue;
                 stepLengthText.setText(String.valueOf(currentStepValue));
+                inputSeriesNum=Integer.valueOf(value);
             }
         }
     };
