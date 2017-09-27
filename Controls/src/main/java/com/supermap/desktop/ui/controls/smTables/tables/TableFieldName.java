@@ -88,6 +88,7 @@ public class TableFieldName extends JTable implements ITable {
 	private void init() {
 		this.setRowHeight(ROW_HEIGHT);
 		this.getTableHeader().getColumnModel().getColumn(TABLE_COLUMN_CHECKABLE).setHeaderRenderer(new CheckHeaderCellRender(this, "", false));
+		this.getTableHeader().setReorderingAllowed(false);
 	}
 
 	public ArrayList getSelectedFieldsName() {

@@ -428,6 +428,7 @@ public class JDialogPrjCoordSysSettings extends SmDialog {
 		this.tablePrjCoordSys = new JTable();
 		this.tablePrjCoordSys.setRowHeight(this.tablePrjCoordSys.getRowHeight() + 4);
 		this.tablePrjCoordSys.setModel(this.prjModel);
+		this.tablePrjCoordSys.getTableHeader().setReorderingAllowed(false);
 		scrollPane.setViewportView(this.tablePrjCoordSys);
 
 		JScrollPane scrollPaneDetail = new JScrollPane();
