@@ -44,7 +44,7 @@ public class CreateCollectionCallable extends UpdateProgressCallable {
 			DatasetInfo datasetInfo;
 			for (int i = rowCount - 1; i >= 0; i--) {
 				datasetInfo = parent.tableModel.getTagValueAt(i);
-				if (null != vector && parent.hasDataset(vector, datasetInfo.getDataBase(), datasetInfo.getName())) {
+				if (null != vector && parent.hasDataset(vector, datasetInfo.getDataBase(), datasetInfo.getAlias(), datasetInfo.getName())) {
 					//需不需要添加已经存在的数据集？
 //					Application.getActiveApplication().getOutput().output(MessageFormat.format(CommonProperties.getString("String_DatasetExistInCollection"), datasetInfos.get(i).getDataset().getName(), vector.getName()));
 					continue;

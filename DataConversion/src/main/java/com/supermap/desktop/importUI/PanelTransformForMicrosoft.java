@@ -13,7 +13,6 @@ import com.supermap.desktop.ui.TristateCheckBox;
 import com.supermap.desktop.ui.controls.ComponentBorderPanel.CompTitledPane;
 import com.supermap.desktop.ui.controls.GridBagConstraintsHelper;
 import com.supermap.desktop.ui.controls.SteppedComboBox;
-import com.supermap.desktop.utilities.Convert;
 import com.supermap.desktop.utilities.StringUtilities;
 import com.supermap.desktop.utilities.XlsUtilities;
 
@@ -51,6 +50,7 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 	private SteppedComboBox comboBoxX;
 	private SteppedComboBox comboBoxY;
 	private SteppedComboBox comboBoxZ;
+	private JLabel labelDataPreview;
 	private JTable tablePreviewCSV;
 	private JScrollPane scrollPanePreviewCSV;
 
@@ -119,7 +119,7 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 
 	private void setImportAsPointWKT() {
 		//todo 设置后有崩溃问题，暂时屏蔽
-		//((ImportSettingCSV) importSetting).setIndexAsGeometry(1);
+//		((ImportSettingCSV) importSetting).setIndexAsGeometry(comboBoxWKT.getSelectedIndex());
 	}
 
 	private ItemListener commonItemListener = new ItemListener() {
@@ -147,26 +147,21 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 
 	private void setImportAsPoint() {
 		//用非法经纬度处理异常数据
-		ArrayList<Integer> fileds = new ArrayList<>();
+		ArrayList<String> fileds = new ArrayList<>();
 		String tempX = comboBoxX.getSelectedItem().toString();
-		if (StringUtilities.isNumber(tempX)) {
-			fileds.add(Convert.toInteger(tempX));
+		if (!StringUtilities.isNullOrEmpty(tempX)) {
+			fileds.add(tempX);
 		}
 		String tempY = comboBoxY.getSelectedItem().toString();
-		if (StringUtilities.isNumber(tempY)) {
-			fileds.add(Convert.toInteger(tempY));
+		if (!StringUtilities.isNullOrEmpty(tempY)) {
+			fileds.add(tempY);
 		}
 		String tempZ = comboBoxZ.getSelectedItem().toString();
-		if (StringUtilities.isNumber(tempZ)) {
-			fileds.add(Convert.toInteger(tempZ));
+		if (!StringUtilities.isNullOrEmpty(tempZ)) {
+			fileds.add(tempZ);
 		}
-		int[] indexsAsPoint = new int[fileds.size()];
-		for (int i = 0, size = fileds.size(); i < size; i++) {
-			indexsAsPoint[i] = fileds.get(i);
-		}
-		((ImportSettingCSV) importSetting).setIndexsAsPoint(indexsAsPoint);
+		((ImportSettingCSV) importSetting).setFieldsAsPoint(fileds.toArray(new String[fileds.size()]));
 		fileds.clear();
-		indexsAsPoint = null;
 		fileds = null;
 		tempX = null;
 		tempY = null;
@@ -206,7 +201,8 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 		prjCoordSys.setGeoCoordSys(geoCoordSys);
 		this.importSetting.setTargetPrjCoordSys(prjCoordSys);
 		this.checkBoxFirstRowAsField = new TristateCheckBox();
-		this.checkBoxFirstRowAsField.setSelected(false);
+		this.checkBoxFirstRowAsField.setSelected(true);
+		((ImportSettingCSV) this.importSetting).setFirstRowIsField(true);
 		this.labelSeparator = new JLabel();
 		this.textFieldSeparator = new JTextField();
 		this.checkBoxImportIndexData = new JCheckBox();
@@ -219,6 +215,7 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 		ButtonGroup group = new ButtonGroup();
 		group.add(this.radioButtonIndexWKT);
 		group.add(this.radioButtonIndex);
+		this.labelDataPreview = new JLabel();
 		this.scrollPanePreviewCSV = new JScrollPane();
 		this.tablePreviewCSV = new JTable();
 		String[] temp = new String[]{};
@@ -331,13 +328,18 @@ public class PanelTransformForMicrosoft extends PanelTransform {
         panelDefault.add(this.textFieldSeparator, new GridBagConstraintsHelper(2, 0, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 0, 5, 20).setFill(GridBagConstraints.HORIZONTAL).setWeight(1, 0));
         panelDefault.add(this.checkBoxFirstRowAsField, new GridBagConstraintsHelper(4, 0, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 0, 5, 10).setFill(GridBagConstraints.NONE).setWeight(0, 0));
         panelDefault.add(this.labelEmpty, new GridBagConstraintsHelper(6, 0, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 0, 5, 10).setFill(GridBagConstraints.HORIZONTAL).setWeight(1, 0));
-        panelDefault.add(this.scrollPanePreviewCSV, new GridBagConstraintsHelper(0, 1, 8, 6).setAnchor(GridBagConstraints.WEST).setInsets(0, 5, 5, 10).setFill(GridBagConstraints.BOTH).setWeight(1, 1).setIpad(0,80));
+        panelDefault.add(this.labelDataPreview, new GridBagConstraintsHelper(0, 1, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 5, 5, 45).setFill(GridBagConstraints.NONE).setWeight(0, 0));
+        panelDefault.add(this.scrollPanePreviewCSV, new GridBagConstraintsHelper(2, 1, 6, 6).setAnchor(GridBagConstraints.WEST).setInsets(0, 0, 5, 10).setFill(GridBagConstraints.BOTH).setWeight(1, 1).setIpad(0,80));
 		panelDefault.setBorder(new TitledBorder(DataConversionProperties.getString("string_border_panelTransform")));
         this.setLayout( new GridBagLayout());
         this.add(panelDefault,new GridBagConstraintsHelper(0,0,1,1).setAnchor(GridBagConstraints.WEST).setFill(GridBagConstraints.BOTH).setWeight(1,0));
         this.add(this.paneForIndexAsPoint,new GridBagConstraintsHelper(0,1,1,1).setAnchor(GridBagConstraints.WEST).setFill(GridBagConstraints.BOTH).setWeight(1,0));
         this.textFieldSeparator.setPreferredSize(new Dimension(18, 23));
-        this.scrollPanePreviewCSV.setViewportView(this.tablePreviewCSV);
+        if (null!=panelImports){
+        	this.scrollPanePreviewCSV.setViewportView(null);
+        }else{
+            this.scrollPanePreviewCSV.setViewportView(this.tablePreviewCSV);
+        }
 		CommonUtilities.setComboBoxTheme(this.comboBoxWKT);
 		CommonUtilities.setComboBoxTheme(this.comboBoxX);
 		CommonUtilities.setComboBoxTheme(this.comboBoxY);
@@ -345,7 +347,20 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 		this.radioButtonIndex.setSelected(true);
         setFirstRowAsField();
         setSeparator();
-        setIndexPanelEnabled();
+        if (null!=panelImports){
+          checkBoxImportIndexData.setEnabled(false);
+          this.radioButtonIndexWKT.setEnabled(false);
+    	this.radioButtonIndex.setEnabled(false);
+    	this.labelX.setEnabled(false);
+		this.labelY.setEnabled(false);
+		this.labelZ.setEnabled(false);
+		comboBoxX.setEnabled(false);
+		comboBoxY.setEnabled(false);
+		comboBoxZ.setEnabled(false);
+		comboBoxWKT.setEnabled(false);
+        }else{
+          setIndexPanelEnabled();
+        }
         if (importSetting instanceof ImportSettingExcel){
         	this.paneForIndexAsPoint.setVisible(false);
         	this.labelSeparator.setVisible(false);
@@ -413,6 +428,7 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 
     @Override
     public void initResources() {
+		this.labelDataPreview.setText(CommonProperties.getString("String_DataPreview"));
         this.labelSeparator.setText(DataConversionProperties.getString("String_Label_Separator"));
         this.textFieldSeparator.setText(",");
         this.checkBoxFirstRowAsField.setText(DataConversionProperties.getString("String_ImportSettingPanel_Checkbox_FirstRowisField"));

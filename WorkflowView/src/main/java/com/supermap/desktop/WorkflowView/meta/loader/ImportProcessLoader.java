@@ -35,7 +35,7 @@ public class ImportProcessLoader extends AbstractProcessLoader {
 		String importType = getKey().replace(IMPORT, "");
 		IProcess process = MetaProcessImportFactory.createMetaProcessImport(importType);
 
-		if (process != null && getTitle() != null && !getTitle().isEmpty()) {
+		if (process != null && getTitle() != null && !getTitle().trim().isEmpty()) {
 			process.setTitle(getTitle());
 		}
 		return process;
