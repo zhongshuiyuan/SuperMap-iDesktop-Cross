@@ -140,14 +140,14 @@ public class JDialogCreateCollectionDataset extends SmDialog {
 		formProgress.doWork(new CreateCollectionCallable(JDialogCreateCollectionDataset.this));
 	}
 
-	public boolean hasDataset(DatasetVector datasetVector, String dataBase, String name) {
+	public boolean hasDataset(DatasetVector datasetVector, String dataBase, String alias, String name) {
 
 		boolean result = false;
 		ArrayList<CollectionDatasetInfo> datasetInfos = datasetVector.getCollectionDatasetInfos();
 		for (int i = 0, size = datasetInfos.size(); i < size; i++) {
 			if (datasetInfos.get(i).getDatasetName().equals(name)
-					&& datasetInfos.get(i).getDatasourceConnectInfo().getDatabase().equals(dataBase)
-					&& null != DatasourceUtilities.getDatasource(datasetInfos.get(i).getDatasourceConnectInfo())) {
+					&& (datasetInfos.get(i).getDatasourceConnectInfo().getDatabase().equals(dataBase)
+					|| datasetInfos.get(i).getDatasourceConnectInfo().getAlias().equals(alias))) {
 				result = true;
 				break;
 			}
@@ -348,25 +348,20 @@ public class JDialogCreateCollectionDataset extends SmDialog {
 							}
 						}
 						tableModel.removeRows(selectRows);
+						setRowSelection();
 					}
 				} else {
-					boolean isDeleteRow = false;
-					for (int i = collectionInfos.size() - 1; i >= 0; i--) {
-						DatasetInfo datasetInfo = tableModel.getTagValueAt(selectRows[0]);
-						if (hasDataset(datasetVector, datasetInfo.getDataBase(), datasetInfo.getName())) {
-							if (new SmOptionPane().showConfirmDialog(MessageFormat.format(CommonProperties.getString("String_RemoveDatasetFromVectorCollection"), datasetVector.getName(), datasetInfo.getDataBase())) == JOptionPane.OK_OPTION) {
-								delete(collectionInfos, i, datasetInfo.getName());
-								isDeleteRow = true;
-							}
+					DatasetInfo datasetInfo = tableModel.getTagValueAt(selectRows[0]);
+					if (hasDataset(datasetVector, datasetInfo.getDataBase(), datasetInfo.getAlias(), datasetInfo.getName())) {
+						if (new SmOptionPane().showConfirmDialog(MessageFormat.format(CommonProperties.getString("String_RemoveDatasetFromVectorCollection"), datasetVector.getName(), datasetInfo.getName())) == JOptionPane.OK_OPTION) {
+							delete(collectionInfos, selectRows[0], datasetInfo.getName());
 						} else {
-							isDeleteRow = true;
+							return;
 						}
 					}
-					if (isDeleteRow) {
-						tableModel.removeRows(selectRows);
-					}
+					tableModel.removeRows(selectRows);
+					setRowSelection();
 				}
-				setRowSelection();
 			}
 		} catch (Exception e) {
 			Application.getActiveApplication().getOutput().output(e);
@@ -473,7 +468,9 @@ public class JDialogCreateCollectionDataset extends SmDialog {
 		try {
 			java.util.List<Dataset> selectedDatasets = datasetChooser.getSelectedDatasets();
 			for (int i = 0; i < selectedDatasets.size(); i++) {
-				if (null != datasetVector && hasDataset(datasetVector, selectedDatasets.get(i).getDatasource().getConnectionInfo().getDatabase(), selectedDatasets.get(i).getName())) {
+				if (null != datasetVector &&
+						hasDataset(datasetVector, selectedDatasets.get(i).getDatasource().getConnectionInfo().getDatabase(),
+								selectedDatasets.get(i).getDatasource().getConnectionInfo().getAlias(), selectedDatasets.get(i).getName())) {
 					//需不需要添加已经存在的数据集？
 //					Application.getActiveApplication().getOutput().output(MessageFormat.format(CommonProperties.getString("String_DatasetExistInCollection"), selectedDatasets.get(i).getName(), this.datasetVector.getName()));
 					continue;

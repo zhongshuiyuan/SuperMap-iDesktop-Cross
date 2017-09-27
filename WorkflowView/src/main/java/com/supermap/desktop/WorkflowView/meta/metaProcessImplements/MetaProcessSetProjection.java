@@ -53,8 +53,9 @@ public class MetaProcessSetProjection extends MetaProcess {
 		return ProcessProperties.getString("String_setProjectionFailed");
 	}
 
+
 	public MetaProcessSetProjection() {
-		setTitle(ProcessProperties.getString("String_setProjection"));
+		setTitle(ProcessProperties.getString("String_SetProjection"));
 		initParameters();
 		initComponentState();
 		registerEvents();

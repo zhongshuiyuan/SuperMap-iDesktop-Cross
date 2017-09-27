@@ -413,7 +413,7 @@ public class PanelLineBufferAnalyst extends JPanel {
 		}
 		// 当数据集为空时，即没有数据用于缓冲，设置其他控件不可用
 		this.panelBufferData.setPanelEnable(this.isComboBoxDatasetNotNull);
-		this.panelResultData.setPanelEnable(this.isComboBoxDatasetNotNull);
+		this.panelResultData.setControlsState(this.isComboBoxDatasetNotNull);
 		this.panelParameterSet.setPanelEnable(this.isComboBoxDatasetNotNull);
 
 		this.panelBufferType.getRadioButtonBufferTypeRound().setEnabled(this.isComboBoxDatasetNotNull);

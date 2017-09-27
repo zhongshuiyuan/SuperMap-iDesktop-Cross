@@ -1,6 +1,9 @@
 package com.supermap.desktop.CtrlAction.Dataset;
 
-import com.supermap.data.*;
+import com.supermap.data.CollectionDatasetInfo;
+import com.supermap.data.DatasetType;
+import com.supermap.data.DatasetVector;
+import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.Interface.IBaseItem;
 import com.supermap.desktop.Interface.IForm;
@@ -46,7 +49,8 @@ public class CtrlActionManageCollectionDataset extends CtrlAction {
 		boolean enable = false;
 		if (null != Application.getActiveApplication().getActiveDatasets() && Application.getActiveApplication().getActiveDatasets().length > 0) {
 			DatasetVector datasetVector = (DatasetVector) Application.getActiveApplication().getActiveDatasets()[0];
-			if (datasetVector.getType() == DatasetType.VECTORCOLLECTION) {
+			if (datasetVector.getType() == DatasetType.VECTORCOLLECTION
+					&& !datasetVector.getDatasource().isReadOnly()) {
 				enable = true;
 			}
 		}

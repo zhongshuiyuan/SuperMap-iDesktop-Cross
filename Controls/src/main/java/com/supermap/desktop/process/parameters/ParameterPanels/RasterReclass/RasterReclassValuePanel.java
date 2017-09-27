@@ -184,6 +184,7 @@ public class RasterReclassValuePanel extends JPanel {
 
 		this.table.setModel(this.rasterReclassModel);
 		this.table.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(40);
+		this.table.getTableHeader().setReorderingAllowed(false);
 		this.table.setRowHeight(23);
 	}
 
