@@ -73,7 +73,6 @@ public class SingleProgressPanel extends JPanel implements IWorkerView<SinglePro
 		labelMessage = new JLabel("...");
 		labelRemaintime = new JLabel("...");
 		this.buttonRun = new ButtonExecutor(this.run, this.cancel);
-		this.buttonRun.setVisible(false);
 		ComponentUIUtilities.setName(labelTitle, "ProcessTask_labelTitle");
 		ComponentUIUtilities.setName(progressBar, "ProcessTask_progressBar");
 		ComponentUIUtilities.setName(labelMessage, "ProcessTask_labelMessage");
