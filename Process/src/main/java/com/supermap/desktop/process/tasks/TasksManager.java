@@ -256,6 +256,15 @@ public class TasksManager {
 					// TODO: 2017/8/9 ready已经没有了，但是waitting还有需要处理下
 				}
 
+				if (isCancel) {
+					Vector<IProcess> running = taskStateManager.get(WORKER_STATE_RUNNING);
+					if (running != null) {
+						for (int i = 0; i < running.size(); i++) {
+							workersMap.get(running.get(i)).cancel();
+						}
+					}
+				}
+
 				// 当等待队列、就绪队列、运行队列均已经清空，则停止任务调度，并输出日志
 				if (taskStateManager.get(WORKER_STATE_WAITING).size() == 0 && ready.size() == 0 && taskStateManager.get(WORKER_STATE_RUNNING).size() == 0) {
 					scheduler.stop();

@@ -30,14 +30,13 @@ public abstract class MetaProcess extends AbstractProcess {
 	private final ParameterPropertyChangedListener parameterPropertyChangedListener;
 
 	protected IParameters parameters = new DefaultParameters(this);
-	protected boolean finished = false;
 
 	protected boolean isChangeSourceData = false;
 
 	protected SteppedListener steppedListener = new SteppedListener() {
 		@Override
 		public void stepped(SteppedEvent steppedEvent) {
-			//Application.getActiveApplication().getOutput().output(String.valueOf(steppedEvent.getPercent()));
+
 			RunningEvent event = new RunningEvent(MetaProcess.this, steppedEvent.getPercent(), steppedEvent.getMessage(), steppedEvent.getRemainTime());
 			fireRunning(event);
 

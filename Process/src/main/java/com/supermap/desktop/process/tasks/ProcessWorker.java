@@ -4,6 +4,7 @@ import com.supermap.desktop.Application;
 import com.supermap.desktop.core.Time;
 import com.supermap.desktop.core.TimeType;
 import com.supermap.desktop.process.core.IProcess;
+import com.supermap.desktop.process.enums.RunningStatus;
 import com.supermap.desktop.process.events.RunningEvent;
 import com.supermap.desktop.process.events.RunningListener;
 import com.supermap.desktop.properties.CoreProperties;
@@ -50,10 +51,14 @@ public class ProcessWorker extends Worker<SingleProgress> {
 		@Override
 		public void running(RunningEvent e) {
 			try {
-				if (e.isIndeterminate()) {
-					update(new SingleProgress(e.getMessage()));
+				if (process.getStatus() == RunningStatus.CANCELLING) {
+					e.setCancel(true);
 				} else {
-					update(new SingleProgress(e.getProgress(), e.getMessage(), CoreProperties.getString("String_Remain") + ":" + Time.toString(e.getRemainTime(), TimeType.SECOND)));
+					if (e.isIndeterminate()) {
+						update(new SingleProgress(e.getMessage()));
+					} else {
+						update(new SingleProgress(e.getProgress(), e.getMessage(), CoreProperties.getString("String_Remain") + ":" + Time.toString(e.getRemainTime(), TimeType.SECOND)));
+					}
 				}
 			} catch (Exception e1) {
 				e.setCancel(true);

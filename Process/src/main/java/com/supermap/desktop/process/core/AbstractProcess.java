@@ -121,7 +121,7 @@ public abstract class AbstractProcess implements IProcess {
 							StringUtilities.isNullOrEmptyString(getCOMPLETED_MESSAGE()) ? COMPLETED_MESSAGE : getCOMPLETED_MESSAGE()
 					));
 					setStatus(RunningStatus.COMPLETED);
-				} else if (getStatus() != RunningStatus.CANCELLING) {
+				} else if (this.status != RunningStatus.CANCELLING) {
 					fireRunning(new RunningEvent(this, 0,
 							StringUtilities.isNullOrEmptyString(getFAILED_MESSAGE()) ? FAILED_MESSAGE : getFAILED_MESSAGE()
 					));
