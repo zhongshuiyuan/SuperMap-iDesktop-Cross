@@ -38,7 +38,7 @@ public class DefaultProcessLoader extends AbstractProcessLoader {
 
 		try {
 			process = (IProcess) classInstance.newInstance();
-			if (getTitle() != null && !getTitle().isEmpty()) {
+			if (getTitle() != null && !getTitle().trim().isEmpty()) {
 				process.setTitle(getTitle());
 			}
 		} catch (Exception e) {

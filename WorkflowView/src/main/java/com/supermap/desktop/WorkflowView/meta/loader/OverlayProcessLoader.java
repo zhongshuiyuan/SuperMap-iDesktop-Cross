@@ -44,7 +44,7 @@ public class OverlayProcessLoader extends AbstractProcessLoader {
 			result = new MetaProcessOverlayAnalyst(OverlayAnalystType.XOR);
 		}
 
-		if (result != null && getTitle() != null && !getTitle().isEmpty()) {
+		if (result != null && getTitle() != null && !getTitle().trim().isEmpty()) {
 			result.setTitle(getTitle());
 		}
 		return result;
