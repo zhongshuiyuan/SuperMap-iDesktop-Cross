@@ -88,6 +88,7 @@ public class PanelReferSysTransSettings extends JPanel {
 		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_BURSA_WOLF));
 
 		this.buttonSet = new SmButton();
+		this.buttonSet.setUseDefaultSize(false);
 	}
 
 	private void initializeResources() {

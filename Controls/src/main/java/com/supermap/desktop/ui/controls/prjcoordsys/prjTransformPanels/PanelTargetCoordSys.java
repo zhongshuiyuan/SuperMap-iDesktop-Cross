@@ -125,6 +125,7 @@ public class PanelTargetCoordSys extends JPanel {
 		}
 		this.datasource = new DatasourceComboBox(datasourceArray);
 		this.buttonPrjSetting = new SmButton();
+		this.buttonPrjSetting.setUseDefaultSize(false);
 
 		String moduleName = "ImportPrjFile";
 		if (!SmFileChoose.isModuleExist(moduleName)) {

@@ -244,6 +244,7 @@ public class JDialogPrjTransform extends SmDialog {
 	}
 
 	private void initializeResources() {
+		this.setTitle(ControlsProperties.getString("String_Title_DatasetPrjTransform"));
 		this.labelDatasource.setText(ControlsProperties.getString("String_Label_ResultDatasource"));
 		this.labelDataset.setText(ControlsProperties.getString("String_Label_ResultDataset"));
 		this.panelSourceData.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_SourceDataset")));
