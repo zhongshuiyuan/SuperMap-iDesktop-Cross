@@ -348,25 +348,20 @@ public class JDialogCreateCollectionDataset extends SmDialog {
 							}
 						}
 						tableModel.removeRows(selectRows);
+						setRowSelection();
 					}
 				} else {
-					boolean isDeleteRow;
 					DatasetInfo datasetInfo = tableModel.getTagValueAt(selectRows[0]);
 					if (hasDataset(datasetVector, datasetInfo.getDataBase(), datasetInfo.getAlias(), datasetInfo.getName())) {
 						if (new SmOptionPane().showConfirmDialog(MessageFormat.format(CommonProperties.getString("String_RemoveDatasetFromVectorCollection"), datasetVector.getName(), datasetInfo.getName())) == JOptionPane.OK_OPTION) {
 							delete(collectionInfos, selectRows[0], datasetInfo.getName());
-							isDeleteRow = true;
 						} else {
-							isDeleteRow = false;
+							return;
 						}
-					} else {
-						isDeleteRow = true;
 					}
-					if (isDeleteRow) {
-						tableModel.removeRows(selectRows);
-					}
+					tableModel.removeRows(selectRows);
+					setRowSelection();
 				}
-				setRowSelection();
 			}
 		} catch (Exception e) {
 			Application.getActiveApplication().getOutput().output(e);

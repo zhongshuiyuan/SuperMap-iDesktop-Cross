@@ -1,4 +1,4 @@
-package com.supermap.desktop.ui.controls.prjcoordsys.prjCoordSysTransPanels;
+package com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels;
 
 import com.supermap.data.*;
 import com.supermap.desktop.Application;
@@ -36,6 +36,7 @@ public class PanelTargetCoordSys extends JPanel {
 	private PrjCoordSys targetPrjCoordSys = null;
 	private PrjCoordSys buttonSetPrjCoordSys = null;
 	private PrjCoordSys importFilePrjCoordSys = null;
+	private DoSome doSome;
 
 	/**
 	 * 获得设置好的坐标系
@@ -92,7 +93,8 @@ public class PanelTargetCoordSys extends JPanel {
 		}
 	};
 
-	public PanelTargetCoordSys() {
+	public PanelTargetCoordSys(DoSome doSome) {
+		this.doSome = doSome;
 		initializeComponents();
 		initializeResources();
 		initializeLayout();
@@ -209,9 +211,11 @@ public class PanelTargetCoordSys extends JPanel {
 	private void initStates() {
 		if (this.datasource.getSelectedDatasource() != null) {
 			this.radioButtonFromDatasource.setSelected(true);
+			this.buttonPrjSetting.setEnabled(false);
 			setPrjCoordSysInfo(this.datasource.getSelectedDatasource().getPrjCoordSys());
 		} else {
 			this.radioButtonPrjSetting.setSelected(true);
+			setPrjCoordSysInfo(null);
 		}
 	}
 
@@ -223,6 +227,10 @@ public class PanelTargetCoordSys extends JPanel {
 	private void setPrjCoordSysInfo(PrjCoordSys prjCoordSysInfo) {
 		this.targetPrjCoordSys = prjCoordSysInfo;
 		this.panelCoordSysInfo.setCoordInfo(PrjCoordSysUtilities.getDescription(prjCoordSysInfo));
+		// 通过doSome，将改变后的targetPrjCoordSys值传给主面板
+		this.doSome.setTargetPrjCoordSys(this.targetPrjCoordSys);
+		// 如果值为空，控制主面板确定按钮不可用
+		this.doSome.setOKButtonEnabled(this.targetPrjCoordSys != null);
 	}
 
 	/**

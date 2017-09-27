@@ -70,12 +70,11 @@ public class PanelResultDataset extends JPanel {
 		this.labelDatasource = new JLabel();
 		this.comboBoxResultDataDatasource = new DatasourceComboBox();
 		this.textFieldResultDatasetName = new JTextField();
-		//this.textFieldResultDatasetName.setPreferredSize(ControlDefaultValues.DEFAULT_PREFERREDSIZE);
 
 		this.checkBoxUsed.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setPanelEnable(checkBoxUsed.isSelected());
+				setControlsState(checkBoxUsed.isSelected());
 			}
 		});
 		this.comboBoxResultDataDatasource.addItemListener(new ItemListener() {
@@ -152,10 +151,11 @@ public class PanelResultDataset extends JPanel {
 	/**
 	 * 设置结果数据集名称
 	 *
-	 * @param resultName
+	 * @param resultName 当设置结果数据集名称时，立即生效
 	 */
 	public void setResultName(String resultName) {
 		this.resultName = resultName;
+		this.textFieldResultDatasetName.setText(comboBoxResultDataDatasource.getSelectedDatasource().getDatasets().getAvailableDatasetName(this.resultName));
 	}
 
 	/**
@@ -164,7 +164,7 @@ public class PanelResultDataset extends JPanel {
 	 *
 	 * @param isEnable
 	 */
-	public void setPanelEnable(boolean isEnable) {
+	public void setControlsState(boolean isEnable) {
 		this.comboBoxResultDataDatasource.setEnabled(isEnable);
 		this.textFieldResultDatasetName.setEnabled(isEnable);
 	}
@@ -174,9 +174,10 @@ public class PanelResultDataset extends JPanel {
 	 *
 	 * @param isEnable
 	 */
-	public void setEnable(boolean isEnable) {
+	public void setPanelEnable(boolean isEnable) {
 		this.checkBoxUsed.setSelected(isEnable);
 		this.checkBoxUsed.setEnabled(isEnable);
+		setControlsState(isEnable);
 	}
 
 	public DatasourceComboBox getComboBoxResultDataDatasource() {
@@ -185,5 +186,9 @@ public class PanelResultDataset extends JPanel {
 
 	public JTextField getTextFieldResultDataDataset() {
 		return textFieldResultDatasetName;
+	}
+
+	public JCheckBox getCheckBoxUsed() {
+		return checkBoxUsed;
 	}
 }
