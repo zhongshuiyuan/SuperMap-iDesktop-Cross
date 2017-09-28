@@ -114,7 +114,7 @@ public class MetaProcessImport extends MetaProcess {
 					/**
 					 * 给导入csv面板中的文件选择器也添加监听事件，用于当文件文件路径改变时，对选中的csv文件进行预读，得到可供选择的字段-yuanR
 					 */
-					if (importSetting instanceof ImportSettingCSV) {
+					if (importSetting instanceof ImportSettingCSV && !(importSetting instanceof ImportSettingGPX) && !(importSetting instanceof ImportSettingExcel)) {
 						parameterWKTFieldName.removeAllItems();
 						parameterXFieldName.removeAllItems();
 						parameterYFieldName.removeAllItems();
@@ -321,7 +321,7 @@ public class MetaProcessImport extends MetaProcess {
 				}
 			});
 		}
-		if (importSetting instanceof ImportSettingCSV) {
+		if (importSetting instanceof ImportSettingCSV && !(importSetting instanceof ImportSettingGPX) && !(importSetting instanceof ImportSettingExcel)) {
 			parameterImportIndexData = parameterCreator.getParameterImportIndexData();
 			parameterWKTFieldName = parameterCreator.getParameterWKTFieldName();
 			parameterXFieldName = parameterCreator.getParameterXFieldName();
@@ -472,7 +472,7 @@ public class MetaProcessImport extends MetaProcess {
 				}
 			}
 			((ImportSettingExcel) importSetting).removeImportSteppedListener(importStepListener);
-		} else if (importSetting instanceof ImportSettingCSV) {
+		} else if (importSetting instanceof ImportSettingCSV && !(importSetting instanceof ImportSettingGPX) && !(importSetting instanceof ImportSettingExcel)) {
 			importSetting.setSourceFilePath(((ParameterFile) (sourceImportParameters.get(0)).parameter).getSelectedItem().toString());
 			final Datasource datasource = ((ParameterDatasource) resultImportParameters.get(0).parameter).getSelectedItem();
 			importSetting.setTargetDatasource(datasource);
