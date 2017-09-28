@@ -96,7 +96,7 @@ public class LayersComponentManager extends JComponent {
 						this.buildContextMenu();
 					}
 
-					JPopupMenu popupMenu = this.getPoputMenu(selectedNodeData);
+					JPopupMenu popupMenu = this.getPopupMenu(selectedNodeData);
 					if (popupMenu != null) {
 						popupMenu.show(this.layersTree, evt.getX(), evt.getY());
 					}
@@ -120,7 +120,7 @@ public class LayersComponentManager extends JComponent {
 						this.buildContextMenu();
 					}
 
-					JPopupMenu popupMenu = this.getPoputMenu(selectedNodeData);
+					JPopupMenu popupMenu = this.getPopupMenu(selectedNodeData);
 					if (popupMenu != null) {
 						popupMenu.show(this.layer3DsTree, evt.getX(), evt.getY());
 					}
@@ -131,7 +131,7 @@ public class LayersComponentManager extends JComponent {
 		}
 	}
 
-	private JPopupMenu getPoputMenu(TreeNodeData nodeData) {
+	private JPopupMenu getPopupMenu(TreeNodeData nodeData) {
 		JPopupMenu popupMenu = null;
 		try {
 			NodeDataType type = nodeData.getType();

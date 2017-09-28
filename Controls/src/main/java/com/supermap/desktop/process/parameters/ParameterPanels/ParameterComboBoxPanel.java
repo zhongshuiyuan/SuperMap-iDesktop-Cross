@@ -11,6 +11,7 @@ import com.supermap.desktop.process.parameter.ipls.ParameterComboBox;
 import com.supermap.desktop.process.util.ParameterUtil;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.controls.GridBagConstraintsHelper;
+import com.supermap.desktop.ui.controls.SmComboBox;
 import com.supermap.desktop.utilities.StringUtilities;
 
 import javax.swing.*;
@@ -33,7 +34,7 @@ public class ParameterComboBoxPanel extends SwingPanel implements IParameterPane
 	// 防止多次触发事件 Prevent multiple trigger events
 	private boolean isSelectingItem = false;
 	private JLabel label = new JLabel();
-	private JComboBox<ParameterDataNode> comboBox = new JComboBox<>();
+	private SmComboBox<ParameterDataNode> comboBox = new SmComboBox<>();
 
 	public ParameterComboBoxPanel(IParameter parameterComboBox) {
 		super(parameterComboBox);

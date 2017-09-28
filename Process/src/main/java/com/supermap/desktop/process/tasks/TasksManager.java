@@ -48,13 +48,12 @@ public class TasksManager {
 	private final Lock lock = new ReentrantLock();
 	private volatile int status = WORKFLOW_STATE_NORMAL;
 
+	private boolean isCancel = false;
 	private Timer scheduler;
 	private Workflow workflow;
-	private Map<IProcess, ProcessWorker> workersMap = new ConcurrentHashMap<>();
-
-	private EventListenerList listenerList = new EventListenerList();
-
 	private TaskStateManager taskStateManager;
+	private EventListenerList listenerList = new EventListenerList();
+	private Map<IProcess, ProcessWorker> workersMap = new ConcurrentHashMap<>();
 
 	private WorkflowChangeListener workflowChangeListener = new WorkflowChangeListener() {
 		@Override
@@ -81,7 +80,6 @@ public class TasksManager {
 			}
 		}
 	};
-	private boolean isCancel = false;
 
 	public TasksManager(Workflow workflow) {
 		this.workflow = workflow;
@@ -251,12 +249,20 @@ public class TasksManager {
 						if (!isCancel) {
 							workersMap.get(process).execute();
 						} else {
-							process.setStatus(RunningStatus.CANCELLED);
 							workersMap.get(process).cancel();
 						}
 					}
 				} else {
 					// TODO: 2017/8/9 ready已经没有了，但是waitting还有需要处理下
+				}
+
+				if (isCancel) {
+					Vector<IProcess> running = taskStateManager.get(WORKER_STATE_RUNNING);
+					if (running != null) {
+						for (int i = 0; i < running.size(); i++) {
+							workersMap.get(running.get(i)).cancel();
+						}
+					}
 				}
 
 				// 当等待队列、就绪队列、运行队列均已经清空，则停止任务调度，并输出日志

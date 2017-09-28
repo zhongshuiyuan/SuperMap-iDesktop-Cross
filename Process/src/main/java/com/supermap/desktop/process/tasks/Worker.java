@@ -14,6 +14,8 @@ public abstract class Worker<V extends Object> {
 	private String title;
 	private SwingWorkerSub workerSub;
 
+	private boolean isReady;
+
 	public String getTitle() {
 		return title;
 	}
@@ -47,7 +49,7 @@ public abstract class Worker<V extends Object> {
 	}
 
 	public boolean isRunning() {
-		return isRunning;
+		return this.isRunning;
 	}
 
 	public final void execute() {

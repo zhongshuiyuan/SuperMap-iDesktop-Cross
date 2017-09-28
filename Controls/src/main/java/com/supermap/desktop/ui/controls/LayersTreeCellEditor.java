@@ -231,6 +231,7 @@ class LayersTreeCellEditor implements TreeCellEditor, KeyListener, ActionListene
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
 		if (layersTree != null) {
+			layersTree.updateQueue();
 			if (layersTree.getSelectionCount() == 1)
 				lastPath = layersTree.getSelectionPath();
 			else

@@ -7,6 +7,7 @@ import com.supermap.desktop.implement.UserDefineType.ImportSettingGPX;
 
 /**
  * Created by xie on 2017/3/31.
+ * 根据类型获得相应的导入类
  */
 public class ImportSettingCreator implements IImportSettingCreator {
 	private final String importSetting = "com.supermap.data.conversion.ImportSetting";
@@ -70,9 +71,12 @@ public class ImportSettingCreator implements IImportSettingCreator {
 				((ImportSettingSimpleJson) result).setImportEmptyDataset(true);
 			}
 		} catch (ClassNotFoundException e) {
+			// 没有找到该类
 			Application.getActiveApplication().getOutput().output(e);
 		} catch (IllegalAccessException e) {
+			//安全权限异常,一般来说,是由于java在反射时调用了private方法所导致的
 		} catch (InstantiationException e) {
+			// 出现这种异常的原因通常情况下是由于要实例化的对象是一个接口或者是抽象类等无法被实例化的类
 			Application.getActiveApplication().getOutput().output(e);
 		}
 		return result;

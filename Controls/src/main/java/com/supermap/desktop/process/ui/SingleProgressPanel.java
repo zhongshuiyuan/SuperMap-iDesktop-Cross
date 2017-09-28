@@ -1,5 +1,6 @@
 package com.supermap.desktop.process.ui;
 
+import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.controls.utilities.ComponentUIUtilities;
 import com.supermap.desktop.process.ProcessProperties;
 import com.supermap.desktop.process.tasks.IWorkerView;
@@ -25,7 +26,7 @@ public class SingleProgressPanel extends JPanel implements IWorkerView<SinglePro
 	private RoundProgressBar progressBar;
 	private JLabel labelTitle;
 	private JLabel labelMessage;
-	private JLabel labelRemaintime;
+	private JLabel labelRemainTime;
 	private ButtonExecutor buttonRun;
 
 	private Runnable run = new Runnable() {
@@ -40,6 +41,8 @@ public class SingleProgressPanel extends JPanel implements IWorkerView<SinglePro
 	private Runnable cancel = new Runnable() {
 		@Override
 		public void run() {
+			labelMessage.setText(ControlsProperties.getString("String_Canceling"));
+			labelRemainTime.setText("");
 			cancel();
 		}
 	};
@@ -71,12 +74,12 @@ public class SingleProgressPanel extends JPanel implements IWorkerView<SinglePro
 		progressBar.setDigitalColor(labelTitle.getBackground());
 		progressBar.setDrawString(true);
 		labelMessage = new JLabel("...");
-		labelRemaintime = new JLabel("...");
+		labelRemainTime = new JLabel("...");
 		this.buttonRun = new ButtonExecutor(this.run, this.cancel);
 		ComponentUIUtilities.setName(labelTitle, "ProcessTask_labelTitle");
 		ComponentUIUtilities.setName(progressBar, "ProcessTask_progressBar");
 		ComponentUIUtilities.setName(labelMessage, "ProcessTask_labelMessage");
-		ComponentUIUtilities.setName(labelRemaintime, "ProcessTask_labelRemaintime");
+		ComponentUIUtilities.setName(labelRemainTime, "ProcessTask_labelRemaintime");
 		ComponentUIUtilities.setName(buttonRun, "ProcessTask_buttonRun");
 	}
 
@@ -95,7 +98,7 @@ public class SingleProgressPanel extends JPanel implements IWorkerView<SinglePro
 				)
 				.addGroup(layout.createSequentialGroup()
 						.addComponent(labelMessage)
-						.addComponent(labelRemaintime)
+						.addComponent(labelRemainTime)
 				)
 		);
 		layout.setVerticalGroup(layout.createSequentialGroup()
@@ -106,7 +109,7 @@ public class SingleProgressPanel extends JPanel implements IWorkerView<SinglePro
 				)
 				.addGroup(layout.createParallelGroup()
 						.addComponent(labelMessage, WIDTH, WIDTH, WIDTH)
-						.addComponent(labelRemaintime, WIDTH, WIDTH, WIDTH)
+						.addComponent(labelRemainTime, WIDTH, WIDTH, WIDTH)
 				)
 		);
 		this.setLayout(layout);
@@ -123,7 +126,7 @@ public class SingleProgressPanel extends JPanel implements IWorkerView<SinglePro
 	public void reset() {
 		this.progressBar.setProgress(0);
 		this.labelMessage.setText("");
-		this.labelRemaintime.setText("");
+		this.labelRemainTime.setText("");
 		this.buttonRun.setProcedure(ButtonExecutor.READY);
 	}
 
@@ -136,21 +139,21 @@ public class SingleProgressPanel extends JPanel implements IWorkerView<SinglePro
 		if (chunk.isIndeterminate()) {
 			this.progressBar.updateProgressIndeterminate();
 			this.labelMessage.setText(chunk.getMessage());
-			this.labelRemaintime.setVisible(false);
+			this.labelRemainTime.setVisible(false);
 			progressBar.setDrawString(false);
 		} else {
 			this.progressBar.stopUpdateProgressIndeterminate();
 			this.progressBar.setProgress(chunk.getPercent());
 			this.labelMessage.setText(chunk.getMessage());
-			this.labelRemaintime.setText(chunk.getRemainTime());
-			this.labelRemaintime.setVisible(true);
+			this.labelRemainTime.setText(chunk.getRemainTime());
+			this.labelRemainTime.setVisible(true);
 			progressBar.setDrawString(true);
 		}
 	}
 
 	@Override
 	public void done() {
-		this.labelRemaintime.setVisible(false);
+		this.labelRemainTime.setVisible(false);
 		this.buttonRun.setProcedure(ButtonExecutor.READY);
 
 		if (this.worker.isCancelled()) {

@@ -143,6 +143,7 @@ public class JDialogLineInterrruptSelect extends SmDialog {
 
         this.data = this.getData();
         this.smChooseTable = new SmChooseTable(this.data, this.tableHeadTitles);
+        this.smChooseTable.getTableHeader().setReorderingAllowed(false);
         this.tableScrollpane.getViewport().setView(this.smChooseTable);
         this.setLayout(new GridBagLayout());
         this.panelWindow.setLayout(new BorderLayout());

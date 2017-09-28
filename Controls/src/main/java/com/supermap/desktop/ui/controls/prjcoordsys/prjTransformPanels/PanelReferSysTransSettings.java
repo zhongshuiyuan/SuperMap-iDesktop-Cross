@@ -1,4 +1,4 @@
-package com.supermap.desktop.ui.controls.prjcoordsys.prjCoordSysTransPanels;
+package com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels;
 
 import com.supermap.data.CoordSysTransMethod;
 import com.supermap.data.CoordSysTransParameter;
@@ -88,6 +88,7 @@ public class PanelReferSysTransSettings extends JPanel {
 		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_BURSA_WOLF));
 
 		this.buttonSet = new SmButton();
+		this.buttonSet.setUseDefaultSize(false);
 	}
 
 	private void initializeResources() {

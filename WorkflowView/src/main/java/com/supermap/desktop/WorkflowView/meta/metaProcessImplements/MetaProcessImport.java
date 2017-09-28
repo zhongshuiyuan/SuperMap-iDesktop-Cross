@@ -6,7 +6,10 @@ import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
 import com.supermap.desktop.WorkflowView.meta.MetaProcess;
-import com.supermap.desktop.WorkflowView.meta.dataconversion.*;
+import com.supermap.desktop.WorkflowView.meta.dataconversion.ImportParameterCreator;
+import com.supermap.desktop.WorkflowView.meta.dataconversion.ImportSettingCreator;
+import com.supermap.desktop.WorkflowView.meta.dataconversion.ImportSettingSetter;
+import com.supermap.desktop.WorkflowView.meta.dataconversion.ReflectInfo;
 import com.supermap.desktop.WorkflowView.meta.loader.ImportProcessLoader;
 import com.supermap.desktop.controls.utilities.DatasetUIUtilities;
 import com.supermap.desktop.implement.UserDefineType.ImportSettingExcel;
@@ -52,7 +55,7 @@ public class MetaProcessImport extends MetaProcess {
 	private CopyOnWriteArrayList<ReflectInfo> resultImportParameters;
 	private CopyOnWriteArrayList<ReflectInfo> paramParameters;
 	private String importType = "";
-	private IParameterCreator parameterCreator;
+	private ImportParameterCreator parameterCreator;
 	private ImportSteppedListener importStepListener = new ImportSteppedListener() {
 		@Override
 		public void stepped(ImportSteppedEvent e) {
@@ -64,13 +67,20 @@ public class MetaProcessImport extends MetaProcess {
 			}
 		}
 	};
+
+	// 拓展导入csv文件功能，支持导入点线面
+	private ParameterComboBox parameterWKTFieldName;
+	private ParameterComboBox parameterXFieldName;
+	private ParameterComboBox parameterYFieldName;
+	private ParameterComboBox parameterZFieldName;
+
 	// 针对SimpleJson，以文件夹和文件形式选择文件-yuanR2017.9.1
 	private ParameterRadioButton parameterRadioButtonFileSelectType;
 	private ParameterFile parameterFileFolder;
 
 	private ParameterFile parameterFile;
 	private ParameterCharset parameterCharset;
-	private ParameterFile parameterChooseFile;
+	private ParameterFile parameterFilePrjChoose;
 	private ParameterButton parameterButton;
 	private ParameterTextArea parameterTextArea;
 	private ParameterRadioButton parameterRadioButton;
@@ -103,6 +113,14 @@ public class MetaProcessImport extends MetaProcess {
 						}
 					}
 
+					/**
+					 * 给导入csv面板中的文件选择器也添加监听事件，用于当文件文件路径改变时，对选中的csv文件进行预读，得到可供选择的字段-yuanR
+					 */
+					if (importSetting instanceof ImportSettingCSV) {
+
+
+					}
+
 				} finally {
 					isSelectingFile = false;
 				}
@@ -129,8 +147,8 @@ public class MetaProcessImport extends MetaProcess {
 	private PropertyChangeListener fileValueListener = new PropertyChangeListener() {
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
-			if (parameterChooseFile.getSelectedItem() != null) {
-				String filePath = parameterChooseFile.getSelectedItem();
+			if (parameterFilePrjChoose.getSelectedItem() != null) {
+				String filePath = parameterFilePrjChoose.getSelectedItem();
 
 				// 设置投影信息
 				if (!StringUtilities.isNullOrEmpty(filePath)) {
@@ -235,8 +253,8 @@ public class MetaProcessImport extends MetaProcess {
 				|| importSetting instanceof ImportSettingModelFLT || importSetting instanceof ImportSettingModel3DS) {
 			parameterButton = parameterCreator.getParameterButton();
 			parameterButton.setActionListener(this.actionListener);
-			parameterChooseFile = parameterCreator.getParameterChooseFile();
-			parameterChooseFile.addPropertyListener(this.fileValueListener);
+			parameterFilePrjChoose = parameterCreator.getParameterFilePrjChoose();
+			parameterFilePrjChoose.addPropertyListener(this.fileValueListener);
 			parameterTextArea = parameterCreator.getParameterTextArea();
 			parameterTextArea.setEnabled(false);
 			parameterRadioButton = parameterCreator.getParameterSetRadioButton();
@@ -249,16 +267,23 @@ public class MetaProcessImport extends MetaProcess {
 						boolean select = (boolean) node.getData();
 						if (select) {
 							parameterButton.setEnabled(select);
-							parameterChooseFile.setEnabled(!select);
+							parameterFilePrjChoose.setEnabled(!select);
 						} else {
 							parameterButton.setEnabled(select);
-							parameterChooseFile.setEnabled(!select);
+							parameterFilePrjChoose.setEnabled(!select);
 						}
 						isSelectingChange = false;
 					}
 				}
 			});
 		}
+		if (importSetting instanceof ImportSettingCSV) {
+			parameterWKTFieldName = parameterCreator.getParameterWKTFieldName();
+			parameterXFieldName = parameterCreator.getParameterXFieldName();
+			parameterYFieldName = parameterCreator.getParameterYFieldName();
+			parameterZFieldName = parameterCreator.getParameterZFieldName();
+		}
+
 	}
 
 	private void addOutPutParameters() {

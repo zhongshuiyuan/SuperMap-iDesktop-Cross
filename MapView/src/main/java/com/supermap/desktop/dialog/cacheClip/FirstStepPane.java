@@ -941,6 +941,7 @@ public class FirstStepPane extends JPanel implements IState {
 		};
 		this.localSplitTable.setModel(tableModel);
 		this.localSplitTable.setRowHeight(23);
+		this.localSplitTable.getTableHeader().setReorderingAllowed(false);
 		this.localSplitTable.getColumnModel().getColumn(COLUMN_INDEX).setMaxWidth(40);
 		this.localSplitTable.getColumnModel().getColumn(COLUMN_TITLE).setMaxWidth(125);
 		this.localSplitTable.getColumnModel().getColumn(COLUMN_TITLE).setMinWidth(125);
@@ -1045,6 +1046,7 @@ public class FirstStepPane extends JPanel implements IState {
 		if (this.globalSplitTable == null) {
 			this.globalSplitTable = new SmChooseTable(new Object[this.globalSplitScale.size()][2], globalSplitTableTitle, columnEditables);
 		}
+		this.globalSplitTable.getTableHeader().setReorderingAllowed(false);
 		this.globalSplitTable.getColumn(globalSplitTable.getModel().getColumnName(COLUMN_INDEX)).setMaxWidth(60);
 		this.globalSplitTable.getColumnModel().getColumn(COLUMN_INDEX).setCellRenderer(new MultipleCheckboxTableRenderer());
 		this.globalSplitTable.getTableHeader().getColumnModel().getColumn(COLUMN_INDEX).setHeaderRenderer(new MultipleCheckboxTableHeaderCellRenderer(this.globalSplitTable, MapViewProperties.getString("MapCache_LayerSeries"), true));

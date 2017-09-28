@@ -245,6 +245,7 @@ public class JDialogTopoPreProgress extends SmDialog {
 			}
 		};
 		table.setModel(tableModel);
+		this.table.getTableHeader().setReorderingAllowed(false);
 		table.getColumnModel().getColumn(COLUMN_INDEX_DATASET).setCellRenderer(new CommonListCellRenderer());
 		table.getColumnModel().getColumn(COLUMN_INDEX_DATASOURCE).setCellRenderer(new CommonListCellRenderer());
 		table.getColumnModel().getColumn(COLUMN_INDEX_COUNT).setMaxWidth(40);

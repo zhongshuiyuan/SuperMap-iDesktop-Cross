@@ -48,10 +48,12 @@ public class CtrlActionManageCollectionDataset extends CtrlAction {
 	public boolean enable() {
 		boolean enable = false;
 		if (null != Application.getActiveApplication().getActiveDatasets() && Application.getActiveApplication().getActiveDatasets().length > 0) {
-			DatasetVector datasetVector = (DatasetVector) Application.getActiveApplication().getActiveDatasets()[0];
-			if (datasetVector.getType() == DatasetType.VECTORCOLLECTION
-					&& !datasetVector.getDatasource().isReadOnly()) {
-				enable = true;
+			if (Application.getActiveApplication().getActiveDatasets()[0] instanceof DatasetVector) {
+				DatasetVector datasetVector = (DatasetVector) Application.getActiveApplication().getActiveDatasets()[0];
+				if (datasetVector.getType() == DatasetType.VECTORCOLLECTION
+						&& !datasetVector.getDatasource().isReadOnly()) {
+					enable = true;
+				}
 			}
 		}
 		return enable;

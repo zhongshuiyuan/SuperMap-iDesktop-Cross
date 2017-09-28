@@ -18,12 +18,7 @@ import com.supermap.desktop.ui.controls.LayersTree;
 import com.supermap.desktop.utilities.CoreResources;
 import com.supermap.desktop.utilities.MapUtilities;
 import com.supermap.desktop.utilities.StringUtilities;
-import com.supermap.mapping.Layer;
-import com.supermap.mapping.Map;
-import com.supermap.mapping.Theme;
-import com.supermap.mapping.ThemeGridUnique;
-import com.supermap.mapping.ThemeGridUniqueItem;
-import com.supermap.mapping.ThemeType;
+import com.supermap.mapping.*;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
@@ -33,16 +28,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
@@ -203,7 +189,7 @@ public class ThemeGridUniqueContainer extends ThemeChangePanel {
 		this.buttonVisble.setIcon(InternalImageIconFactory.VISIBLE);
 		this.buttonForeGroundColor.setIcon(InternalImageIconFactory.FOREGROUND_COLOR);
 		this.buttonAdd.setIcon(InternalImageIconFactory.ADD_ITEM);
-		this.buttonDelete.setIcon(CoreResources.getIcon("/coreresources/ToolBar/Image_ToolButton_Delete.png"));
+		this.buttonDelete.setIcon(CoreResources.getIcon("/coreresources/ToolBar/Image_ToolButton_Delete_16.png"));
 		this.buttonAntitone.setIcon(InternalImageIconFactory.Rever);
 	}
 
@@ -262,6 +248,7 @@ public class ThemeGridUniqueContainer extends ThemeChangePanel {
 		this.tableUniqueInfo.setModel(defaultTableModel);
 		initColumnIcon();
 		this.tableUniqueInfo.setRowHeight(20);
+		this.tableUniqueInfo.getTableHeader().setReorderingAllowed(false);
 
 		TableColumn visibleColumn = tableUniqueInfo.getColumn(MapViewProperties.getString("String_Title_Visible"));
 		TableColumn viewColumn = tableUniqueInfo.getColumn(MapViewProperties.getString("String_Title_Sytle"));

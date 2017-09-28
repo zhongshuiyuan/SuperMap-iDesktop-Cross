@@ -75,7 +75,7 @@ public abstract class MetaProcessHydrology extends MetaProcess {
 	}
 
 	protected void initField() {
-
+		//该方法在基类构造函数中调用
 	}
 
 	protected abstract void initParaComponent();

@@ -121,11 +121,13 @@ public abstract class AbstractProcess implements IProcess {
 							StringUtilities.isNullOrEmptyString(getCOMPLETED_MESSAGE()) ? COMPLETED_MESSAGE : getCOMPLETED_MESSAGE()
 					));
 					setStatus(RunningStatus.COMPLETED);
-				} else if (!isCancelled()) {
+				} else if (this.status != RunningStatus.CANCELLING) {
 					fireRunning(new RunningEvent(this, 0,
 							StringUtilities.isNullOrEmptyString(getFAILED_MESSAGE()) ? FAILED_MESSAGE : getFAILED_MESSAGE()
 					));
 					setStatus(RunningStatus.EXCEPTION);
+				} else {
+					setStatus(RunningStatus.CANCELLED);
 				}
 			} else {
 				Application.getActiveApplication().getOutput().output(MessageFormat.format(ProcessProperties.getString("String_ParameterRequisiteUnFilled"), getTitle()));
@@ -229,11 +231,15 @@ public abstract class AbstractProcess implements IProcess {
 
 	@Override
 	public final void cancel() {
-		if (this.status != RunningStatus.NORMAL || this.status == RunningStatus.CANCELLED) {
-			return;
-		}
+		if (this.status == RunningStatus.RUNNING) {
 
-		setStatus(RunningStatus.CANCELLED);
+			// 当 Process 正在执行时，设置状态为 cancelling
+			setStatus(RunningStatus.CANCELLING);
+		} else if (this.status != RunningStatus.CANCELLING) {
+
+			// 当 Process 没有正在执行或者正在取消，则设置状态为 cancelled
+			setStatus(RunningStatus.CANCELLED);
+		}
 	}
 
 	@Override
