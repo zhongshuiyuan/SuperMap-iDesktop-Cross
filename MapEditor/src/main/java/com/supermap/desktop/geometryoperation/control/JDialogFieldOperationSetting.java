@@ -258,6 +258,7 @@ public class JDialogFieldOperationSetting extends SmDialog implements ItemListen
 		this.table = new JTable();
 		FieldOperationTableModel tableModel = new FieldOperationTableModel();
 		this.table.setModel(tableModel);
+		this.table.getTableHeader().setReorderingAllowed(false);
 		TableColumn fieldNameColumn = this.table.getColumnModel().getColumn(FieldOperationTableModel.FIELD_NAME);
 		fieldNameColumn.setPreferredWidth(160);
 		fieldNameColumn.setMaxWidth(160);

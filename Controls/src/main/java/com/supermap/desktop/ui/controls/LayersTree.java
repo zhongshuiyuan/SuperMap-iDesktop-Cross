@@ -38,6 +38,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * 图层管理树控件
@@ -60,6 +61,7 @@ public class LayersTree extends JTree {
 	private DragSource dragSource;
 	private int draggedNodeIndex = -1;
 	private int dropTargetNodeIndex = -1;
+	private LinkedBlockingQueue<Layer[]> layersQueue=new LinkedBlockingQueue<>();
 
 	private DefaultMutableTreeNode dropTargetNode = null;
 	private DefaultMutableTreeNode draggedNode = null;
@@ -864,6 +866,19 @@ public class LayersTree extends JTree {
 		return mouseAdapter;
 	}
 
+	/**
+	 * 如果layer包含于已选中节点中，则返回其所在的序号；否则返回-1
+	 * @return
+	 */
+	private int findSelectedLayersIndex(Layer[] layers,Layer layer) {
+		for (int i = 0; i < layers.length; i++) {
+			if (layers[i].equals(layer)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	private class TreeMouseListener extends MouseAdapter {
 		@Override
 		public void mouseClicked(MouseEvent e) {
@@ -872,24 +887,48 @@ public class LayersTree extends JTree {
 			if (path != null) {
 				HitTestInfo hitTestInfo = hitTest(e.getX(), e.getY());
 				if (hitTestInfo != null) {
-
 					TreeNodeData nodeData = hitTestInfo.getData();
 					Object obj = nodeData.getData();
+					if (obj instanceof Layer) {
+						Layer layer = (Layer) obj;
+						int type = hitTestInfo.getIconType().value();
+						Layer[] selectedLayers = getCurrentSelectLayers().length > 1 ? getCurrentSelectLayers() : layersQueue.peek();
+						int index = findSelectedLayersIndex(selectedLayers,layer);
 
-					int type = hitTestInfo.getIconType().value();
-
-					if (type == 1) {
-						setCaseOne(obj);
-						refresh();
-					} else if (type == 2 && LayersTreeUtilties.isTreeNodeDataVisible(nodeData.getData())) {
-						setCaseTwo(obj);
-						updateLater();
-					} else if (type == 3 && LayersTreeUtilties.isTreeNodeDataVisible(nodeData.getData())) {
-						setCaseThree(obj);
-						updateLater();
-					} else if (type == 4 && LayersTreeUtilties.isTreeNodeDataVisible(nodeData.getData())) {
-						setCaseFour(obj);
-						updateLater();
+						if (index > -1 && selectedLayers.length > 1) {
+							switch (type) {
+								case 1:
+									setCaseOne(selectedLayers, index);
+									refresh();
+									break;
+								case 2:
+									setCaseTwo(selectedLayers, index);
+									updateLater();
+									break;
+								case 3:
+									setCaseThree(obj);
+									updateLater();
+									break;
+								case 4:
+									setCaseFour(selectedLayers, index);
+									updateLater();
+									break;
+							}
+						} else {
+							if (type == 1) {
+								setCaseOne(obj);
+								refresh();
+							} else if (type == 2 && LayersTreeUtilties.isTreeNodeDataVisible(nodeData.getData())) {
+								setCaseTwo(obj);
+								updateLater();
+							} else if (type == 3 && LayersTreeUtilties.isTreeNodeDataVisible(nodeData.getData())) {
+								setCaseThree(obj);
+								updateLater();
+							} else if (type == 4 && LayersTreeUtilties.isTreeNodeDataVisible(nodeData.getData())) {
+								setCaseFour(obj);
+								updateLater();
+							}
+						}
 					}
 				}
 			}
@@ -984,6 +1023,34 @@ public class LayersTree extends JTree {
 				ThemeLabelItem item = (ThemeLabelItem) obj;
 				item.setVisible(!item.isVisible());
 				return;
+			}
+		}
+
+		private void setCaseFour(Layer[] layers,int index) {
+			boolean isSnapable = !layers[index].isSnapable();
+			for (int i = 0; i < layers.length; i++) {
+				layers[i].setSnapable(layers[i].isVisible() && isSnapable);
+			}
+		}
+		//cross暂时没有开放多图层编辑，这个还用不到
+		private void setCaseThree(Layer[] layers,int index) {
+			boolean isEditable = !layers[index].isEditable();
+			for (int i = 0; i < layers.length; i++) {
+				layers[i].setEditable(layers[i].isVisible() && isEditable);
+			}
+		}
+
+		private void setCaseTwo(Layer[] layers,int index) {
+			boolean isSelectable = !layers[index].isSelectable();
+			for (int i = 0; i < layers.length; i++) {
+				layers[i].setSelectable(layers[i].isVisible() && isSelectable);
+			}
+		}
+
+		private void setCaseOne(Layer[] layers, int index) {
+			boolean isVisible = !layers[index].isVisible();
+			for (int i = 0; i < layers.length; i++) {
+				layers[i].setVisible(isVisible);
 			}
 		}
 
@@ -1119,7 +1186,7 @@ public class LayersTree extends JTree {
 			// notify by xie
 			// 多选需要让用户指定设置哪些风格，现在暂时先只处理第一个图层
 			if (selections.length > 1) {
-				upateItemStyles(symbolType, selections);
+				updateItemStyles(symbolType, selections);
 			} else {
 				DefaultMutableTreeNode selecTreeNode = (DefaultMutableTreeNode) this.getLastSelectedPathComponent();
 				TreeNodeData treeNodeData = (TreeNodeData) (selecTreeNode).getUserObject();
@@ -1243,7 +1310,7 @@ public class LayersTree extends JTree {
 		}
 	}
 
-	private void upateItemStyles(SymbolType symbolType, TreePath[] selections) {
+	private void updateItemStyles(SymbolType symbolType, TreePath[] selections) {
 		java.util.List<GeoStyle> geoStyleList = new ArrayList<>();
 		for (TreePath selection : selections) {
 			TreeNodeData treeNodeData = (TreeNodeData) ((DefaultMutableTreeNode) selection.getLastPathComponent()).getUserObject();
@@ -1292,12 +1359,29 @@ public class LayersTree extends JTree {
 			return null;
 		}
 		TreePath[] selectionPaths = this.getSelectionPaths();
-		ArrayList<Layer> seleteLayers = new ArrayList<>();
+		ArrayList<Layer> selectLayers = new ArrayList<>();
 		for (TreePath selectionPath : selectionPaths) {
 			Layer layer = (Layer) ((TreeNodeData) ((DefaultMutableTreeNode) selectionPath.getLastPathComponent()).getUserObject()).getData();
-			seleteLayers.add(layer);
+			selectLayers.add(layer);
 		}
-		return seleteLayers.toArray(new Layer[seleteLayers.size()]);
+		Layer[] selectedLayers = selectLayers.toArray(new Layer[selectLayers.size()]);
+		return selectedLayers;
+	}
+
+	public void updateQueue() {
+		if (this.getSelectionPath() != null) {
+			TreePath[] selectionPaths = this.getSelectionPaths();
+			ArrayList<Layer> selectLayers = new ArrayList<>();
+			for (TreePath selectionPath : selectionPaths) {
+				Layer layer = (Layer) ((TreeNodeData) ((DefaultMutableTreeNode) selectionPath.getLastPathComponent()).getUserObject()).getData();
+				selectLayers.add(layer);
+			}
+			Layer[] selectedLayers = selectLayers.toArray(new Layer[selectLayers.size()]);
+			if (layersQueue.size() > 2) {
+				layersQueue.poll();
+			}
+			layersQueue.add(selectedLayers);
+		}
 	}
 
 	/**

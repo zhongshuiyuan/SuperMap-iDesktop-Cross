@@ -146,6 +146,13 @@ public class MetaProcessDEMBuild extends MetaProcess {
 		if (datasetVector != null) {
 			sourceDatasources.setSelectedItem(datasetVector.getDatasource());
 			sourceDataset.setSelectedItem(datasetVector);
+			lakeDatasource.setSelectedItem(datasetVector.getDatasource());
+			lakeDataset.setDatasource(datasetVector.getDatasource());
+			clipDatasource.setSelectedItem(datasetVector.getDatasource());
+			clipDataset.setDatasource(datasetVector.getDatasource());
+			eraseDatasource.setSelectedItem(datasetVector.getDatasource());
+			eraseDataset.setDatasource(datasetVector.getDatasource());
+			comboBoxSourceField.setFieldName((DatasetVector) datasetVector);
 		}
 		comboBoxSourceField.setFieldType(fieldType);
 
@@ -204,22 +211,8 @@ public class MetaProcessDEMBuild extends MetaProcess {
 				new ParameterDataNode(PixelFormatUtilities.toString(PixelFormat.UBIT32), PixelFormat.UBIT32)
 		);
 
-		if (datasetVector != null) {
-			lakeDatasource.setSelectedItem(datasetVector.getDatasource());
-			lakeDataset.setDatasource(datasetVector.getDatasource());
-		}
 		comboBoxLakeField.setFieldType(fieldType);
 		comboBoxLakeField.setShowNullValue(true);
-
-		if (datasetVector != null) {
-			clipDatasource.setSelectedItem(datasetVector.getDatasource());
-			clipDataset.setDatasource(datasetVector.getDatasource());
-		}
-
-		if (datasetVector != null) {
-			eraseDatasource.setSelectedItem(datasetVector.getDatasource());
-			eraseDataset.setDatasource(datasetVector.getDatasource());
-		}
 	}
 
 	private void initParameterConstraint() {

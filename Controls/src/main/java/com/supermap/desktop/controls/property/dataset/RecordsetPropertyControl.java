@@ -208,6 +208,7 @@ public class RecordsetPropertyControl extends AbstractPropertyControl {
 		this.tableRecordset = new JTable();
 		this.tableRecordset.setSurrendersFocusOnKeystroke(true);
 		this.tableRecordset.setModel(new RecordsetPropertyTableModel());
+		this.tableRecordset.getTableHeader().setReorderingAllowed(false);
 		this.tableRecordset.getColumnModel().getColumn(0).setMaxWidth(COLUMN_INDEX_WIDTH);
 
 		this.tableRecordset.setDefaultEditor(Object.class, new DefaultCellEditor(new JTextField()) {

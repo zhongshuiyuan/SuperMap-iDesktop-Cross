@@ -3,11 +3,11 @@ package com.supermap.desktop.CtrlAction.Dataset;
 import com.supermap.data.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.CommonToolkit;
+import com.supermap.desktop.Interface.ISmTextFieldLegit;
 import com.supermap.desktop.dataeditor.DataEditorProperties;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.controls.CellRenders.TableDataCellRender;
 import com.supermap.desktop.ui.controls.*;
-import com.supermap.desktop.Interface.ISmTextFieldLegit;
 import com.supermap.desktop.ui.controls.TextFields.SmTextFieldLegit;
 import com.supermap.desktop.ui.controls.button.SmButton;
 import com.supermap.desktop.ui.controls.mutiTable.DDLExportTableModel;
@@ -216,6 +216,7 @@ public class JDialogDatasetCopy extends SmDialog {
 
 		this.table = new MutiTable();
 		this.table.setRowHeight(23);
+		this.table.getTableHeader().setReorderingAllowed(false);
 		this.table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		@SuppressWarnings("serial")
 		DDLExportTableModel tableModel = new DDLExportTableModel(new String[]{"Dataset", "CurrentDatasource", "TargetDatasource", "TargetDataset",

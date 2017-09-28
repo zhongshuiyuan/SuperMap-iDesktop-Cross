@@ -238,6 +238,7 @@ public class ThemeGridRangeContainer extends ThemeChangePanel {
 		this.tableRangeInfo.setModel(tableModel);
 		initColumnIcon();
 		this.tableRangeInfo.setRowHeight(20);
+		this.tableRangeInfo.getTableHeader().setReorderingAllowed(false);
 
 		TableColumn visibleColumn = this.tableRangeInfo.getColumn(MapViewProperties.getString("String_Title_Visible"));
 		TableColumn viewColumn = this.tableRangeInfo.getColumn(MapViewProperties.getString("String_Title_Sytle"));
