@@ -2,15 +2,11 @@ package com.supermap.desktop.spatialanalyst.vectoranalyst;
 
 import com.supermap.analyst.spatialanalyst.BufferAnalystParameter;
 import com.supermap.analyst.spatialanalyst.BufferEndType;
-import com.supermap.data.Dataset;
-import com.supermap.data.DatasetType;
-import com.supermap.data.DatasetVector;
-import com.supermap.data.DatasetVectorInfo;
-import com.supermap.data.Datasource;
-import com.supermap.data.Recordset;
+import com.supermap.data.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.Interface.IFormMap;
 import com.supermap.desktop.controls.utilities.MapViewUIUtilities;
+import com.supermap.desktop.ui.controls.borderPanel.PanelResultDataset;
 import com.supermap.desktop.ui.controls.progress.FormProgress;
 import com.supermap.desktop.utilities.DoubleUtilities;
 import com.supermap.mapping.Map;
@@ -40,7 +36,7 @@ public class PanelLineBufferAnalyst extends JPanel {
 	private PanelLineBufferRadiu panelLineBufferRadiu = new PanelLineBufferRadiu();
 	private PanelBufferType panelBufferType = new PanelBufferType();
 	private PanelBufferData panelBufferData = new PanelBufferData();
-	private PanelResultData panelResultData = new PanelResultData();
+	private PanelResultDataset panelResultData = new PanelResultDataset("Buffer", false);
 	private PanelParameterSet panelParameterSet = new PanelParameterSet();
 
 	private String resultDatasetName;
@@ -137,11 +133,11 @@ public class PanelLineBufferAnalyst extends JPanel {
 				.addGroup(panelBasicRightLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(this.panelBufferType, 0, 10, Short.MAX_VALUE)
 						.addComponent(this.panelLineBufferRadiu)
-						.addComponent(this.panelResultData)));
+						.addComponent(this.panelResultData.getPanel())));
 		panelBasicRightLayout.setVerticalGroup(panelBasicRightLayout.createSequentialGroup()
 				.addComponent(this.panelBufferType).addContainerGap()
 				.addComponent(this.panelLineBufferRadiu).addContainerGap()
-				.addComponent(this.panelResultData));
+				.addComponent(this.panelResultData.getPanel()));
 		//@formatter:on
 
 	}
@@ -417,7 +413,7 @@ public class PanelLineBufferAnalyst extends JPanel {
 		}
 		// 当数据集为空时，即没有数据用于缓冲，设置其他控件不可用
 		this.panelBufferData.setPanelEnable(this.isComboBoxDatasetNotNull);
-		this.panelResultData.setPanelEnable(this.isComboBoxDatasetNotNull);
+		this.panelResultData.setControlsState(this.isComboBoxDatasetNotNull);
 		this.panelParameterSet.setPanelEnable(this.isComboBoxDatasetNotNull);
 
 		this.panelBufferType.getRadioButtonBufferTypeRound().setEnabled(this.isComboBoxDatasetNotNull);

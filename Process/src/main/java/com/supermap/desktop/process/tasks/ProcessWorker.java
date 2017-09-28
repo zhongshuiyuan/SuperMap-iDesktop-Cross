@@ -4,6 +4,7 @@ import com.supermap.desktop.Application;
 import com.supermap.desktop.core.Time;
 import com.supermap.desktop.core.TimeType;
 import com.supermap.desktop.process.core.IProcess;
+import com.supermap.desktop.process.enums.RunningStatus;
 import com.supermap.desktop.process.events.RunningEvent;
 import com.supermap.desktop.process.events.RunningListener;
 import com.supermap.desktop.properties.CoreProperties;
@@ -34,11 +35,23 @@ public class ProcessWorker extends Worker<SingleProgress> {
 		return this.process.run();
 	}
 
+	@Override
+	public void cancel() {
+		this.process.cancel();
+	}
+
+	@Override
+	public boolean isCancelled() {
+
+		// 保证任何时候 process 的取消状态都与 worker 相同
+		return this.process.isCancelled();
+	}
+
 	private class RunningHandler implements RunningListener {
 		@Override
 		public void running(RunningEvent e) {
 			try {
-				if (isCancelled()) {
+				if (process.getStatus() == RunningStatus.CANCELLING) {
 					e.setCancel(true);
 				} else {
 					if (e.isIndeterminate()) {

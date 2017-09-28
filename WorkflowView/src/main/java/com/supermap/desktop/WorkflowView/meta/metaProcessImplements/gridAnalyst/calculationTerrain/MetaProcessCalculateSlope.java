@@ -26,6 +26,10 @@ public class MetaProcessCalculateSlope extends MetaProcessCalTerrain {
 	// 高程缩放系数
 	private ParameterNumber parameterZFactor;
 
+	public MetaProcessCalculateSlope() {
+		setTitle(ProcessProperties.getString("String_CalculateSlope"));
+	}
+
 	@Override
 	protected void initHook() {
 
@@ -56,11 +60,6 @@ public class MetaProcessCalculateSlope extends MetaProcessCalTerrain {
 	@Override
 	protected String getDefaultResultName() {
 		return "result_calculateSlope";
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_CalculateSlope");
 	}
 
 	@Override

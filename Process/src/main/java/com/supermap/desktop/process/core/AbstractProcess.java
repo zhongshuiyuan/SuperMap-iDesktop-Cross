@@ -37,7 +37,7 @@ public abstract class AbstractProcess implements IProcess {
 	private Inputs inputs = new Inputs(this);
 	private Outputs outputs = new Outputs(this);
 	private int serialID = 0;
-
+	private String title;
 	private String RUNNING_MESSAGE = ProcessProperties.getString("String_Running");
 	private String COMPLETED_MESSAGE = ProcessProperties.getString("String_Completed");
 	private String FAILED_MESSAGE = ProcessProperties.getString("String_Failed");
@@ -63,6 +63,16 @@ public abstract class AbstractProcess implements IProcess {
 	@Override
 	public int getSerialID() {
 		return this.serialID;
+	}
+
+	@Override
+	public String getTitle() {
+		return this.title;
+	}
+
+	@Override
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	@Override
@@ -111,11 +121,13 @@ public abstract class AbstractProcess implements IProcess {
 							StringUtilities.isNullOrEmptyString(getCOMPLETED_MESSAGE()) ? COMPLETED_MESSAGE : getCOMPLETED_MESSAGE()
 					));
 					setStatus(RunningStatus.COMPLETED);
-				} else if (!isCancelled()) {
+				} else if (this.status != RunningStatus.CANCELLING) {
 					fireRunning(new RunningEvent(this, 0,
 							StringUtilities.isNullOrEmptyString(getFAILED_MESSAGE()) ? FAILED_MESSAGE : getFAILED_MESSAGE()
 					));
 					setStatus(RunningStatus.EXCEPTION);
+				} else {
+					setStatus(RunningStatus.CANCELLED);
 				}
 			} else {
 				Application.getActiveApplication().getOutput().output(MessageFormat.format(ProcessProperties.getString("String_ParameterRequisiteUnFilled"), getTitle()));
@@ -219,11 +231,15 @@ public abstract class AbstractProcess implements IProcess {
 
 	@Override
 	public final void cancel() {
-		if (this.status != RunningStatus.NORMAL || this.status == RunningStatus.CANCELLED) {
-			return;
-		}
+		if (this.status == RunningStatus.RUNNING) {
 
-		setStatus(RunningStatus.CANCELLED);
+			// 当 Process 正在执行时，设置状态为 cancelling
+			setStatus(RunningStatus.CANCELLING);
+		} else if (this.status != RunningStatus.CANCELLING) {
+
+			// 当 Process 没有正在执行或者正在取消，则设置状态为 cancelled
+			setStatus(RunningStatus.CANCELLED);
+		}
 	}
 
 	@Override

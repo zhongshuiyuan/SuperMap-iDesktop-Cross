@@ -11,12 +11,15 @@ import com.supermap.desktop.process.parameter.ipls.ParameterComboBox;
 import com.supermap.desktop.process.util.ParameterUtil;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.controls.GridBagConstraintsHelper;
+import com.supermap.desktop.ui.controls.SmComboBox;
 import com.supermap.desktop.utilities.StringUtilities;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
@@ -31,7 +34,7 @@ public class ParameterComboBoxPanel extends SwingPanel implements IParameterPane
 	// 防止多次触发事件 Prevent multiple trigger events
 	private boolean isSelectingItem = false;
 	private JLabel label = new JLabel();
-	private JComboBox<ParameterDataNode> comboBox = new JComboBox<>();
+	private SmComboBox<ParameterDataNode> comboBox = new SmComboBox<>();
 
 	public ParameterComboBoxPanel(IParameter parameterComboBox) {
 		super(parameterComboBox);
@@ -48,7 +51,7 @@ public class ParameterComboBoxPanel extends SwingPanel implements IParameterPane
 		} else {
 			parameterComboBox.setFieldVale(ParameterComboBox.comboBoxValue, comboBox.getSelectedItem());
 		}
-		initListeners(this.parameterComboBox);
+		initListeners();
 		label.setText(getDescribe());
 		label.setToolTipText(this.parameterComboBox.getDescribe());
 		label.setVisible(parameterComboBox.isDescriptionVisible());
@@ -71,7 +74,16 @@ public class ParameterComboBoxPanel extends SwingPanel implements IParameterPane
 		}
 	}
 
-	private void initListeners(ParameterComboBox parameterComboBox) {
+	private void initListeners() {
+		comboBox.getComponent(0).addMouseListener(new MouseAdapter() {
+			//添加右边按钮点击时事件
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				isSelectingItem = true;
+				parameterComboBox.firePropertyChangeListener(new PropertyChangeEvent(parameterComboBox,"LeftButtonClicked","",""));
+				isSelectingItem = false;
+			}
+		});
 		parameterComboBox.addPropertyListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {

@@ -48,7 +48,7 @@ public class MetaProcessEdgeMatch extends MetaProcess {
 
 
 	public MetaProcessEdgeMatch() {
-
+		setTitle(ProcessProperties.getString("String_EdgeMatch"));
 		initParameters();
 		initComponentState();
 		initParameterConstraint();
@@ -192,11 +192,6 @@ public class MetaProcessEdgeMatch extends MetaProcess {
 	@Override
 	public IParameters getParameters() {
 		return parameters;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_EdgeMatch");
 	}
 
 	@Override

@@ -25,10 +25,10 @@ import java.beans.PropertyChangeListener;
 
 /**
  * @author XiaJT
- * 重构界面yuanR2017.9.15
- * 1、根据需选择的数据集类型，对界面进行选择：当是线和面数据集时，所需控件只要字段选择界面
- * 2、当聚合方式虚选择网络时，范围数据集可以为空
- * 3、根据数据集类型重写执行
+ *         重构界面yuanR2017.9.15
+ *         1、根据需选择的数据集类型，对界面进行选择：当是线和面数据集时，所需控件只要字段选择界面
+ *         2、当聚合方式虚选择网络时，范围数据集可以为空
+ *         3、根据数据集类型重写执行
  */
 public class MetaProcessOptimizedHotSpotAnalyst extends MetaProcess {
 	private static final String INPUT_SOURCE_DATASET = CommonProperties.getString("String_GroupBox_SourceData");
@@ -74,6 +74,7 @@ public class MetaProcessOptimizedHotSpotAnalyst extends MetaProcess {
 	};
 
 	public MetaProcessOptimizedHotSpotAnalyst() {
+		setTitle(ProcessProperties.getString("String_optimizedHotSpotAnalyst"));
 		initParameters();
 		initComponentLayout();
 		initParameterState();
@@ -199,11 +200,6 @@ public class MetaProcessOptimizedHotSpotAnalyst extends MetaProcess {
 		EqualDatasetConstraint equalDatasetConstraint = new EqualDatasetConstraint();
 		equalDatasetConstraint.constrained(parameterSingleDataset, ParameterSingleDataset.DATASET_FIELD_NAME);
 		equalDatasetConstraint.constrained(parameterFieldComboBoxNotPoint, ParameterFieldComboBox.DATASET_FIELD_NAME);
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_optimizedHotSpotAnalyst");
 	}
 
 	@Override

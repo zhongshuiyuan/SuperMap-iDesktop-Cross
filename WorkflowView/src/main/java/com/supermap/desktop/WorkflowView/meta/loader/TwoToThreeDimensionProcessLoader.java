@@ -45,6 +45,12 @@ public class TwoToThreeDimensionProcessLoader extends AbstractProcessLoader {
 				type = DatasetType.REGION;
 				break;
 		}
-		return new MetaProcess2DTo3D(type);
+
+		IProcess process = new MetaProcess2DTo3D(type);
+
+		if (process != null && process.getTitle() != null && !process.getTitle().trim().isEmpty()) {
+			process.setTitle(getTitle());
+		}
+		return process;
 	}
 }

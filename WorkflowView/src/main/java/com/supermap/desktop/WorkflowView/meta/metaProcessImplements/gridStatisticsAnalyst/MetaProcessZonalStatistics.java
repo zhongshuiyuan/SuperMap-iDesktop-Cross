@@ -4,12 +4,7 @@ import com.supermap.analyst.spatialanalyst.GridStatisticsMode;
 import com.supermap.analyst.spatialanalyst.StatisticsAnalyst;
 import com.supermap.analyst.spatialanalyst.ZonalStatisticsAnalystParameter;
 import com.supermap.analyst.spatialanalyst.ZonalStatisticsAnalystResult;
-import com.supermap.data.Dataset;
-import com.supermap.data.DatasetGrid;
-import com.supermap.data.DatasetType;
-import com.supermap.data.DatasetVector;
-import com.supermap.data.FieldType;
-import com.supermap.data.PixelFormat;
+import com.supermap.data.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
@@ -21,15 +16,7 @@ import com.supermap.desktop.process.constraint.ipls.EqualDatasourceConstraint;
 import com.supermap.desktop.process.parameter.ParameterDataNode;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
-import com.supermap.desktop.process.parameter.ipls.ParameterCheckBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
-import com.supermap.desktop.process.parameter.ipls.ParameterComboBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterDatasource;
-import com.supermap.desktop.process.parameter.ipls.ParameterDatasourceConstrained;
-import com.supermap.desktop.process.parameter.ipls.ParameterFieldComboBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterSaveDataset;
-import com.supermap.desktop.process.parameter.ipls.ParameterSingleDataset;
-import com.supermap.desktop.process.parameter.ipls.ParameterTextField;
+import com.supermap.desktop.process.parameter.ipls.*;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.utilities.DatasetUtilities;
 import com.supermap.desktop.utilities.GridStatisticsModeUtilities;
@@ -58,6 +45,7 @@ public class MetaProcessZonalStatistics extends MetaProcess {
 	private ParameterCheckBox checkBoxIgnore;
 
 	public MetaProcessZonalStatistics() {
+		setTitle(ProcessProperties.getString("String_Title_ZonalStatisticsOnRasterValue"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -162,11 +150,6 @@ public class MetaProcessZonalStatistics extends MetaProcess {
 	@Override
 	public String getKey() {
 		return MetaKeys.ZONAL_STATISTICS_ON_RASTER_VALUE;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_ZonalStatisticsOnRasterValue");
 	}
 
 	@Override

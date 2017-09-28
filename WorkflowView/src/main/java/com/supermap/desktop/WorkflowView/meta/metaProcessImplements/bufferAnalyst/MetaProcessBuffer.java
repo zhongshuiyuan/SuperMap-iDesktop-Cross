@@ -27,7 +27,7 @@ import java.beans.PropertyChangeListener;
 
 /**
  * @author XiaJT
- * 重构界面-yuanR20174.9.6
+ *         重构界面-yuanR20174.9.6
  */
 public class MetaProcessBuffer extends MetaProcess {
 	private final static String INPUT_SOURCE_DATASET = CommonProperties.getString("String_GroupBox_SourceData");
@@ -64,6 +64,7 @@ public class MetaProcessBuffer extends MetaProcess {
 	};
 
 	public MetaProcessBuffer() {
+		setTitle(ProcessProperties.getString("String_BufferAnalyst"));
 		initParameters();
 		initComponentState();
 		initParameterConstraint();
@@ -236,11 +237,6 @@ public class MetaProcessBuffer extends MetaProcess {
 	@Override
 	public IParameterPanel getComponent() {
 		return parameters.getPanel();
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_BufferAnalyst");
 	}
 
 	@Override

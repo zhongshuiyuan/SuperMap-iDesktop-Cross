@@ -2,22 +2,14 @@ package com.supermap.desktop.WorkflowView.meta.metaProcessImplements.spatialStat
 
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
-import com.supermap.data.conversion.DataExport;
-import com.supermap.data.conversion.ExportResult;
-import com.supermap.data.conversion.ExportSetting;
-import com.supermap.data.conversion.ExportSteppedListener;
-import com.supermap.data.conversion.FileType;
+import com.supermap.data.conversion.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
 import com.supermap.desktop.WorkflowView.WorkflowViewProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaProcess;
 import com.supermap.desktop.WorkflowView.meta.dataconversion.ExportSettingUtilities;
 import com.supermap.desktop.controls.ControlsProperties;
-import com.supermap.desktop.implement.UserDefineType.ExportSettingExcel;
-import com.supermap.desktop.implement.UserDefineType.ExportSettingGPX;
-import com.supermap.desktop.implement.UserDefineType.GPXAnalytic;
-import com.supermap.desktop.implement.UserDefineType.UserDefineExportResult;
-import com.supermap.desktop.implement.UserDefineType.UserDefineFileType;
+import com.supermap.desktop.implement.UserDefineType.*;
 import com.supermap.desktop.process.ProcessProperties;
 import com.supermap.desktop.process.constraint.ipls.EqualDatasourceConstraint;
 import com.supermap.desktop.process.core.IProcess;
@@ -26,13 +18,7 @@ import com.supermap.desktop.process.core.ReadyEvent;
 import com.supermap.desktop.process.parameter.ParameterDataNode;
 import com.supermap.desktop.process.parameter.interfaces.IParameterPanel;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.BasicTypes;
-import com.supermap.desktop.process.parameter.ipls.ParameterCheckBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
-import com.supermap.desktop.process.parameter.ipls.ParameterComboBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterDatasource;
-import com.supermap.desktop.process.parameter.ipls.ParameterFile;
-import com.supermap.desktop.process.parameter.ipls.ParameterSingleDataset;
-import com.supermap.desktop.process.parameter.ipls.ParameterTextField;
+import com.supermap.desktop.process.parameter.ipls.*;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.utilities.DatasetUtilities;
 import com.supermap.desktop.utilities.DatasourceUtilities;
@@ -342,11 +328,6 @@ public class MetaProcessAbstractExport extends MetaProcess {
 	private String getDatasetAlis(ExportSetting tempSetting) {
 		Dataset tempDataset = (Dataset) tempSetting.getSourceData();
 		return tempDataset.getName() + ProcessProperties.getString("string_index_and") + tempDataset.getDatasource().getAlias();
-	}
-
-	@Override
-	public String getTitle() {
-		return null;
 	}
 
 	@Override

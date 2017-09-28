@@ -30,12 +30,15 @@ public class MetaProcess2DTo3D extends MetaProcessTypeConversion {
 	public MetaProcess2DTo3D(DatasetType inputType) {
 		this.inputType = inputType;
 		if (inputType.equals(DatasetType.POINT)) {
+			setTitle(ProcessProperties.getString("String_Title_Point2DTo3D"));
 			outputType = DatasetType.POINT3D;
 			OUTPUT_DATA = "Point2Dto3DResult";
 		} else if (inputType.equals(DatasetType.LINE)) {
+			setTitle(ProcessProperties.getString("String_Title_Line2DTo3D"));
 			outputType = DatasetType.LINE3D;
 			OUTPUT_DATA = "Line2Dto3DResult";
 		} else if (inputType.equals(DatasetType.REGION)) {
+			setTitle(ProcessProperties.getString("String_Title_Region2DTo3D"));
 			outputType = DatasetType.REGION3D;
 			OUTPUT_DATA = "Region2Dto3DResult";
 		}
@@ -123,18 +126,6 @@ public class MetaProcess2DTo3D extends MetaProcessTypeConversion {
 			return MetaKeys.CONVERSION_LINE2D_TO_3D;
 		} else if (inputType.equals(DatasetType.REGION)) {
 			return MetaKeys.CONVERSION_REGION2D_TO_3D;
-		}
-		return null;
-	}
-
-	@Override
-	public String getTitle() {
-		if (inputType.equals(DatasetType.POINT)) {
-			return ProcessProperties.getString("String_Title_Point2DTo3D");
-		} else if (inputType.equals(DatasetType.LINE)) {
-			return ProcessProperties.getString("String_Title_Line2DTo3D");
-		} else if (inputType.equals(DatasetType.REGION)) {
-			return ProcessProperties.getString("String_Title_Region2DTo3D");
 		}
 		return null;
 	}

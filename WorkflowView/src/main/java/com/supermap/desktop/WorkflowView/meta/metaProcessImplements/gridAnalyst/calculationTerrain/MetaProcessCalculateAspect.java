@@ -15,6 +15,10 @@ import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetType
 public class MetaProcessCalculateAspect extends MetaProcessCalTerrain {
 	private final static String OUTPUT_DATASET = "CalculateAspectResult";
 
+	public MetaProcessCalculateAspect() {
+		setTitle(ProcessProperties.getString("String_CalculateAspect"));
+	}
+
 	@Override
 	protected void initHook() {
 
@@ -28,11 +32,6 @@ public class MetaProcessCalculateAspect extends MetaProcessCalTerrain {
 	@Override
 	protected String getDefaultResultName() {
 		return "result_calculateAspect";
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_CalculateAspect");
 	}
 
 	@Override

@@ -1,11 +1,6 @@
 package com.supermap.desktop.ui.controls;
 
-import com.supermap.data.CursorType;
-import com.supermap.data.Dataset;
-import com.supermap.data.DatasetVector;
-import com.supermap.data.FieldType;
-import com.supermap.data.QueryParameter;
-import com.supermap.data.Recordset;
+import com.supermap.data.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.properties.CommonProperties;
@@ -19,16 +14,14 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 
 public class SQLExpressionDialog extends SmDialog {
@@ -613,6 +606,7 @@ public class SQLExpressionDialog extends SmDialog {
 			this.jTableFieldInfo.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			//行高
 			this.jTableFieldInfo.setRowHeight(25);
+			this.jTableFieldInfo.getTableHeader().setReorderingAllowed(false);
 		}
 		return this.jTableFieldInfo;
 	}

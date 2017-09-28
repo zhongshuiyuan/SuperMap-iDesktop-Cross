@@ -42,6 +42,7 @@ public class MetaProcessSummaryRegion extends MetaProcess {
 	private ParameterCheckBox parametersumShape = new ParameterCheckBox(ProcessProperties.getString("String_SumShape"));
 
 	public MetaProcessSummaryRegion() {
+		setTitle(ProcessProperties.getString("String_SummaryRegion"));
 		initComponents();
 		initComponentState();
 		initComponentLayout();
@@ -50,9 +51,9 @@ public class MetaProcessSummaryRegion extends MetaProcess {
 	private void initComponents() {
 		//设置输入数据
 		parameterInputDataType.setDescribe(ProcessProperties.getString("String_FileInputPath"));
-		parameterIServerLogin.setInputDataType(this.parameterInputDataType);
-		//设置分析数据
-		parameterIServerLogin.setAnalystDataType(this.parameterAnalystDataType);
+		parameterInputDataType.setiServerLogin(parameterIServerLogin);
+		parameterAnalystDataType.setiServerLogin(parameterIServerLogin);
+//		//设置分析数据
 		parameterSummaryType.setRequisite(true);
 		parameterSummaryType.setItems(new ParameterDataNode(ProcessProperties.getString("String_summaryMesh"), "SUMMARYMESH"), new ParameterDataNode(ProcessProperties.getString("String_summaryRegion"), "SUMMARYREGION"));
 		parameterMeshType.setRequisite(true);
@@ -79,19 +80,15 @@ public class MetaProcessSummaryRegion extends MetaProcess {
 	}
 
 	private void initComponentState() {
-		parameterInputDataType.parameterDataInputWay.removeAllItems();
-		parameterInputDataType.parameterDataInputWay.setItems(new ParameterDataNode(ProcessProperties.getString("String_BigDataStore"), "3"),
+		parameterInputDataType.resetInputItems(new ParameterDataNode(ProcessProperties.getString("String_BigDataStore"), "3"),
 				new ParameterDataNode(ProcessProperties.getString("String_UDBFile"), "1"), new ParameterDataNode(ProcessProperties.getString("String_PG"), "2"));
 		parameterInputDataType.parameterSwitch.switchParameter("3");
-		parameterAnalystDataType.parameterDataInputWay.removeAllItems();
-		parameterAnalystDataType.parameterDataInputWay.setItems(new ParameterDataNode(ProcessProperties.getString("String_BigDataStore"), "3"),
+		parameterAnalystDataType.resetInputItems(new ParameterDataNode(ProcessProperties.getString("String_BigDataStore"), "3"),
 				new ParameterDataNode(ProcessProperties.getString("String_UDBFile"), "1"), new ParameterDataNode(ProcessProperties.getString("String_PG"), "2"));
 		parameterAnalystDataType.parameterSwitch.switchParameter("3");
 		parameterAnalystDataType.setBool(true);
 		parameterInputDataType.setSupportDatasetType(DatasetType.LINE, DatasetType.REGION);
 		parameterAnalystDataType.setSupportDatasetType(DatasetType.REGION);
-		parameterIServerLogin.setDataType(parameterInputDataType.supportDatasetType);
-		parameterIServerLogin.setAnalystDatasetTypes(parameterAnalystDataType.supportDatasetType);
 	}
 
 	private void initComponentLayout() {
@@ -154,11 +151,6 @@ public class MetaProcessSummaryRegion extends MetaProcess {
 				parameterWeightedFields, switchWeightedFields, parametersumShape);
 		parameters.addParameters(parameterIServerLogin, parameterInputDataType, parameterCombineSetting);
 		parameters.getOutputs().addData("SummaryRegionResult", ProcessOutputResultProperties.getString("String_BoundsAnalysisResult"), Type.UNKOWN);
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_SummaryRegion");
 	}
 
 	@Override

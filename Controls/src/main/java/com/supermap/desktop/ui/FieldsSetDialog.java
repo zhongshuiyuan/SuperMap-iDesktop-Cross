@@ -6,7 +6,6 @@ import com.supermap.desktop.controls.utilities.ComponentFactory;
 import com.supermap.desktop.ui.controls.DialogResult;
 import com.supermap.desktop.ui.controls.GridBagConstraintsHelper;
 import com.supermap.desktop.ui.controls.SmDialog;
-import com.supermap.desktop.ui.controls.smTables.TableFactory;
 import com.supermap.desktop.ui.controls.smTables.tables.TableFieldName;
 
 import javax.swing.*;
@@ -123,9 +122,9 @@ public class FieldsSetDialog extends SmDialog {
     }
 
     private void initComponents() {
-	    this.tableFieldNameSourceFields = (TableFieldName) TableFactory.getTable("FieldName");
+	    this.tableFieldNameSourceFields = new TableFieldName();
 	    this.tableFieldNameSourceFields.setDatasetVector(sourceDataset);
-	    this.tableFieldNameOverlayAnalystFields = (TableFieldName) TableFactory.getTable("FieldName");
+	    this.tableFieldNameOverlayAnalystFields = new TableFieldName();
 	    this.tableFieldNameOverlayAnalystFields.setDatasetVector(overlayAnalystDataset);
 
 

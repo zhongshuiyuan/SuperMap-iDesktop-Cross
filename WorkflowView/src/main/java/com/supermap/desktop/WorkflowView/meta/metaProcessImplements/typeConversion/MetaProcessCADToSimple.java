@@ -26,6 +26,7 @@ public class MetaProcessCADToSimple extends MetaProcessTypeConversion {
 	private ParameterSaveDatasetTable saveDatasetTable;
 
 	public MetaProcessCADToSimple() {
+		setTitle(ProcessProperties.getString("String_Title_CADToSimple"));
 		initParameters();
 		initParameterConstraint();
 	}
@@ -147,11 +148,6 @@ public class MetaProcessCADToSimple extends MetaProcessTypeConversion {
 	@Override
 	public String getKey() {
 		return MetaKeys.CONVERSION_CAD_TO_SIMPLE;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_CADToSimple");
 	}
 
 	private boolean convert(Recordset recordset, Geometry geometry, Map<String, Object> value, DatasetType datasetType) {

@@ -2,14 +2,17 @@ package com.supermap.desktop.ui.controls.prjcoordsys;
 
 import com.supermap.data.CoordSysTransMethod;
 import com.supermap.data.CoordSysTransParameter;
-import com.supermap.data.PrjCoordSys;
 import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.SMFormattedTextField;
 import com.supermap.desktop.ui.controls.DialogResult;
+import com.supermap.desktop.ui.controls.SmComboBox;
 import com.supermap.desktop.ui.controls.SmDialog;
+import com.supermap.desktop.ui.controls.SmFileChoose;
 import com.supermap.desktop.ui.controls.button.SmButton;
 import com.supermap.desktop.utilities.CoordSysTransMethodUtilities;
+import com.supermap.desktop.utilities.FileUtilities;
+import com.supermap.desktop.utilities.StringUtilities;
 
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
@@ -17,9 +20,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 import java.text.NumberFormat;
 
-public class JDialogPrjCoordSysTranslator extends SmDialog {
+/**
+ * 原先的投影转换JDialog，现在充当投影转换参数设置面板
+ * 仿照.net进行修改
+ * yuanR2017.9.25
+ */
+public class JDialogPrjCoordSysTranslatorSettings extends SmDialog {
 
 	/**
 	 *
@@ -27,8 +36,8 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 	private static final long serialVersionUID = 1L;
 
 	private JLabel labelMethod;
-	private JComboBox<String> comboBoxMethod;
-	private SmButton buttonSetPrj;
+	private SmComboBox<String> comboBoxMethod;
+	//private SmButton buttonSetPrj;
 	private JLabel labelScaleDifference;
 	private SMFormattedTextField textFieldScaleDifference;
 	private JLabel labelRotationX;
@@ -43,20 +52,24 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 	private SMFormattedTextField textFieldTranslateY;
 	private JLabel labelTranslateZ;
 	private SMFormattedTextField textFieldTranslateZ;
+	private SmButton buttonImport;
+	private SmButton buttonExport;
 	private SmButton buttonOk;
 	private SmButton buttonCancel;
 
-	private transient CoordSysTransMethod method = CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION;
-	private transient CoordSysTransParameter parameter = new CoordSysTransParameter();
-	private transient PrjCoordSys targetPrj = null;
-	private transient PrjCoordSys beforePrj = null;
+	private CoordSysTransMethod method = CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION;
+	private CoordSysTransParameter parameter = new CoordSysTransParameter();
 
 	private transient ActionListener actionListener = new ActionListener() {
-
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (e.getSource() == buttonSetPrj) {
-				buttonSetPrjClicked();
+			//if (e.getSource() == buttonSetPrj) {
+			//	//buttonSetPrjClicked();
+			//} else
+			if (e.getSource() == buttonImport) {
+				buttonImportClicked();
+			} else if (e.getSource() == buttonExport) {
+				buttonExportClicked();
 			} else if (e.getSource() == buttonOk) {
 				buttonOKClicked();
 			} else if (e.getSource() == buttonCancel) {
@@ -65,7 +78,6 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 		}
 	};
 	private transient ItemListener itemListener = new ItemListener() {
-
 		@Override
 		public void itemStateChanged(ItemEvent e) {
 			if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -75,21 +87,21 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 	};
 
 	/**
-	 * 新建投影转换窗口
+	 * 投影转换参数设置窗口
 	 *
-	 * @param beforePrj
-	 *            转换之前的投影信息
+	 * @param
 	 */
-	public JDialogPrjCoordSysTranslator(PrjCoordSys beforePrj) {
-		this.beforePrj = beforePrj;
+	public JDialogPrjCoordSysTranslatorSettings() {
 		initializeComponents();
 		initializeResources();
-		fillComponents();
+		fillCoordSysTransParameter(this.parameter);
 		setComponentsEnabled();
 		registerEvents();
 		setSize(600, 350);
 		setLocationRelativeTo(null);
-		this.componentList.add(buttonSetPrj);
+		//this.componentList.add(buttonSetPrj);
+		this.componentList.add(buttonImport);
+		this.componentList.add(buttonExport);
 		this.componentList.add(buttonOk);
 		this.componentList.add(buttonCancel);
 		this.setFocusTraversalPolicy(policy);
@@ -97,24 +109,32 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 	}
 
 	public CoordSysTransMethod getMethod() {
-		return method;
+		return this.method;
 	}
 
 	public CoordSysTransParameter getParameter() {
-		return parameter;
+		return this.parameter;
 	}
 
-	public PrjCoordSys getTargetPrj() {
-		return targetPrj;
-	}
+	//public PrjCoordSys getTargetPrj() {
+	//	return targetPrj;
+	//}
 
 	private void initializeComponents() {
 		// 基本参数
-		this.labelMethod = new JLabel("Method:");
-		this.comboBoxMethod = new JComboBox<>();
+		this.labelMethod = new JLabel("Method");
+		this.comboBoxMethod = new SmComboBox();
+		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION));
+		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_MOLODENSKY));
+		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_MOLODENSKY_ABRIDGED));
+		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_POSITION_VECTOR));
+		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_COORDINATE_FRAME));
+		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_BURSA_WOLF));
+
 		this.labelScaleDifference = new JLabel("ScaleDiff");
 		this.textFieldScaleDifference = new SMFormattedTextField(NumberFormat.getInstance());
-		this.buttonSetPrj = new SmButton(ControlsProperties.getString("String_SetDesPrjCoordSys"));
+		//this.buttonSetPrj = new SmButton(ControlsProperties.getString("String_SetDesPrjCoordSys"));
+		//this.buttonSetPrj.setEnabled(false);
 
 		JPanel panelBase = new JPanel();
 		panelBase.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_BasicParameters")));
@@ -131,14 +151,13 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 						.addComponent(this.labelScaleDifference))
 				.addGroup(gl_panelBase.createParallelGroup(Alignment.LEADING)
 						.addComponent(this.comboBoxMethod)
-						.addComponent(this.textFieldScaleDifference))
-				.addComponent(this.buttonSetPrj));
-		
+						.addComponent(this.textFieldScaleDifference)));
+
+
 		gl_panelBase.setVerticalGroup(gl_panelBase.createSequentialGroup()
 				.addGroup(gl_panelBase.createParallelGroup(Alignment.CENTER)
 						.addComponent(this.labelMethod)
-						.addComponent(this.comboBoxMethod, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(this.buttonSetPrj))
+						.addComponent(this.comboBoxMethod, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addGroup(gl_panelBase.createParallelGroup(Alignment.CENTER)
 						.addComponent(this.labelScaleDifference)
 						.addComponent(this.textFieldScaleDifference, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)));
@@ -169,7 +188,7 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 						.addComponent(this.textFieldRotationX)
 						.addComponent(this.textFieldRotationY)
 						.addComponent(this.textFieldRotationZ)));
-		
+
 		gl_panelRotation.setVerticalGroup(gl_panelRotation.createSequentialGroup()
 				.addGroup(gl_panelRotation.createParallelGroup(Alignment.CENTER)
 						.addComponent(this.labelRotationX)
@@ -207,7 +226,7 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 						.addComponent(this.textFieldTranslateX)
 						.addComponent(this.textFieldTranslateY)
 						.addComponent(this.textFieldTranslateZ)));
-		
+
 		gl_panelOffset.setVerticalGroup(gl_panelOffset.createSequentialGroup()
 				.addGroup(gl_panelOffset.createParallelGroup(Alignment.CENTER)
 						.addComponent(this.labelTranslateX)
@@ -221,6 +240,8 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 		// @formatter:on
 
 		// 主界面
+		this.buttonImport = new SmButton(ControlsProperties.getString("String_Button_Import"));
+		this.buttonExport = new SmButton(ControlsProperties.getString("String_Button_Export"));
 		this.buttonOk = new SmButton("OK");
 		this.buttonCancel = new SmButton("Cancel");
 		this.getRootPane().setDefaultButton(this.buttonOk);
@@ -237,16 +258,20 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 						.addComponent(panelRotation)
 						.addComponent(panelOffset))
 				.addGroup(groupLayout.createSequentialGroup()
-						.addGap(10,10,Short.MAX_VALUE)
+						.addComponent(this.buttonImport)
+						.addComponent(this.buttonExport)
+						.addGap(10, 10, Short.MAX_VALUE)
 						.addComponent(this.buttonOk)
 						.addComponent(this.buttonCancel)));
-		
+
 		groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
 				.addComponent(panelBase)
 				.addGroup(groupLayout.createParallelGroup(Alignment.CENTER)
 						.addComponent(panelRotation)
 						.addComponent(panelOffset))
 				.addGroup(groupLayout.createParallelGroup(Alignment.CENTER)
+						.addComponent(this.buttonImport)
+						.addComponent(this.buttonExport)
 						.addComponent(this.buttonOk)
 						.addComponent(this.buttonCancel)));
 		// @formatter:on
@@ -256,7 +281,9 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 		setTitle(ControlsProperties.getString("String_TransParamsSetting"));
 		this.labelMethod.setText(ControlsProperties.getString("String_TransMethod"));
 		this.labelScaleDifference.setText(ControlsProperties.getString("String_ScaleDifference"));
-		this.buttonSetPrj.setText(ControlsProperties.getString("String_SetDesPrjCoordSys"));
+		//this.buttonSetPrj.setText(ControlsProperties.getString("String_SetDesPrjCoordSys"));
+		this.buttonImport.setText(ControlsProperties.getString("String_Button_Import"));
+		this.buttonExport.setText(ControlsProperties.getString("String_Button_Export"));
 		this.buttonOk.setText(CommonProperties.getString(CommonProperties.OK));
 		this.buttonCancel.setText(CommonProperties.getString(CommonProperties.Cancel));
 	}
@@ -264,45 +291,61 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 	private void registerEvents() {
 		unregisterEvents();
 		this.comboBoxMethod.addItemListener(this.itemListener);
-		this.buttonSetPrj.addActionListener(this.actionListener);
+		//this.buttonSetPrj.addActionListener(this.actionListener);
+		this.buttonImport.addActionListener(this.actionListener);
+		this.buttonExport.addActionListener(this.actionListener);
 		this.buttonOk.addActionListener(this.actionListener);
 		this.buttonCancel.addActionListener(this.actionListener);
 	}
 
 	private void unregisterEvents() {
 		this.comboBoxMethod.removeItemListener(this.itemListener);
-		this.buttonSetPrj.removeActionListener(this.actionListener);
+		//this.buttonSetPrj.removeActionListener(this.actionListener);
+		this.buttonImport.removeActionListener(this.actionListener);
+		this.buttonExport.removeActionListener(this.actionListener);
 		this.buttonOk.removeActionListener(this.actionListener);
 		this.buttonCancel.removeActionListener(this.actionListener);
 	}
 
-	private void fillComponents() {
-		fillComboBoxMethod();
-		this.textFieldScaleDifference.setValue(this.parameter.getScaleDifference());
-		setRotationParameter();
-		this.textFieldTranslateX.setValue(this.parameter.getTranslateX());
-		this.textFieldTranslateY.setValue(this.parameter.getTranslateY());
-		this.textFieldTranslateZ.setValue(this.parameter.getTranslateZ());
+	/**
+	 * 初始化投影参数的值
+	 * yuanR2017.9.25
+	 */
+	private void fillCoordSysTransParameter(CoordSysTransParameter coordSysTransParameter) {
+		this.textFieldScaleDifference.setValue(coordSysTransParameter.getScaleDifference());
+		// 旋转角度单位与组件保持一致，需要是弧度，这里做一下转换。弧度转为秒
+		this.textFieldRotationX.setValue(coordSysTransParameter.getRotateX() / Math.PI * 180 * 60 * 60);
+		this.textFieldRotationY.setValue(coordSysTransParameter.getRotateY() / Math.PI * 180 * 60 * 60);
+		this.textFieldRotationZ.setValue(coordSysTransParameter.getRotateZ() / Math.PI * 180 * 60 * 60);
+
+		this.textFieldTranslateX.setValue(coordSysTransParameter.getTranslateX());
+		this.textFieldTranslateY.setValue(coordSysTransParameter.getTranslateY());
+		this.textFieldTranslateZ.setValue(coordSysTransParameter.getTranslateZ());
 	}
 
-	private void fillComboBoxMethod() {
-		this.comboBoxMethod.removeAllItems();
-		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION));
-		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_MOLODENSKY));
-		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_MOLODENSKY_ABRIDGED));
-		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_POSITION_VECTOR));
-		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_COORDINATE_FRAME));
-		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_BURSA_WOLF));
-		this.comboBoxMethod.setSelectedItem(CoordSysTransMethodUtilities.toString(this.method));
-	}
+	///**
+	// * 初始化转换模式的值
+	// *
+	// * @param method
+	// */
+	//private void fillComboBoxMethod(CoordSysTransMethod method) {
+	//	this.comboBoxMethod.removeAllItems();
+	//	this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION));
+	//	this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_MOLODENSKY));
+	//	this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_MOLODENSKY_ABRIDGED));
+	//	this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_POSITION_VECTOR));
+	//	this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_COORDINATE_FRAME));
+	//	this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_BURSA_WOLF));
+	//	this.comboBoxMethod.setSelectedItem(CoordSysTransMethodUtilities.toString(method));
+	//}
 
 	private void buttonSetPrjClicked() {
-		JDialogPrjCoordSysSettings prjSettings = new JDialogPrjCoordSysSettings();
-		prjSettings.setPrjCoordSys(this.getTargetPrj() == null ? this.beforePrj : this.getTargetPrj());
-		if (prjSettings.showDialog() == DialogResult.OK) {
-			this.targetPrj = prjSettings.getPrjCoordSys();
-		}
-		setComponentsEnabled();
+		//JDialogPrjCoordSysSettings prjSettings = new JDialogPrjCoordSysSettings();
+		//prjSettings.setPrjCoordSys(this.getTargetPrj() == null ? this.beforePrj : this.getTargetPrj());
+		//if (prjSettings.showDialog() == DialogResult.OK) {
+		//	this.targetPrj = prjSettings.getPrjCoordSys();
+		//}
+		//setComponentsEnabled();
 	}
 
 	private void comboBoxMethodSelectedChange() {
@@ -323,35 +366,69 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 			this.textFieldRotationY.setEditable(true);
 			this.textFieldRotationZ.setEditable(true);
 		}
-		this.buttonOk.setEnabled(this.targetPrj != null);
+		//this.buttonOk.setEnabled(this.targetPrj != null);
+	}
+
+
+	/**
+	 * 导入.ctp文件，
+	 */
+	private void buttonImportClicked() {
+		String moduleName = "ImportPrjCoordSysTranslatorFile";
+		if (!SmFileChoose.isModuleExist(moduleName)) {
+			SmFileChoose.addNewNode(SmFileChoose.createFileFilter(ControlsProperties.getString("String_TransParamFile"), "ctp"),
+					CommonProperties.getString("String_DefaultFilePath"), ControlsProperties.getString("String_OpenRasterAlgebraExpressionFile"),
+					moduleName, "OpenOne");
+		}
+		SmFileChoose fileChooseImport = new SmFileChoose(moduleName);
+		if (fileChooseImport.showDefaultDialog() == JFileChooser.APPROVE_OPTION) {
+			String filePath = fileChooseImport.getFilePath();
+			if (!StringUtilities.isNullOrEmptyString(filePath)) {
+				try {
+					String strXML = FileUtilities.getFileValue(filePath);
+					CoordSysTransParameter coordSysTransParameter = new CoordSysTransParameter();
+					coordSysTransParameter.fromXML(strXML);
+					this.parameter = coordSysTransParameter;
+					fillCoordSysTransParameter(this.parameter);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	/**
-	 * 旋转角度单位与组件保持一致，需要是弧度，这里做一下转换。秒转为弧度
+	 * 导出.ctp文件，
 	 */
-	private void getRotationParameter() {
-		//
-		this.parameter.setRotateX(Double.valueOf(this.textFieldRotationX.getValue().toString()) / 60 / 60 / 180 * Math.PI);
-		this.parameter.setRotateY(Double.valueOf(this.textFieldRotationY.getValue().toString()) / 60 / 60 / 180 * Math.PI);
-		this.parameter.setRotateZ(Double.valueOf(this.textFieldRotationZ.getValue().toString()) / 60 / 60 / 180 * Math.PI);
-	}
+	private void buttonExportClicked() {
+		String moduleName = "ExportPrjCoordSysTranslatorFile";
+		if (!SmFileChoose.isModuleExist(moduleName)) {
+			SmFileChoose.addNewNode(SmFileChoose.createFileFilter(ControlsProperties.getString("String_TransParamFile"), "ctp"),
+					CommonProperties.getString("String_DefaultFilePath"), ControlsProperties.getString("String_SaveAsFile"),
+					moduleName, "SaveOne");
+		}
+		SmFileChoose fileChooseExport = new SmFileChoose(moduleName);
+		fileChooseExport.setSelectedFile(new File("CoordSysTransPatameter.ctp"));
+		if (fileChooseExport.showDefaultDialog() == JFileChooser.APPROVE_OPTION) {
+			// 获得当前设置的参数值，赋值给默认参数：parameter
+			setCoordSysTransParameterValue();
+			String filePath = fileChooseExport.getFilePath();
+			if (!StringUtilities.isNullOrEmptyString(filePath)) {
+				try {
+					File file = new File(filePath);
+					FileUtilities.createFile(file);
+					FileUtilities.writeToFile(file, parameter.toXML());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 
-	/**
-	 * 旋转角度单位与组件保持一致，需要是弧度，这里做一下转换。弧度转为秒
-	 */
-	private void setRotationParameter() {
-		this.textFieldRotationX.setValue(this.parameter.getRotateX() / Math.PI * 180 * 60 * 60);
-		this.textFieldRotationY.setValue(this.parameter.getRotateY() / Math.PI * 180 * 60 * 60);
-		this.textFieldRotationZ.setValue(this.parameter.getRotateZ() / Math.PI * 180 * 60 * 60);
 	}
 
 	private void buttonOKClicked() {
 		this.method = CoordSysTransMethodUtilities.valueOf(this.comboBoxMethod.getSelectedItem().toString());
-		this.parameter.setScaleDifference(Double.valueOf(this.textFieldScaleDifference.getValue().toString()));
-		getRotationParameter();
-		this.parameter.setTranslateX(Double.valueOf(this.textFieldTranslateX.getValue().toString()));
-		this.parameter.setTranslateY(Double.valueOf(this.textFieldTranslateY.getValue().toString()));
-		this.parameter.setTranslateZ(Double.valueOf(this.textFieldTranslateZ.getValue().toString()));
+		setCoordSysTransParameterValue();
 		this.dialogResult = DialogResult.OK;
 		setVisible(false);
 	}
@@ -359,6 +436,19 @@ public class JDialogPrjCoordSysTranslator extends SmDialog {
 	private void buttonCancelClicked() {
 		this.dialogResult = DialogResult.CANCEL;
 		setVisible(false);
+	}
+
+	private void setCoordSysTransParameterValue() {
+		this.parameter.setScaleDifference(Double.valueOf(this.textFieldScaleDifference.getValue().toString()));
+
+		// 旋转角度单位与组件保持一致，需要是弧度，这里做一下转换。秒转为弧度
+		this.parameter.setRotateX(Double.valueOf(this.textFieldRotationX.getValue().toString()) / 60 / 60 / 180 * Math.PI);
+		this.parameter.setRotateY(Double.valueOf(this.textFieldRotationY.getValue().toString()) / 60 / 60 / 180 * Math.PI);
+		this.parameter.setRotateZ(Double.valueOf(this.textFieldRotationZ.getValue().toString()) / 60 / 60 / 180 * Math.PI);
+
+		this.parameter.setTranslateX(Double.valueOf(this.textFieldTranslateX.getValue().toString()));
+		this.parameter.setTranslateY(Double.valueOf(this.textFieldTranslateY.getValue().toString()));
+		this.parameter.setTranslateZ(Double.valueOf(this.textFieldTranslateZ.getValue().toString()));
 	}
 
 }

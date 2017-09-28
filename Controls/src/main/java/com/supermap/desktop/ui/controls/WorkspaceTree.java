@@ -2044,6 +2044,13 @@ public class WorkspaceTree extends JTree implements IDisposable {
 				this.setSelectionPath(path);
 				break;
 			}
+			// ***** fix by lixiaoyao   If the datasource to be selected is already filtered,
+			//                          the first datasource in the current tree is selected.
+			if (i + 1 == datasourceTreeNode.getChildCount()) {
+				TreePath path = new TreePath(((DefaultMutableTreeNode) datasourceTreeNode.getChildAt(0)).getPath());
+				this.scrollPathToVisible(path);
+				this.setSelectionPath(path);
+			}
 		}
 	}
 
@@ -2366,7 +2373,7 @@ public class WorkspaceTree extends JTree implements IDisposable {
 		this.workspaceDropTarget = workspaceDropTarget;
 	}
 
-	public class CollectionInfo{
+	public class CollectionInfo {
 		private DatasetType datasetType;
 		private CollectionDatasetInfo collectionDatasetInfo;
 

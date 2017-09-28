@@ -37,14 +37,14 @@ public class MetaProcessKernelDensity extends MetaProcess {
 
 
 	public MetaProcessKernelDensity() {
+		setTitle(ProcessProperties.getString("String_KernelDensityAnalyst"));
 		initComponents();
 	}
 
 	private void initComponents() {
 		parameterInputDataType.setDescribe(ProcessProperties.getString("String_FileInputPath"));
-		parameterIServerLogin.setInputDataType(this.parameterInputDataType);
+		parameterInputDataType.setiServerLogin(parameterIServerLogin);
 		parameterInputDataType.setSupportDatasetType(DatasetType.POINT);
-		parameterIServerLogin.setDataType(parameterInputDataType.supportDatasetType);
 		ParameterDataNode parameterDataNode = new ParameterDataNode(ProcessProperties.getString("String_KernelDensity"), "1");
 		parameterComboBoxAnalyseType.setRequisite(true);
 		parameterComboBoxAnalyseType.setItems(parameterDataNode);
@@ -98,11 +98,6 @@ public class MetaProcessKernelDensity extends MetaProcess {
 				parameterCombineAlaysis
 		);
 		parameters.getOutputs().addData("KernelDensityResult", ProcessOutputResultProperties.getString("String_KernelsDensityAnalysisResult"), Type.UNKOWN);
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_KernelDensityAnalyst");
 	}
 
 	@Override

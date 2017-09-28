@@ -43,6 +43,7 @@ public class MetaProcessCostPathLine extends MetaProcessGridAnalyst {
 	private ParameterNumber numberSmoothDegree;
 
 	public MetaProcessCostPathLine() {
+		setTitle(ProcessProperties.getString("String_Title_CostPathLine"));
 		initParameters();
 		initParameterConstraint();
 		initParametersState();
@@ -148,11 +149,6 @@ public class MetaProcessCostPathLine extends MetaProcessGridAnalyst {
 	@Override
 	public String getKey() {
 		return MetaKeys.COST_PATH_LINE;
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_Title_CostPathLine");
 	}
 
 	@Override

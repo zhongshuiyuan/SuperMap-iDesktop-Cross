@@ -8,7 +8,7 @@ public class MetaKeys {
 	public static final String BUFFER = "Buffer";
 	public static final String MULTIBUFFER = "MultiBuffer";
 	public static final String IMPORT = "Import";
-	public static final String PROJECTION = "Projection";
+	public static final String PROJECTIONTRANSFORM = "ProjectionTransform";
 	public static final String SET_PROJECTION = "SetProjection";
 	public static final String EXPORTGRID = "ExportGrid";
 	public static final String EXPORTVECTOR = "ExportVector";
@@ -132,8 +132,8 @@ public class MetaKeys {
 	public static final String CONVERSION_POINT2D_TO_3D = "Conversion_Point2DTo3D";
 	public static final String CONVERSION_LINE2D_TO_3D = "Conversion_Line2DTo3D";
 	public static final String CONVERSION_REGION2D_TO_3D = "Conversion_Region2DTo3D";
-	public static final String CONVERSION_NETWORK_TO_POINT2D = "Conversion_NetWorkToPoint2D";
-	public static final String CONVERSION_NETWORK_TO_LINE = "Conversion_NetWorkToLine";
+	public static final String CONVERSION_NETWORK_TO_POINT2D = "Conversion_NetworkToPoint2D";
+	public static final String CONVERSION_NETWORK_TO_LINE = "Conversion_NetworkToLine";
 	public static final String CONVERSION_LINEM_TO_LINE = "Conversion_LineMToLine";
 
 

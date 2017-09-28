@@ -8,7 +8,7 @@ import com.supermap.desktop.ui.controls.DialogResult;
 import com.supermap.desktop.ui.controls.GridBagConstraintsHelper;
 import com.supermap.desktop.ui.controls.button.SmButton;
 import com.supermap.desktop.ui.controls.prjcoordsys.JDialogPrjCoordSysSettings;
-import com.supermap.desktop.ui.controls.prjcoordsys.JDialogPrjCoordSysTranslator;
+import com.supermap.desktop.ui.controls.prjcoordsys.JDialogPrjTransform;
 import com.supermap.desktop.utilities.PrjCoordSysUtilities;
 
 import javax.swing.*;
@@ -23,7 +23,7 @@ import java.awt.event.ActionListener;
 public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final int DEFAULT_COMPONENT_WIDTH = 120;
@@ -165,6 +165,7 @@ public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 		this.buttonSet.setText(ControlsProperties.getString("String_ProjectionInfoControl_ButtonResetProjectionInfo"));
 		this.buttonConvert.setText(ControlsProperties.getString("String_ProjectionInfoControl_ButtonProjectionConversion"));
 	}
+
 	private void setComponentName() {
 		ComponentUIUtilities.setName(this.labelName, "PrjCoordSysPropertyControl_labelName");
 		ComponentUIUtilities.setName(this.textFieldName, "PrjCoordSysPropertyControl_textFieldName");
@@ -177,6 +178,7 @@ public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 		ComponentUIUtilities.setName(this.buttonSet, "PrjCoordSysPropertyControl_buttonSet");
 		ComponentUIUtilities.setName(this.buttonConvert, "PrjCoordSysPropertyControl_buttonConvert");
 	}
+
 	public void initButtonState() {
 		// 目前看来，复制，转换，设置是否能使用是一致的。
 		this.buttonConvert.setEnabled(covertFlag);
@@ -220,10 +222,16 @@ public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 		}
 	}
 
+	/**
+	 * 投影转换按钮响应事件
+	 * 原投影转换是对树中选中的对象进行投影，支持数据集和数据源
+	 * 現投影转换功能更为独立，在功能内可以任意跟换原数据
+	 * 因此对功能的实现进行修改及优化
+	 * yuanR2017.9.27
+	 */
 	private void buttonConvertClicked() {
-		JDialogPrjCoordSysTranslator dialogTranslator = new JDialogPrjCoordSysTranslator(prjHandle.getPrj());
+		JDialogPrjTransform dialogTranslator = new JDialogPrjTransform();
 		if (dialogTranslator.showDialog() == DialogResult.OK) {
-			this.prjHandle.convert(dialogTranslator.getMethod(), dialogTranslator.getParameter(), dialogTranslator.getTargetPrj());
 			fillComponents();
 		}
 	}

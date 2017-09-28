@@ -26,7 +26,7 @@ import java.text.DecimalFormat;
 
 /**
  * @author XiaJT
- * 增量空间自相关
+ *         增量空间自相关
  */
 public class MetaProcessIncrementalAutoCorrelation extends MetaProcess {
 	// TODO: 2017/4/27
@@ -43,6 +43,7 @@ public class MetaProcessIncrementalAutoCorrelation extends MetaProcess {
 //	private ParameterTextArea parameterResult = new ParameterTextArea();
 
 	public MetaProcessIncrementalAutoCorrelation() {
+		setTitle(ProcessProperties.getString("String_incrementalAutoCorrelation"));
 		initParameters();
 		initParameterState();
 		initParameterConstraint();
@@ -108,11 +109,6 @@ public class MetaProcessIncrementalAutoCorrelation extends MetaProcess {
 		equalDatasetConstraint.constrained(dataset, ParameterSingleDataset.DATASET_FIELD_NAME);
 		equalDatasetConstraint.constrained(parameterFieldComboBox, ParameterFieldComboBox.DATASET_FIELD_NAME);
 
-	}
-
-	@Override
-	public String getTitle() {
-		return ProcessProperties.getString("String_incrementalAutoCorrelation");
 	}
 
 	@Override

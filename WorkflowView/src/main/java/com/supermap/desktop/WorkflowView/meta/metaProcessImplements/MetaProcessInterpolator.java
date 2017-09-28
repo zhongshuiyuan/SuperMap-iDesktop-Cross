@@ -1,14 +1,6 @@
 package com.supermap.desktop.WorkflowView.meta.metaProcessImplements;
 
-import com.supermap.analyst.spatialanalyst.Exponent;
-import com.supermap.analyst.spatialanalyst.InterpolationAlgorithmType;
-import com.supermap.analyst.spatialanalyst.InterpolationIDWParameter;
-import com.supermap.analyst.spatialanalyst.InterpolationKrigingParameter;
-import com.supermap.analyst.spatialanalyst.InterpolationParameter;
-import com.supermap.analyst.spatialanalyst.InterpolationRBFParameter;
-import com.supermap.analyst.spatialanalyst.Interpolator;
-import com.supermap.analyst.spatialanalyst.SearchMode;
-import com.supermap.analyst.spatialanalyst.VariogramMode;
+import com.supermap.analyst.spatialanalyst.*;
 import com.supermap.data.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
@@ -25,15 +17,7 @@ import com.supermap.desktop.process.parameter.ParameterDataNode;
 import com.supermap.desktop.process.parameter.ParameterSearchModeInfo;
 import com.supermap.desktop.process.parameter.interfaces.IParameterPanel;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
-import com.supermap.desktop.process.parameter.ipls.ParameterCombine;
-import com.supermap.desktop.process.parameter.ipls.ParameterComboBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterDatasource;
-import com.supermap.desktop.process.parameter.ipls.ParameterDatasourceConstrained;
-import com.supermap.desktop.process.parameter.ipls.ParameterFieldComboBox;
-import com.supermap.desktop.process.parameter.ipls.ParameterNumber;
-import com.supermap.desktop.process.parameter.ipls.ParameterSaveDataset;
-import com.supermap.desktop.process.parameter.ipls.ParameterSearchMode;
-import com.supermap.desktop.process.parameter.ipls.ParameterSingleDataset;
+import com.supermap.desktop.process.parameter.ipls.*;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.properties.PixelFormatProperties;
 import com.supermap.desktop.utilities.DatasetUtilities;
@@ -108,10 +92,25 @@ public class MetaProcessInterpolator extends MetaProcessGridAnalyst {
 
 	public MetaProcessInterpolator(InterpolationAlgorithmType interpolationAlgorithmType) {
 		this.interpolationAlgorithmType = interpolationAlgorithmType;
+		initTitle();
 		initParameters();
 		initParameterStates();
 		initParameterConstraint();
 		registerEvents();
+	}
+
+	private void initTitle() {
+		if (interpolationAlgorithmType.equals(InterpolationAlgorithmType.IDW)) {
+			setTitle(ControlsProperties.getString("String_Interpolator_IDW"));
+		} else if (interpolationAlgorithmType.equals(InterpolationAlgorithmType.RBF)) {
+			setTitle(ControlsProperties.getString("String_Interpolator_RBF"));
+		} else if (interpolationAlgorithmType.equals(InterpolationAlgorithmType.KRIGING)) {
+			setTitle(ControlsProperties.getString("String_Interpolator_KRIGING"));
+		} else if (interpolationAlgorithmType.equals(InterpolationAlgorithmType.SimpleKRIGING)) {
+			setTitle(ControlsProperties.getString("String_Interpolator_SimpleKRIGING"));
+		} else if (interpolationAlgorithmType.equals(InterpolationAlgorithmType.UniversalKRIGING)) {
+			setTitle(ControlsProperties.getString("String_Interpolator_UniversalKRIGING"));
+		}
 	}
 
 	private void initParameters() {
@@ -166,9 +165,9 @@ public class MetaProcessInterpolator extends MetaProcessGridAnalyst {
 
 		parameterPower = new ParameterNumber(CommonProperties.getString("String_Power"));
 		parameterPower.setSelectedItem(2);
-        parameterPower.setMinValue(1);
-        parameterPower.setMaxValue(100);
-        parameterTension = new ParameterNumber(CommonProperties.getString("String_Tension"));
+		parameterPower.setMinValue(1);
+		parameterPower.setMaxValue(100);
+		parameterTension = new ParameterNumber(CommonProperties.getString("String_Tension"));
 		parameterTension.setSelectedItem(40);
 		parameterTension.setMinValue(0);
 		parameterSmooth = new ParameterNumber(CommonProperties.getString("String_Smooth"));
@@ -278,23 +277,6 @@ public class MetaProcessInterpolator extends MetaProcessGridAnalyst {
 				}
 			}
 		});
-	}
-
-	@Override
-	public String getTitle() {
-		String title = "";
-		if (interpolationAlgorithmType.equals(InterpolationAlgorithmType.IDW)) {
-			title = ControlsProperties.getString("String_Interpolator_IDW");
-		} else if (interpolationAlgorithmType.equals(InterpolationAlgorithmType.RBF)) {
-			title = ControlsProperties.getString("String_Interpolator_RBF");
-		} else if (interpolationAlgorithmType.equals(InterpolationAlgorithmType.KRIGING)) {
-			title = ControlsProperties.getString("String_Interpolator_KRIGING");
-		} else if (interpolationAlgorithmType.equals(InterpolationAlgorithmType.SimpleKRIGING)) {
-			title = ControlsProperties.getString("String_Interpolator_SimpleKRIGING");
-		} else if (interpolationAlgorithmType.equals(InterpolationAlgorithmType.UniversalKRIGING)) {
-			title = ControlsProperties.getString("String_Interpolator_UniversalKRIGING");
-		}
-		return title;
 	}
 
 	@Override

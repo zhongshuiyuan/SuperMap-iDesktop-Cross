@@ -4,9 +4,11 @@ import com.supermap.data.conversion.FileType;
 import com.supermap.desktop.dataconversion.DataConversionProperties;
 import com.supermap.desktop.iml.FileTypeLocale;
 import com.supermap.desktop.implement.UserDefineType.UserDefineFileType;
+import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.utilities.FileUtilities;
 
 import java.io.File;
+import java.text.MessageFormat;
 
 /**
  * Created by xie on 2016/10/14.
@@ -61,11 +63,13 @@ public class FiletypeUtilities {
 				|| fileType.equalsIgnoreCase(FileTypeLocale.WAP_STRING) || fileType.equalsIgnoreCase(FileTypeLocale.WAT_STRING)) {
 			fileType = DataConversionProperties.getString("String_FormImport_MapGIS");
 			// MapGIS 交换格式(*.wat,*.wan,*.wal,*.wap)
-		} else if (fileType.equalsIgnoreCase(FileTypeLocale.XLSX_STRING) || fileType.equalsIgnoreCase(FileTypeLocale.CSV_STRING)
+		} else if (fileType.equalsIgnoreCase(FileTypeLocale.XLSX_STRING)
 				|| fileType.equalsIgnoreCase(FileTypeLocale.XLS_STRING)) {
 			fileType = DataConversionProperties.getString("String_FormImport_MicroSoft");
 			// Microsoft 交换格式(*.xlsx,*.csv)
-		} else if (fileType.equalsIgnoreCase(FileTypeLocale.SIT_STRING) || fileType.equalsIgnoreCase(FileTypeLocale.IMG_STRING)
+		} else if(fileType.equalsIgnoreCase(FileTypeLocale.CSV_STRING)){
+			fileType = MessageFormat.format(CommonProperties.getString("String_FileType"),"CSV");
+		}else if (fileType.equalsIgnoreCase(FileTypeLocale.SIT_STRING) || fileType.equalsIgnoreCase(FileTypeLocale.IMG_STRING)
 				|| fileType.equalsIgnoreCase(FileTypeLocale.TIF_STRING) || fileType.equalsIgnoreCase(FileTypeLocale.TIFF_STRING)
 				|| fileType.equalsIgnoreCase(FileTypeLocale.BMP_STRING) || fileType.equalsIgnoreCase(FileTypeLocale.PNG_STRING)
 				|| fileType.equalsIgnoreCase(FileTypeLocale.JPG_STRING) || fileType.equalsIgnoreCase(FileTypeLocale.JPEG_STRING)
