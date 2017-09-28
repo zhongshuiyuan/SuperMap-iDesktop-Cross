@@ -373,12 +373,15 @@ public class ImportParameterCreator implements IParameterCreator {
 			return result;
 		}
 		if (importSetting instanceof ImportSettingCSV) {
+			parameterCombineParamSet = new ParameterCombine();
+			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
 			// 对导入CSV文件参数面板进行重构，支持导入点线面
 			// 首行为字段信息
 			ReflectInfo setFirstRowIsField = new ReflectInfo();
 			setFirstRowIsField.methodName = "setFirstRowIsField";
-			setFirstRowIsField.parameter = new ParameterCheckBox(CommonProperties.getString("String_FirstRowisField"));
-
+			ParameterCheckBox parameterFirstRowIsField = new ParameterCheckBox(CommonProperties.getString("String_FirstRowisField"));
+			parameterFirstRowIsField.setSelectedItem(true);
+			setFirstRowIsField.parameter = parameterFirstRowIsField;
 			if (importSetting instanceof ImportSettingExcel) {
 				result.add(setFirstRowIsField);
 				parameterCombineParamSet.addParameters(setFirstRowIsField.parameter);
@@ -432,13 +435,12 @@ public class ImportParameterCreator implements IParameterCreator {
 				result.add(setSeparator);
 				result.add(setFirstRowIsField);
 				result.add(setImportIndexData);
+				result.add(setWKTField);
 				result.add(setWKTFieldName);
 				result.add(setXFieldName);
 				result.add(setYFieldName);
 				result.add(setZFieldName);
 
-				parameterCombineParamSet = new ParameterCombine();
-				parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
 				parameterCombineParamSet.addParameters(setSeparator.parameter, setFirstRowIsField.parameter, setImportIndexData.parameter, setWKTField.parameter,
 						parameterWKTFieldName, parameterXFieldName, parameterYFieldName, parameterZFieldName);
 
@@ -1022,6 +1024,10 @@ public class ImportParameterCreator implements IParameterCreator {
 
 	public ParameterRadioButton getParameterRadioButtonFolderOrFile() {
 		return parameterRadioButtonFolderOrFile;
+	}
+
+	public ParameterCheckBox getParameterImportIndexData() {
+		return parameterImportIndexData;
 	}
 
 	public ParameterComboBox getParameterWKTFieldName() {
