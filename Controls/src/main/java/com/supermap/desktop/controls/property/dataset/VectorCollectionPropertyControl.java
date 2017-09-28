@@ -1,6 +1,9 @@
 package com.supermap.desktop.controls.property.dataset;
 
-import com.supermap.data.*;
+import com.supermap.data.CollectionDatasetInfo;
+import com.supermap.data.DatasetVector;
+import com.supermap.data.DatasourceConnectionInfo;
+import com.supermap.desktop.Application;
 import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.controls.property.AbstractPropertyControl;
 import com.supermap.desktop.controls.utilities.ComponentUIUtilities;
@@ -120,8 +123,10 @@ public class VectorCollectionPropertyControl extends AbstractPropertyControl {
 				this.textFieldDatasetCount.setText(String.valueOf(this.datasetVector.getCollectionDatasetCount()));
 				this.textFieldDatasetType.setText(DatasetTypeUtilities.toString(this.datasetVector.GetSubCollectionDatasetType()));
 			}
+			this.buttonSetDatasetCount.setEnabled(!this.datasetVector.getDatasource().isReadOnly());
 		} catch (Exception ex) {
 			//GetSubCollectionDatasetType异常
+			Application.getActiveApplication().getOutput().output(ex);
 		}
 
 	}
@@ -130,7 +135,7 @@ public class VectorCollectionPropertyControl extends AbstractPropertyControl {
 		ArrayList<DatasetInfo> datasetInfos = new ArrayList<>();
 		ArrayList<CollectionDatasetInfo> collectionDatasetInfos = this.datasetVector.getCollectionDatasetInfos();
 		DatasetInfo datasetInfo;
-		for (int i = 0,size = collectionDatasetInfos.size(); i <size ; i++) {
+		for (int i = 0, size = collectionDatasetInfos.size(); i < size; i++) {
 			datasetInfo = new DatasetInfo();
 			DatasourceConnectionInfo info = collectionDatasetInfos.get(i).getDatasourceConnectInfo();
 			datasetInfo.setName(collectionDatasetInfos.get(i).getDatasetName());
