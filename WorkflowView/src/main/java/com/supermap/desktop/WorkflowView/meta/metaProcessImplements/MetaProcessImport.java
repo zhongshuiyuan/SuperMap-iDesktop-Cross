@@ -26,10 +26,7 @@ import com.supermap.desktop.ui.UICommonToolkit;
 import com.supermap.desktop.ui.controls.DialogResult;
 import com.supermap.desktop.ui.controls.WorkspaceTree;
 import com.supermap.desktop.ui.controls.prjcoordsys.JDialogPrjCoordSysSettings;
-import com.supermap.desktop.utilities.DatasourceUtilities;
-import com.supermap.desktop.utilities.FileUtilities;
-import com.supermap.desktop.utilities.PrjCoordSysUtilities;
-import com.supermap.desktop.utilities.StringUtilities;
+import com.supermap.desktop.utilities.*;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -69,6 +66,7 @@ public class MetaProcessImport extends MetaProcess {
 	};
 
 	// 拓展导入csv文件功能，支持导入点线面
+	private ParameterCheckBox parameterImportIndexData;
 	private ParameterComboBox parameterWKTFieldName;
 	private ParameterComboBox parameterXFieldName;
 	private ParameterComboBox parameterYFieldName;
@@ -117,10 +115,35 @@ public class MetaProcessImport extends MetaProcess {
 					 * 给导入csv面板中的文件选择器也添加监听事件，用于当文件文件路径改变时，对选中的csv文件进行预读，得到可供选择的字段-yuanR
 					 */
 					if (importSetting instanceof ImportSettingCSV) {
+						parameterWKTFieldName.removeAllItems();
+						parameterXFieldName.removeAllItems();
+						parameterYFieldName.removeAllItems();
+						parameterZFieldName.removeAllItems();
+						parameterImportIndexData.setSelectedItem(false);
+						parameterImportIndexData.setEnabled(false);
 
-
+						String path = (String) evt.getNewValue();
+						if (new File(path).exists() && getData(path) != null) {
+							String[][] data = getData(path);
+							String[] tempValues = data[0];
+							for (int i = 0, tempLength = tempValues.length; i < tempLength; i++) {
+								tempValues[i] = tempValues[i].replace("\"", "");
+							}
+							String[] indexX = tempValues;
+							parameterZFieldName.addItem(new ParameterDataNode("", " "));
+							for (int i = 0; i < indexX.length; i++) {
+								parameterWKTFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
+								parameterXFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
+								parameterYFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
+								parameterZFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
+							}
+							parameterWKTFieldName.setSelectedItem(indexX[0]);
+							parameterXFieldName.setSelectedItem(indexX[0]);
+							parameterYFieldName.setSelectedItem(indexX[0]);
+							parameterZFieldName.setSelectedItem(" ");
+							parameterImportIndexData.setEnabled(true);
+						}
 					}
-
 				} finally {
 					isSelectingFile = false;
 				}
@@ -143,6 +166,27 @@ public class MetaProcessImport extends MetaProcess {
 			}
 		}
 	};
+
+	private String[][] getData(String filePath) {
+		String[][] result = null;
+		try {
+			ArrayList<String> list = XlsUtilities.readCsv(new File(filePath));
+			if (list.size() > 0) {
+				result = new String[list.size()][];
+			}
+			for (int i = 0, size = list.size(); i < size; i++) {
+				String tempStr = list.get(i);
+				if (tempStr.contains("(")) {
+					tempStr = tempStr.substring(0, tempStr.indexOf("(") - 1);
+				}
+				result[i] = tempStr.split(",");
+			}
+		} catch (Exception ex) {
+			result = null;
+		} finally {
+			return result;
+		}
+	}
 
 	private PropertyChangeListener fileValueListener = new PropertyChangeListener() {
 		@Override
@@ -278,12 +322,12 @@ public class MetaProcessImport extends MetaProcess {
 			});
 		}
 		if (importSetting instanceof ImportSettingCSV) {
+			parameterImportIndexData = parameterCreator.getParameterImportIndexData();
 			parameterWKTFieldName = parameterCreator.getParameterWKTFieldName();
 			parameterXFieldName = parameterCreator.getParameterXFieldName();
 			parameterYFieldName = parameterCreator.getParameterYFieldName();
 			parameterZFieldName = parameterCreator.getParameterZFieldName();
 		}
-
 	}
 
 	private void addOutPutParameters() {
@@ -428,6 +472,50 @@ public class MetaProcessImport extends MetaProcess {
 				}
 			}
 			((ImportSettingExcel) importSetting).removeImportSteppedListener(importStepListener);
+		} else if (importSetting instanceof ImportSettingCSV) {
+			importSetting.setSourceFilePath(((ParameterFile) (sourceImportParameters.get(0)).parameter).getSelectedItem().toString());
+			final Datasource datasource = ((ParameterDatasource) resultImportParameters.get(0).parameter).getSelectedItem();
+			importSetting.setTargetDatasource(datasource);
+			importSetting.setTargetDatasetName(((ParameterTextField) resultImportParameters.get(1).parameter).getSelectedItem().toString());
+			((ImportSettingCSV) importSetting).setSeparator((((ParameterTextField) paramParameters.get(0).parameter).getSelectedItem()));
+			((ImportSettingCSV) importSetting).setFirstRowIsField(Boolean.valueOf(((ParameterCheckBox) paramParameters.get(1).parameter).getSelectedItem()));
+			// 当勾选导入空间数据时，必须勾选首行为字段信息，才能导入成功。-yuanR存疑2017.9.28
+			if (Boolean.valueOf(((ParameterCheckBox) paramParameters.get(2).parameter).getSelectedItem())) {
+				if ((Boolean) ((ParameterDataNode) ((ParameterRadioButton) paramParameters.get(3).parameter).getSelectedItem()).getData()) {
+					// 使用wkt
+					//todo 设置后有崩溃问题，暂时屏蔽
+					//((ImportSettingCSV) importSetting).setIndexAsGeometry(((ParameterComboBox) paramParameters.get(4).parameter).getSelectedIndex());
+				} else {
+					// 使用x，y，z
+					//用非法经纬度处理异常数据
+					ArrayList<String> fileds = new ArrayList<>();
+					String tempX = ((ParameterComboBox) paramParameters.get(5).parameter).getSelectedData().toString();
+					if (!StringUtilities.isNullOrEmptyString(tempX)) {
+						fileds.add(tempX);
+					}
+					String tempY = ((ParameterComboBox) paramParameters.get(6).parameter).getSelectedData().toString();
+					if (!StringUtilities.isNullOrEmptyString(tempY)) {
+						fileds.add(tempY);
+					}
+					String tempZ = ((ParameterComboBox) paramParameters.get(7).parameter).getSelectedData().toString();
+					if (!StringUtilities.isNullOrEmptyString(tempZ)) {
+						fileds.add(tempZ);
+					}
+					((ImportSettingCSV) importSetting).setFieldsAsPoint(fileds.toArray(new String[fileds.size()]));
+					fileds.clear();
+				}
+			}
+			try {
+				startTime = System.currentTimeMillis(); // 获取开始时间
+				DataImport dataImport = new DataImport();
+				dataImport.getImportSettings().add(importSetting);
+				dataImport.addImportSteppedListener(this.importStepListener);
+				ImportResult result = dataImport.run();
+				isSuccessful = getCommonResult(isSuccessful, startTime, result);
+				dataImport.removeImportSteppedListener(this.importStepListener);
+			} catch (Exception e) {
+				Application.getActiveApplication().getOutput().output(e);
+			}
 		} else {
 			ImportSetting newImportSetting = new ImportSettingCreator().create(importType);
 			DataImport dataImport = ImportSettingSetter.setParameter(newImportSetting, sourceImportParameters, resultImportParameters, paramParameters);

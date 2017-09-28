@@ -149,15 +149,15 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 		//用非法经纬度处理异常数据
 		ArrayList<String> fileds = new ArrayList<>();
 		String tempX = comboBoxX.getSelectedItem().toString();
-		if (!StringUtilities.isNullOrEmpty(tempX)) {
+		if (!StringUtilities.isNullOrEmptyString(tempX)) {
 			fileds.add(tempX);
 		}
 		String tempY = comboBoxY.getSelectedItem().toString();
-		if (!StringUtilities.isNullOrEmpty(tempY)) {
+		if (!StringUtilities.isNullOrEmptyString(tempY)) {
 			fileds.add(tempY);
 		}
 		String tempZ = comboBoxZ.getSelectedItem().toString();
-		if (!StringUtilities.isNullOrEmpty(tempZ)) {
+		if (!StringUtilities.isNullOrEmptyString(tempZ)) {
 			fileds.add(tempZ);
 		}
 		((ImportSettingCSV) importSetting).setFieldsAsPoint(fileds.toArray(new String[fileds.size()]));
@@ -308,145 +308,145 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 
 		JPanel panelTemp = new JPanel();
 		// @formatter:off
-        panelTemp.setLayout(new GridBagLayout());
-        panelTemp.add(this.radioButtonIndexWKT, new GridBagConstraintsHelper(0, 0, 1, 1).setAnchor(GridBagConstraints.WEST).setInsets(5).setFill(GridBagConstraints.NONE).setWeight(0, 0));
-        panelTemp.add(this.comboBoxWKT, new GridBagConstraintsHelper(1, 0, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 0, 5, 5).setFill(GridBagConstraints.NONE).setWeight(0, 0));
-        panelTemp.add(this.labelEmpty, new GridBagConstraintsHelper(3, 0, 4, 1).setAnchor(GridBagConstraints.WEST).setInsets(5).setFill(GridBagConstraints.HORIZONTAL).setWeight(1, 0));
+		panelTemp.setLayout(new GridBagLayout());
+		panelTemp.add(this.radioButtonIndexWKT, new GridBagConstraintsHelper(0, 0, 1, 1).setAnchor(GridBagConstraints.WEST).setInsets(5).setFill(GridBagConstraints.NONE).setWeight(0, 0));
+		panelTemp.add(this.comboBoxWKT, new GridBagConstraintsHelper(1, 0, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 0, 5, 5).setFill(GridBagConstraints.NONE).setWeight(0, 0));
+		panelTemp.add(this.labelEmpty, new GridBagConstraintsHelper(3, 0, 4, 1).setAnchor(GridBagConstraints.WEST).setInsets(5).setFill(GridBagConstraints.HORIZONTAL).setWeight(1, 0));
 
-        panelTemp.add(this.radioButtonIndex, new GridBagConstraintsHelper(0, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setInsets(0,5,0,0).setFill(GridBagConstraints.NONE).setWeight(0, 0));
-        panelTemp.add(this.labelX, new GridBagConstraintsHelper(1, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setFill(GridBagConstraints.NONE).setWeight(0, 0));
-        panelTemp.add(this.comboBoxX, new GridBagConstraintsHelper(2, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setInsets(5).setFill(GridBagConstraints.HORIZONTAL).setWeight(1, 0));
-        panelTemp.add(this.labelY, new GridBagConstraintsHelper(3, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setInsets(5).setFill(GridBagConstraints.NONE).setWeight(0, 0));
-        panelTemp.add(this.comboBoxY, new GridBagConstraintsHelper(4, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setInsets(5).setFill(GridBagConstraints.HORIZONTAL).setWeight(1, 0));
-        panelTemp.add(this.labelZ, new GridBagConstraintsHelper(5, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setInsets(5).setFill(GridBagConstraints.NONE).setWeight(0, 0));
-        panelTemp.add(this.comboBoxZ, new GridBagConstraintsHelper(6, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setInsets(5,5,5,10).setFill(GridBagConstraints.HORIZONTAL).setWeight(1, 0));
-        this.paneForIndexAsPoint = new CompTitledPane(this.checkBoxImportIndexData, panelTemp);
+		panelTemp.add(this.radioButtonIndex, new GridBagConstraintsHelper(0, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setInsets(0, 5, 0, 0).setFill(GridBagConstraints.NONE).setWeight(0, 0));
+		panelTemp.add(this.labelX, new GridBagConstraintsHelper(1, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setFill(GridBagConstraints.NONE).setWeight(0, 0));
+		panelTemp.add(this.comboBoxX, new GridBagConstraintsHelper(2, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setInsets(5).setFill(GridBagConstraints.HORIZONTAL).setWeight(1, 0));
+		panelTemp.add(this.labelY, new GridBagConstraintsHelper(3, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setInsets(5).setFill(GridBagConstraints.NONE).setWeight(0, 0));
+		panelTemp.add(this.comboBoxY, new GridBagConstraintsHelper(4, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setInsets(5).setFill(GridBagConstraints.HORIZONTAL).setWeight(1, 0));
+		panelTemp.add(this.labelZ, new GridBagConstraintsHelper(5, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setInsets(5).setFill(GridBagConstraints.NONE).setWeight(0, 0));
+		panelTemp.add(this.comboBoxZ, new GridBagConstraintsHelper(6, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 5, 5, 10).setFill(GridBagConstraints.HORIZONTAL).setWeight(1, 0));
+		this.paneForIndexAsPoint = new CompTitledPane(this.checkBoxImportIndexData, panelTemp);
 
-        JPanel panelDefault = new JPanel();
-        panelDefault.setLayout(new GridBagLayout());
-        panelDefault.add(this.labelSeparator, new GridBagConstraintsHelper(0, 0, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 5, 5, 45).setFill(GridBagConstraints.NONE).setWeight(0, 0));
-        panelDefault.add(this.textFieldSeparator, new GridBagConstraintsHelper(2, 0, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 0, 5, 20).setFill(GridBagConstraints.HORIZONTAL).setWeight(1, 0));
-        panelDefault.add(this.checkBoxFirstRowAsField, new GridBagConstraintsHelper(4, 0, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 0, 5, 10).setFill(GridBagConstraints.NONE).setWeight(0, 0));
-        panelDefault.add(this.labelEmpty, new GridBagConstraintsHelper(6, 0, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 0, 5, 10).setFill(GridBagConstraints.HORIZONTAL).setWeight(1, 0));
-        panelDefault.add(this.labelDataPreview, new GridBagConstraintsHelper(0, 1, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 5, 5, 45).setFill(GridBagConstraints.NONE).setWeight(0, 0));
-        panelDefault.add(this.scrollPanePreviewCSV, new GridBagConstraintsHelper(2, 1, 6, 6).setAnchor(GridBagConstraints.WEST).setInsets(0, 0, 5, 10).setFill(GridBagConstraints.BOTH).setWeight(1, 1).setIpad(0,80));
+		JPanel panelDefault = new JPanel();
+		panelDefault.setLayout(new GridBagLayout());
+		panelDefault.add(this.labelSeparator, new GridBagConstraintsHelper(0, 0, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 5, 5, 45).setFill(GridBagConstraints.NONE).setWeight(0, 0));
+		panelDefault.add(this.textFieldSeparator, new GridBagConstraintsHelper(2, 0, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 0, 5, 20).setFill(GridBagConstraints.HORIZONTAL).setWeight(1, 0));
+		panelDefault.add(this.checkBoxFirstRowAsField, new GridBagConstraintsHelper(4, 0, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 0, 5, 10).setFill(GridBagConstraints.NONE).setWeight(0, 0));
+		panelDefault.add(this.labelEmpty, new GridBagConstraintsHelper(6, 0, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 0, 5, 10).setFill(GridBagConstraints.HORIZONTAL).setWeight(1, 0));
+		panelDefault.add(this.labelDataPreview, new GridBagConstraintsHelper(0, 1, 2, 1).setAnchor(GridBagConstraints.WEST).setInsets(5, 5, 5, 45).setFill(GridBagConstraints.NONE).setWeight(0, 0));
+		panelDefault.add(this.scrollPanePreviewCSV, new GridBagConstraintsHelper(2, 1, 6, 6).setAnchor(GridBagConstraints.WEST).setInsets(0, 0, 5, 10).setFill(GridBagConstraints.BOTH).setWeight(1, 1).setIpad(0, 80));
 		panelDefault.setBorder(new TitledBorder(DataConversionProperties.getString("string_border_panelTransform")));
-        this.setLayout( new GridBagLayout());
-        this.add(panelDefault,new GridBagConstraintsHelper(0,0,1,1).setAnchor(GridBagConstraints.WEST).setFill(GridBagConstraints.BOTH).setWeight(1,0));
-        this.add(this.paneForIndexAsPoint,new GridBagConstraintsHelper(0,1,1,1).setAnchor(GridBagConstraints.WEST).setFill(GridBagConstraints.BOTH).setWeight(1,0));
-        this.textFieldSeparator.setPreferredSize(new Dimension(18, 23));
-        if (null!=panelImports){
-        	this.scrollPanePreviewCSV.setViewportView(null);
-        }else{
-            this.scrollPanePreviewCSV.setViewportView(this.tablePreviewCSV);
-        }
+		this.setLayout(new GridBagLayout());
+		this.add(panelDefault, new GridBagConstraintsHelper(0, 0, 1, 1).setAnchor(GridBagConstraints.WEST).setFill(GridBagConstraints.BOTH).setWeight(1, 0));
+		this.add(this.paneForIndexAsPoint, new GridBagConstraintsHelper(0, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setFill(GridBagConstraints.BOTH).setWeight(1, 0));
+		this.textFieldSeparator.setPreferredSize(new Dimension(18, 23));
+		if (null != panelImports) {
+			this.scrollPanePreviewCSV.setViewportView(null);
+		} else {
+			this.scrollPanePreviewCSV.setViewportView(this.tablePreviewCSV);
+		}
 		CommonUtilities.setComboBoxTheme(this.comboBoxWKT);
 		CommonUtilities.setComboBoxTheme(this.comboBoxX);
 		CommonUtilities.setComboBoxTheme(this.comboBoxY);
 		CommonUtilities.setComboBoxTheme(this.comboBoxZ);
 		this.radioButtonIndex.setSelected(true);
-        setFirstRowAsField();
-        setSeparator();
-        if (null!=panelImports){
-          checkBoxImportIndexData.setEnabled(false);
-          this.radioButtonIndexWKT.setEnabled(false);
-    	this.radioButtonIndex.setEnabled(false);
-    	this.labelX.setEnabled(false);
-		this.labelY.setEnabled(false);
-		this.labelZ.setEnabled(false);
-		comboBoxX.setEnabled(false);
-		comboBoxY.setEnabled(false);
-		comboBoxZ.setEnabled(false);
-		comboBoxWKT.setEnabled(false);
-        }else{
-          setIndexPanelEnabled();
-        }
-        if (importSetting instanceof ImportSettingExcel){
-        	this.paneForIndexAsPoint.setVisible(false);
-        	this.labelSeparator.setVisible(false);
-        	this.textFieldSeparator.setVisible(false);
-        	this.scrollPanePreviewCSV.setVisible(false);
-        }
-    }
+		setFirstRowAsField();
+		setSeparator();
+		if (null != panelImports) {
+			checkBoxImportIndexData.setEnabled(false);
+			this.radioButtonIndexWKT.setEnabled(false);
+			this.radioButtonIndex.setEnabled(false);
+			this.labelX.setEnabled(false);
+			this.labelY.setEnabled(false);
+			this.labelZ.setEnabled(false);
+			comboBoxX.setEnabled(false);
+			comboBoxY.setEnabled(false);
+			comboBoxZ.setEnabled(false);
+			comboBoxWKT.setEnabled(false);
+		} else {
+			setIndexPanelEnabled();
+		}
+		if (importSetting instanceof ImportSettingExcel) {
+			this.paneForIndexAsPoint.setVisible(false);
+			this.labelSeparator.setVisible(false);
+			this.textFieldSeparator.setVisible(false);
+			this.scrollPanePreviewCSV.setVisible(false);
+		}
+	}
 
-    private void setSeparator() {
-        if (null != panelImports) {
-            this.textFieldSeparator.setText(getSameSeparator());
-        }
-    }
+	private void setSeparator() {
+		if (null != panelImports) {
+			this.textFieldSeparator.setText(getSameSeparator());
+		}
+	}
 
-    private void setFirstRowAsField() {
-        if (null != panelImports) {
-            this.checkBoxFirstRowAsField.setSelectedEx(externalDataSelectAll());
-        }
-    }
+	private void setFirstRowAsField() {
+		if (null != panelImports) {
+			this.checkBoxFirstRowAsField.setSelectedEx(externalDataSelectAll());
+		}
+	}
 
-    private Boolean externalDataSelectAll() {
-        Boolean result = null;
-        int selectCount = 0;
-        int unSelectCount = 0;
-        for (PanelImport tempPanel : panelImports) {
-            boolean select = ((PanelTransformForMicrosoft) tempPanel.getTransform()).getCheckBoxFirstRowAsField().isSelected();
-            if (select) {
-                selectCount++;
-            } else if (!select) {
-                unSelectCount++;
-            }
-        }
-        if (selectCount == panelImports.size()) {
-            result = true;
-        } else if (unSelectCount == panelImports.size()) {
-            result = false;
-        }
-        return result;
-    }
+	private Boolean externalDataSelectAll() {
+		Boolean result = null;
+		int selectCount = 0;
+		int unSelectCount = 0;
+		for (PanelImport tempPanel : panelImports) {
+			boolean select = ((PanelTransformForMicrosoft) tempPanel.getTransform()).getCheckBoxFirstRowAsField().isSelected();
+			if (select) {
+				selectCount++;
+			} else if (!select) {
+				unSelectCount++;
+			}
+		}
+		if (selectCount == panelImports.size()) {
+			result = true;
+		} else if (unSelectCount == panelImports.size()) {
+			result = false;
+		}
+		return result;
+	}
 
-    @Override
-    public void registEvents() {
-        removeEvents();
-        this.textFieldSeparator.getDocument().addDocumentListener(this.separatorListener);
-        this.checkBoxFirstRowAsField.addItemListener(this.itemListener);
-	    this.checkBoxImportIndexData.addActionListener(this.actionListener);
-	    this.comboBoxWKT.addItemListener(wktItemListener);
-	    this.comboBoxX.addItemListener(commonItemListener);
-	    this.comboBoxY.addItemListener(commonItemListener);
-	    this.comboBoxZ.addItemListener(commonItemListener);
-	    this.radioButtonIndex.addItemListener(radioButtonListener);
-	    this.radioButtonIndexWKT.addItemListener(radioButtonListener);
-    }
+	@Override
+	public void registEvents() {
+		removeEvents();
+		this.textFieldSeparator.getDocument().addDocumentListener(this.separatorListener);
+		this.checkBoxFirstRowAsField.addItemListener(this.itemListener);
+		this.checkBoxImportIndexData.addActionListener(this.actionListener);
+		this.comboBoxWKT.addItemListener(wktItemListener);
+		this.comboBoxX.addItemListener(commonItemListener);
+		this.comboBoxY.addItemListener(commonItemListener);
+		this.comboBoxZ.addItemListener(commonItemListener);
+		this.radioButtonIndex.addItemListener(radioButtonListener);
+		this.radioButtonIndexWKT.addItemListener(radioButtonListener);
+	}
 
-    @Override
-    public void removeEvents() {
-        this.textFieldSeparator.getDocument().removeDocumentListener(this.separatorListener);
-        this.checkBoxFirstRowAsField.removeItemListener(this.itemListener);
-	    this.checkBoxImportIndexData.removeActionListener(this.actionListener);
-	    this.comboBoxWKT.removeItemListener(wktItemListener);
-	    this.comboBoxX.removeItemListener(commonItemListener);
-	    this.radioButtonIndex.removeItemListener(radioButtonListener);
-	    this.radioButtonIndexWKT.removeItemListener(radioButtonListener);
-    }
+	@Override
+	public void removeEvents() {
+		this.textFieldSeparator.getDocument().removeDocumentListener(this.separatorListener);
+		this.checkBoxFirstRowAsField.removeItemListener(this.itemListener);
+		this.checkBoxImportIndexData.removeActionListener(this.actionListener);
+		this.comboBoxWKT.removeItemListener(wktItemListener);
+		this.comboBoxX.removeItemListener(commonItemListener);
+		this.radioButtonIndex.removeItemListener(radioButtonListener);
+		this.radioButtonIndexWKT.removeItemListener(radioButtonListener);
+	}
 
-    @Override
-    public void initResources() {
+	@Override
+	public void initResources() {
 		this.labelDataPreview.setText(CommonProperties.getString("String_DataPreview"));
-        this.labelSeparator.setText(DataConversionProperties.getString("String_Label_Separator"));
-        this.textFieldSeparator.setText(",");
-        this.checkBoxFirstRowAsField.setText(DataConversionProperties.getString("String_ImportSettingPanel_Checkbox_FirstRowisField"));
-        this.radioButtonIndexWKT.setText(CommonProperties.getString("String_WKTIndex"));
-        this.radioButtonIndex.setText(CommonProperties.getString("String_XYField"));
-        this.labelX.setText(CommonProperties.getString("string_longitude"));
-        this.labelY.setText(CommonProperties.getString("string_latitude"));
-        this.labelZ.setText(CommonProperties.getString("string_elevation"));
-        this.checkBoxImportIndexData.setText(CommonProperties.getString("String_ImportIndexData"));
-    }
+		this.labelSeparator.setText(DataConversionProperties.getString("String_Label_Separator"));
+		this.textFieldSeparator.setText(",");
+		this.checkBoxFirstRowAsField.setText(DataConversionProperties.getString("String_ImportSettingPanel_Checkbox_FirstRowisField"));
+		this.radioButtonIndexWKT.setText(CommonProperties.getString("String_WKTIndex"));
+		this.radioButtonIndex.setText(CommonProperties.getString("String_XYField"));
+		this.labelX.setText(CommonProperties.getString("string_longitude"));
+		this.labelY.setText(CommonProperties.getString("string_latitude"));
+		this.labelZ.setText(CommonProperties.getString("string_elevation"));
+		this.checkBoxImportIndexData.setText(CommonProperties.getString("String_ImportIndexData"));
+	}
 
-    public JTextField getTextFieldSeparator() {
-        return textFieldSeparator;
-    }
+	public JTextField getTextFieldSeparator() {
+		return textFieldSeparator;
+	}
 
-    public JCheckBox getCheckBoxFirstRowAsField() {
-        return checkBoxFirstRowAsField;
-    }
+	public JCheckBox getCheckBoxFirstRowAsField() {
+		return checkBoxFirstRowAsField;
+	}
 
 	public JComboBox getComboBoxWKT() {
 		return comboBoxWKT;
@@ -465,34 +465,34 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 	}
 
 	public String getSameSeparator() {
-        String result = "";
-        String temp = ((PanelTransformForMicrosoft) panelImports.get(0).getTransform()).getTextFieldSeparator().getText();
-        boolean isSame = true;
-        for (PanelImport tempPanel : panelImports) {
-            String tempObject = ((PanelTransformForMicrosoft) tempPanel.getTransform()).getTextFieldSeparator().getText();
-            if (!temp.equals(tempObject)) {
-                isSame = false;
-                break;
-            }
-        }
-        if (isSame) {
-            result = temp;
-        }
-        return result;
-    }
+		String result = "";
+		String temp = ((PanelTransformForMicrosoft) panelImports.get(0).getTransform()).getTextFieldSeparator().getText();
+		boolean isSame = true;
+		for (PanelImport tempPanel : panelImports) {
+			String tempObject = ((PanelTransformForMicrosoft) tempPanel.getTransform()).getTextFieldSeparator().getText();
+			if (!temp.equals(tempObject)) {
+				isSame = false;
+				break;
+			}
+		}
+		if (isSame) {
+			result = temp;
+		}
+		return result;
+	}
 
 	public void setIndexPanelEnabled() {
 		boolean indexPanelEnabled = checkBoxImportIndexData.isSelected();
-    	this.radioButtonIndexWKT.setEnabled(indexPanelEnabled);
-    	this.radioButtonIndex.setEnabled(indexPanelEnabled);
-    	this.labelX.setEnabled(indexPanelEnabled);
+		this.radioButtonIndexWKT.setEnabled(indexPanelEnabled);
+		this.radioButtonIndex.setEnabled(indexPanelEnabled);
+		this.labelX.setEnabled(indexPanelEnabled);
 		this.labelY.setEnabled(indexPanelEnabled);
 		this.labelZ.setEnabled(indexPanelEnabled);
 		boolean enabled = radioButtonIndex.isSelected();
-		comboBoxX.setEnabled(enabled&&indexPanelEnabled);
-		comboBoxY.setEnabled(enabled&&indexPanelEnabled);
-		comboBoxZ.setEnabled(enabled&&indexPanelEnabled);
+		comboBoxX.setEnabled(enabled && indexPanelEnabled);
+		comboBoxY.setEnabled(enabled && indexPanelEnabled);
+		comboBoxZ.setEnabled(enabled && indexPanelEnabled);
 		boolean wktEnabled = radioButtonIndexWKT.isSelected();
-		comboBoxWKT.setEnabled(wktEnabled&&indexPanelEnabled);
+		comboBoxWKT.setEnabled(wktEnabled && indexPanelEnabled);
 	}
 }
