@@ -277,9 +277,11 @@ public class ParameterSearchModePanel extends SwingPanel implements IParameterPa
             labelMaxPointCount.setVisible(false);
             textFieldMaxRadius.setVisible(true);
             textFieldMaxPointCount.setVisible(false);
-            double width = dataset.getBounds().getWidth();
-            double height = dataset.getBounds().getHeight();
-            textFieldMaxRadius.setText((int) ((width < height ? width : height) / 5) + "");
+            if (dataset != null) {
+                double width = dataset.getBounds().getWidth();
+                double height = dataset.getBounds().getHeight();
+                textFieldMaxRadius.setText((int) ((width < height ? width : height) / 5) + "");
+            }
             textFieldSearchCount.setText("5");
             textFieldSearchCount.setMinValue(2);
             textFieldSearchCount.setMaxValue(12);

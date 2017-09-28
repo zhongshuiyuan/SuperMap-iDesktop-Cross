@@ -392,7 +392,9 @@ public class MetaProcessInterpolator extends MetaProcessGridAnalyst {
 		String field = parameterInterpolatorFields.getFieldName();
 		Recordset recordset = datasetVector.getRecordset(false, CursorType.DYNAMIC);
 		while (!recordset.isEOF()) {
-			mean +=Double.valueOf(recordset.getObject(field).toString());
+			if (recordset.getObject(field) != null) {
+				mean +=Double.valueOf(recordset.getObject(field).toString());
+			}
 			recordset.moveNext();
 		}
 		mean = mean / recordset.getRecordCount();

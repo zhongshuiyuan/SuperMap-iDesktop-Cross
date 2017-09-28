@@ -19,14 +19,14 @@ class EditableDecorator implements TreeNodeDecorator {
 		if (DecoratorUnities.isDecoratorShow(data.getData())) {
 			return;
 		}
-		boolean isEidtable = false;
+		boolean isEditable = false;
 		ImageIcon icon = (ImageIcon) label.getIcon();
 		BufferedImage bufferedImage = new BufferedImage(IMAGEICON_WIDTH, IMAGEICON_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		Graphics graphics = bufferedImage.getGraphics();
-		isEidtable = getState(data.getData());
+		isEditable = getState(data.getData());
 		boolean isVisible = LayersTreeUtilties.isTreeNodeDataVisible(data.getData());
 
-		if (isEidtable && isVisible) {
+		if (isEditable && isVisible) {
 			graphics.drawImage(InternalImageIconFactory.EDITABLE.getImage(), 0, 0, label);
 		} else {
 			graphics.drawImage(InternalImageIconFactory.UNEDITABLE.getImage(), 0, 0, label);
