@@ -10,16 +10,16 @@ import java.util.ArrayList;
  * 转换参数工厂接口
  */
 public interface IPanelTransformFactory {
-    /**
-     * 创建转换参数界面
-     *
-     * @param importSetting
-     * @return
-     */
-    IImportSetttingTransform createPanelTransform(ImportSetting importSetting);
+	/**
+	 * 创建转换参数界面
+	 *
+	 * @param importSetting
+	 * @return
+	 */
+	IImportSetttingTransform createPanelTransform(ImportSetting importSetting);
 
-    IImportSetttingTransform createPanelTransform(ArrayList<PanelImport> panelImports);
+	IImportSetttingTransform createPanelTransform(ArrayList<PanelImport> panelImports);
 
-    int getImportSettingsType(ArrayList<PanelImport> panelImports);
+	int getImportSettingsType(ArrayList<PanelImport> panelImports);
 
 }

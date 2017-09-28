@@ -15,8 +15,8 @@ import com.supermap.desktop.newtheme.commonUtils.ThemeGuideFactory;
 import com.supermap.desktop.newtheme.commonUtils.ThemeItemLabelDecorator;
 import com.supermap.desktop.newtheme.commonUtils.ThemeUtil;
 import com.supermap.desktop.ui.UICommonToolkit;
-import com.supermap.desktop.ui.controls.*;
 import com.supermap.desktop.ui.controls.ComponentBorderPanel.CompTitledPane;
+import com.supermap.desktop.ui.controls.*;
 import com.supermap.desktop.ui.controls.TextFields.RightValueListener;
 import com.supermap.desktop.ui.controls.TextFields.WaringTextField;
 import com.supermap.desktop.utilities.CoreResources;
@@ -583,6 +583,7 @@ public class ThemeGraphContainer extends ThemeChangePanel {
         this.tableGraphInfo.setModel(new LocalDefualTableModel(new Object[this.graphCount][3], this.nameStrings));
         initTableColumns();
         this.tableGraphInfo.setRowHeight(25);
+        this.tableGraphInfo.getTableHeader().setReorderingAllowed(false);
         this.tableGraphInfo.getColumn(MapViewProperties.getString("String_ThemeGraphItemManager_ClmExpression")).setMaxWidth(200);
         this.tableGraphInfo.getColumn(MapViewProperties.getString("String_Title_Sytle")).setMaxWidth(100);
         this.tableGraphInfo.getColumn(MapViewProperties.getString("String_ThemeGraphTextFormat_Caption")).setMaxWidth(200);
@@ -784,7 +785,7 @@ public class ThemeGraphContainer extends ThemeChangePanel {
         this.toolbar.add(this.buttonMoveToForward);
         this.toolbar.add(this.buttonMoveToNext);
         this.toolbar.add(this.buttonMoveToLast);
-        this.buttonDelete.setIcon(CoreResources.getIcon("/coreresources/ToolBar/Image_ToolButton_Delete.png"));
+        this.buttonDelete.setIcon(CoreResources.getIcon("/coreresources/ToolBar/Image_ToolButton_Delete_16.png"));
         this.buttonMoveToFrist.setIcon(InternalImageIconFactory.MOVE_TO_FRIST);
         this.buttonMoveToForward.setIcon(InternalImageIconFactory.MOVE_TO_FORWARD);
         this.buttonMoveToNext.setIcon(InternalImageIconFactory.MOVE_TO_NEXT);

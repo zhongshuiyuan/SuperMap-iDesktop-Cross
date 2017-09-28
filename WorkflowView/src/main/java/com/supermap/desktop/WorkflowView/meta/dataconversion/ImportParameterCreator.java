@@ -21,6 +21,8 @@ import com.supermap.desktop.ui.controls.SmFileChoose;
 import com.supermap.desktop.utilities.EncodeTypeUtilities;
 import com.supermap.desktop.utilities.StringUtilities;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -33,12 +35,9 @@ public class ImportParameterCreator implements IParameterCreator {
 	private ParameterCombine parameterCombineResultSet;
 	private ParameterCombine parameterCombineParamSet;
 	private ParameterCombine parameterCombineModelSet;
-	// simpleJson有文件夹/文件两种导入模式
-	private ParameterRadioButton parameterRadioButtonFolderOrFile;
-	// simpleJson选择文件夹模式的ParameterFile
-	private ParameterFile parameterFileFolder;
+
 	private ParameterFile parameterFile;
-	private ParameterFile parameterChooseFile;
+	private ParameterFile parameterFilePrjChoose;
 	private ParameterButton parameterButton;
 	private ParameterTextArea parameterTextArea;
 	private ParameterRadioButton parameterRadioButton;
@@ -48,16 +47,24 @@ public class ImportParameterCreator implements IParameterCreator {
 	private ParameterEnum parameterEncodeType;
 	private ParameterEnum parameterImportMode;
 	private ParameterDatasetType parameterDatasetTypeEnum;
+	// 增加导入simpleJson
+	private ParameterRadioButton parameterRadioButtonFolderOrFile;
+	private ParameterFile parameterFileFolder;
+	// 拓展导入csv文件功能，支持导入点线面
+	private ParameterCheckBox parameterImportIndexData;
+	private ParameterRadioButton parameterRadioButtonSetWKTField;
+	private ParameterComboBox parameterWKTFieldName;
+	private ParameterComboBox parameterXFieldName;
+	private ParameterComboBox parameterYFieldName;
+	private ParameterComboBox parameterZFieldName;
+
 
 	/**
-	 * 获得文件/文件夹单选框参数，外部添加监听
+	 * 创建参数面板
 	 *
+	 * @param importSetting
 	 * @return
 	 */
-	public ParameterRadioButton getParameterRadioButtonFolderOrFile() {
-		return parameterRadioButtonFolderOrFile;
-	}
-
 	@Override
 	public CopyOnWriteArrayList<ReflectInfo> create(Object importSetting) {
 		//转换参数设置
@@ -366,24 +373,106 @@ public class ImportParameterCreator implements IParameterCreator {
 			return result;
 		}
 		if (importSetting instanceof ImportSettingCSV) {
+			parameterCombineParamSet = new ParameterCombine();
+			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
+			// 对导入CSV文件参数面板进行重构，支持导入点线面
+			// 首行为字段信息
+			ReflectInfo setFirstRowIsField = new ReflectInfo();
+			setFirstRowIsField.methodName = "setFirstRowIsField";
+			ParameterCheckBox parameterFirstRowIsField = new ParameterCheckBox(CommonProperties.getString("String_FirstRowisField"));
+			parameterFirstRowIsField.setSelectedItem(true);
+			setFirstRowIsField.parameter = parameterFirstRowIsField;
+
+			// 分隔符
 			ReflectInfo setSeparator = new ReflectInfo();
 			setSeparator.methodName = "setSeparator";
 			ParameterTextField parameterSeparator = new ParameterTextField(CommonProperties.getString("String_Separator"));
 			parameterSeparator.setSelectedItem(",");
 			setSeparator.parameter = parameterSeparator;
-			ReflectInfo setFirstRowIsField = new ReflectInfo();
-			setFirstRowIsField.methodName = "setFirstRowIsField";
-			setFirstRowIsField.parameter = new ParameterCheckBox(CommonProperties.getString("String_FirstRowisField"));
-
-			parameterCombineParamSet = new ParameterCombine();
-			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
 			if (importSetting instanceof ImportSettingExcel) {
 				result.add(setFirstRowIsField);
 				parameterCombineParamSet.addParameters(setFirstRowIsField.parameter);
+			} else if (importSetting instanceof ImportSettingGPX) {
+				result.add(setFirstRowIsField);
+				result.add(setSeparator);
+				parameterCombineParamSet.addParameters(setFirstRowIsField.parameter, setSeparator.parameter);
 			} else {
+				// 导入空间数据
+				ReflectInfo setImportIndexData = new ReflectInfo();
+				setSeparator.methodName = "setImportIndexData";
+				parameterImportIndexData = new ParameterCheckBox(CommonProperties.getString("String_ImportIndexData"));
+				parameterImportIndexData.setSelectedItem(false);
+				setImportIndexData.parameter = parameterImportIndexData;
+				//设置wkt字段
+				ReflectInfo setWKTField = new ReflectInfo();
+				setWKTField.methodName = "setWKTField";
+				parameterRadioButtonSetWKTField = new ParameterRadioButton();
+				ParameterDataNode[] parameterDataNodes = {new ParameterDataNode(CommonProperties.getString("String_WKTIndex"), true), new ParameterDataNode(CommonProperties.getString("String_XYField"), false)};
+				parameterRadioButtonSetWKTField.setItems(parameterDataNodes);
+				parameterRadioButtonSetWKTField.setSelectedItem(parameterDataNodes[0]);
+				parameterRadioButtonSetWKTField.setEnabled(false);
+				setWKTField.parameter = parameterRadioButtonSetWKTField;
+				//字段选择器
+				ReflectInfo setWKTFieldName = new ReflectInfo();
+				setWKTFieldName.methodName = "setWKTFieldName";
+				parameterWKTFieldName = new ParameterComboBox(CommonProperties.getString("String_WKTIndex"));
+				parameterWKTFieldName.setEnabled(false);
+				setWKTFieldName.parameter = parameterWKTFieldName;
+
+				ReflectInfo setXFieldName = new ReflectInfo();
+				setWKTFieldName.methodName = "setXFieldName";
+				parameterXFieldName = new ParameterComboBox(CommonProperties.getString("string_longitude"));
+				parameterXFieldName.setEnabled(false);
+				setXFieldName.parameter = parameterXFieldName;
+
+				ReflectInfo setYFieldName = new ReflectInfo();
+				setWKTFieldName.methodName = "setYFieldName";
+				parameterYFieldName = new ParameterComboBox(CommonProperties.getString("string_latitude"));
+				parameterYFieldName.setEnabled(false);
+				setYFieldName.parameter = parameterYFieldName;
+
+				ReflectInfo setZFieldName = new ReflectInfo();
+				setWKTFieldName.methodName = "setZFieldName";
+				parameterZFieldName = new ParameterComboBox(CommonProperties.getString("string_elevation"));
+				parameterZFieldName.setEnabled(false);
+				setZFieldName.parameter = parameterZFieldName;
+
 				result.add(setSeparator);
 				result.add(setFirstRowIsField);
-				parameterCombineParamSet.addParameters(setSeparator.parameter, setFirstRowIsField.parameter);
+				result.add(setImportIndexData);
+				result.add(setWKTField);
+				result.add(setWKTFieldName);
+				result.add(setXFieldName);
+				result.add(setYFieldName);
+				result.add(setZFieldName);
+
+				parameterCombineParamSet.addParameters(setSeparator.parameter, setFirstRowIsField.parameter, setImportIndexData.parameter, setWKTField.parameter,
+						parameterWKTFieldName, parameterXFieldName, parameterYFieldName, parameterZFieldName);
+
+				// 增加监听事件
+				parameterImportIndexData.addPropertyListener(new PropertyChangeListener() {
+					@Override
+					public void propertyChange(PropertyChangeEvent evt) {
+						Boolean isEnabled = Boolean.valueOf(parameterImportIndexData.getSelectedItem());
+						parameterRadioButtonSetWKTField.setEnabled(isEnabled);
+						parameterWKTFieldName.setEnabled(isEnabled && (Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+						parameterXFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+						parameterYFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+						parameterZFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+					}
+				});
+
+				parameterRadioButtonSetWKTField.addPropertyListener(new PropertyChangeListener() {
+					@Override
+					public void propertyChange(PropertyChangeEvent evt) {
+						Boolean isEnabled = Boolean.valueOf(parameterImportIndexData.getSelectedItem());
+						parameterWKTFieldName.setEnabled(isEnabled && (Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+						parameterXFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+						parameterYFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+						parameterZFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+
+					}
+				});
 			}
 			return result;
 		}
@@ -435,10 +524,10 @@ public class ImportParameterCreator implements IParameterCreator {
 						ControlsProperties.getString("String_ImportPrjFile"), moduleName, "OpenMany");
 			}
 
-			parameterChooseFile = new ParameterFile();
-			parameterChooseFile.setModuleName(moduleName);
-			parameterChooseFile.setEnabled(false);
-			chooseFile.parameter = parameterChooseFile;
+			parameterFilePrjChoose = new ParameterFile();
+			parameterFilePrjChoose.setModuleName(moduleName);
+			parameterFilePrjChoose.setEnabled(false);
+			chooseFile.parameter = parameterFilePrjChoose;
 			result.add(chooseFile);
 			ReflectInfo selectButton = new ReflectInfo();
 			selectButton.methodName = "";
@@ -456,18 +545,10 @@ public class ImportParameterCreator implements IParameterCreator {
 			parameterCombineProjectSet.setDescribe(ProcessProperties.getString("String_setProject"));
 			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
 			parameterCombineParamSet.addParameters(parameterCombineModelSet, parameterCombineProjectSet.addParameters(
-					new ParameterCombine(ParameterCombine.HORIZONTAL).addParameters(parameterRadioButton, new ParameterCombine().addParameters(parameterButton, parameterChooseFile)), parameterTextArea));
+					new ParameterCombine(ParameterCombine.HORIZONTAL).addParameters(parameterRadioButton, new ParameterCombine().addParameters(parameterButton, parameterFilePrjChoose)), parameterTextArea));
 			return result;
 		}
 		return null;
-	}
-
-	public ParameterTextField getParameterDataset() {
-		return parameterDataset;
-	}
-
-	public ParameterCharset getParameterCharset() {
-		return parameterCharset;
 	}
 
 	@Override
@@ -807,51 +888,6 @@ public class ImportParameterCreator implements IParameterCreator {
 		return resultInfo;
 	}
 
-	@Override
-	public ParameterFile getParameterFile() {
-		return parameterFile;
-	}
-
-	public ParameterFile getParameterFileFolder() {
-		return parameterFileFolder;
-	}
-
-	public ParameterFile getParameterChooseFile() {
-		return parameterChooseFile;
-	}
-
-	public ParameterButton getParameterButton() {
-		return parameterButton;
-	}
-
-	@Override
-	public ParameterTextArea getParameterTextArea() {
-		return parameterTextArea;
-	}
-
-	public ParameterRadioButton getParameterSetRadioButton() {
-		return parameterRadioButton;
-	}
-
-	@Override
-	public ParameterDatasource getParameterResultDatasource() {
-		return parameterDatasource;
-	}
-
-	@Override
-	public IParameter getParameterCombineResultSet() {
-		return parameterCombineResultSet;
-	}
-
-	@Override
-	public IParameter getParameterCombineParamSet() {
-		return parameterCombineParamSet;
-	}
-
-	public ParameterCombine getParameterCombineSourceInfoSet() {
-		return parameterCombineSourceInfoSet;
-	}
-
 	private ParameterDatasetType createDatasetTypeEnum(ImportSetting importSetting) {
 		ParameterDatasetType result;
 		result = new ParameterDatasetType();
@@ -942,4 +978,76 @@ public class ImportParameterCreator implements IParameterCreator {
 		return result;
 	}
 
+
+	public ParameterFile getParameterFile() {
+		return parameterFile;
+	}
+
+	public ParameterFile getParameterFileFolder() {
+		return parameterFileFolder;
+	}
+
+	public ParameterFile getParameterFilePrjChoose() {
+		return parameterFilePrjChoose;
+	}
+
+	public ParameterButton getParameterButton() {
+		return parameterButton;
+	}
+
+	public ParameterTextArea getParameterTextArea() {
+		return parameterTextArea;
+	}
+
+	public ParameterRadioButton getParameterSetRadioButton() {
+		return parameterRadioButton;
+	}
+
+	public ParameterDatasource getParameterResultDatasource() {
+		return parameterDatasource;
+	}
+
+	public IParameter getParameterCombineResultSet() {
+		return parameterCombineResultSet;
+	}
+
+	public IParameter getParameterCombineParamSet() {
+		return parameterCombineParamSet;
+	}
+
+	public ParameterCombine getParameterCombineSourceInfoSet() {
+		return parameterCombineSourceInfoSet;
+	}
+
+	public ParameterTextField getParameterDataset() {
+		return parameterDataset;
+	}
+
+	public ParameterCharset getParameterCharset() {
+		return parameterCharset;
+	}
+
+	public ParameterRadioButton getParameterRadioButtonFolderOrFile() {
+		return parameterRadioButtonFolderOrFile;
+	}
+
+	public ParameterCheckBox getParameterImportIndexData() {
+		return parameterImportIndexData;
+	}
+
+	public ParameterComboBox getParameterWKTFieldName() {
+		return parameterWKTFieldName;
+	}
+
+	public ParameterComboBox getParameterXFieldName() {
+		return parameterXFieldName;
+	}
+
+	public ParameterComboBox getParameterYFieldName() {
+		return parameterYFieldName;
+	}
+
+	public ParameterComboBox getParameterZFieldName() {
+		return parameterZFieldName;
+	}
 }

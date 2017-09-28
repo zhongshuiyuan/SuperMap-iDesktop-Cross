@@ -89,6 +89,7 @@ public class JDialogDatasetNew extends SmDialog {
 		this.table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		this.newDatasetTableModel = new NewDatasetTableModel();
 		this.table.setModel(newDatasetTableModel);
+		this.table.getTableHeader().setReorderingAllowed(false);
 
 		this.table.getColumnModel().getColumn(NewDatasetTableModel.COLUMN_INDEX_TARGET_DATASOURCE).setCellRenderer(new TableDataCellRender());
 		this.table.getColumnModel().getColumn(NewDatasetTableModel.COLUMN_INDEX_DATASET_TYPE).setCellRenderer(new TableDataCellRender());

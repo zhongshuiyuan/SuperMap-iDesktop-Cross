@@ -2,12 +2,12 @@ package com.supermap.desktop.controls.colorScheme;
 
 import com.supermap.data.Colors;
 import com.supermap.desktop.Application;
+import com.supermap.desktop.Interface.ISmTextFieldLegit;
 import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.controls.utilities.ControlsResources;
 import com.supermap.desktop.controls.utilities.ToolbarUIUtilities;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.controls.*;
-import com.supermap.desktop.Interface.ISmTextFieldLegit;
 import com.supermap.desktop.ui.controls.TextFields.SmTextFieldLegit;
 import com.supermap.desktop.ui.controls.button.SmButton;
 import com.supermap.desktop.utilities.*;
@@ -648,7 +648,7 @@ public class ColorSchemeEditorDialog extends SmDialog {
 			tableColorsTable.setRowHeight(25);
 			colorsTableModel = new ColorsTableModel();
 			tableColorsTable.setModel(colorsTableModel);
-
+			tableColorsTable.getTableHeader().setReorderingAllowed(false);
 			// 设置表格颜色列的显示效果为指定的颜色
 			TableColumn colorColumn = tableColorsTable.getColumnModel().getColumn(1);
 			colorColumn.setCellRenderer(new DefaultTableCellRenderer() {

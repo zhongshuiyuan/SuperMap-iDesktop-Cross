@@ -52,6 +52,7 @@ public class DatasourceInfoControl extends AbstractPropertyControl {
 		JScrollPane scrollPaneStatisticValue = new JScrollPane();
 //		scrollPaneStatisticValue.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_StatisticsInfo")));
 		table = new JTable();
+		table.getTableHeader().setReorderingAllowed(false);
 		table.setModel(new DefaultTableModel(new Object[][]{,}, new String[]{ControlsProperties.getString("String_DatasetType"),
 				ControlsProperties.getString("String_StatisticResult")}) {
 			/**
