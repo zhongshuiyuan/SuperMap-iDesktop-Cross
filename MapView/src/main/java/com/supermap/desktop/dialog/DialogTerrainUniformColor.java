@@ -5,8 +5,8 @@ import com.supermap.data.DatasetGrid;
 import com.supermap.data.DatasetType;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.Interface.IFormMap;
-import com.supermap.desktop.mapview.MapViewProperties;
 import com.supermap.desktop.controls.colorsTable.LayerGridParamColorTableDialog;
+import com.supermap.desktop.mapview.MapViewProperties;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.controls.CommonListCellRenderer;
 import com.supermap.desktop.ui.controls.DataCell;
@@ -166,6 +166,7 @@ public class DialogTerrainUniformColor extends SmDialog {
         mutiTable.setCheckHeaderColumn(COLUMN_INDEX_CHECK);
         mutiTable.getColumnModel().getColumn(COLUMN_INDEX_LAYER).setCellRenderer(new CommonListCellRenderer());
         mutiTable.setRowHeight(ROW_HRIGHT);
+        this.mutiTable.getTableHeader().setReorderingAllowed(false);
         comboBoxLayer = new JComboBox();
         comboBoxLayer.setRenderer(new CommonListCellRenderer());
         toolBar.add(labelLayer);

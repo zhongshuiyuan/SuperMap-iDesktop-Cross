@@ -512,6 +512,7 @@ public class SnapSettingDialog extends SmDialog {
 		this.tableSnapMode.getColumn(tableSnapMode.getModel().getColumnName(TABLE_COLUMN_DESCRIPTION)).setCellRenderer(TableTooltipCellRenderer.getInstance());
 		this.tableSnapMode.getTableHeader().getColumnModel().getColumn(TABLE_COLUMN_CHECKABLE).setHeaderRenderer(new CheckableHeaderCellRenderer(tableSnapMode, DataEditorProperties.getString("String_Enabled")));
 		this.tableSnapMode.setRowHeight(23);
+		this.tableSnapMode.getTableHeader().setReorderingAllowed(false);
 		this.tableSnapMode.setShowHorizontalLines(false);
 		this.tableSnapMode.setShowVerticalLines(false);
 		this.tableSnapMode.addRowSelectionInterval(0, 0);

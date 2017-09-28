@@ -239,6 +239,7 @@ public class JDialogJoinItems extends SmDialog {
 
 	private void setTableStates() {
 		joinItemsTable.setRowHeight(23);
+		joinItemsTable.getTableHeader().setReorderingAllowed(false);
 
 		joinItemsTable.getColumnModel().getColumn(COLUMN_INDEX).setPreferredWidth(tableWeight[0]);
 		joinItemsTable.getColumnModel().getColumn(COLUMN_NAME).setPreferredWidth(tableWeight[1]);

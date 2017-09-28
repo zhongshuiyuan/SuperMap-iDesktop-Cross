@@ -432,6 +432,7 @@ public class ThemeRangeContainer extends ThemeChangePanel {
         this.tableRangeInfo.setModel(new LocalDefualTableModel(new Object[this.rangeCount][4], nameStrings));
         initColumnIcon();
         this.tableRangeInfo.setRowHeight(20);
+        this.tableRangeInfo.getTableHeader().setReorderingAllowed(false);
         this.tableRangeInfo.getColumn(MapViewProperties.getString("String_Title_Visible")).setMaxWidth(40);
         this.tableRangeInfo.getColumn(MapViewProperties.getString("String_Title_Sytle")).setMaxWidth(100);
         this.tableRangeInfo.getColumn(MapViewProperties.getString("String_Title_RangeValue")).setMaxWidth(200);

@@ -593,6 +593,7 @@ public class LayerGridParamColorTableDialog extends SmDialog {
 			tableColor.setRowHeight(25);
 			colorsWithKeysTableModel = new ColorsWithKeysTableModel();
 			tableColor.setModel(colorsWithKeysTableModel);
+			this.tableColor.getTableHeader().setReorderingAllowed(false);
 
 			TableColumn indexColumn = tableColor.getColumnModel().getColumn(0);
 			TableColumn colorColumn = tableColor.getColumnModel().getColumn(1);

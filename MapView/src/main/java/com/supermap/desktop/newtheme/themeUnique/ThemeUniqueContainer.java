@@ -482,6 +482,7 @@ public class ThemeUniqueContainer extends ThemeChangePanel {
 
 		};
 		this.tableUniqueInfo.setModel(defaultTableModel);
+		this.tableUniqueInfo.getTableHeader().setReorderingAllowed(false);
 		initColumnIcon();
 		this.tableUniqueInfo.setRowHeight(20);
 
