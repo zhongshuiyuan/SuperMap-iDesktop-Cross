@@ -20,8 +20,6 @@ import com.supermap.desktop.process.parameter.ipls.ParameterSingleDataset;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.utilities.DatasetUtilities;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
@@ -85,19 +83,19 @@ public class MetaProcessDataUpdate extends MetaProcess {
 	}
 
 	private void registerListner() {
-		this.chooseTable.addPropertyListener(new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				ArrayList<Dataset> datasets = (ArrayList<Dataset>) evt.getNewValue();
-				if (datasets == null || datasets.size() == 0) {
-					sourceDatasource.setEnabled(true);
-					sourceDataset.setEnabled(true);
-				} else {
-					sourceDatasource.setEnabled(false);
-					sourceDataset.setEnabled(false);
-				}
-			}
-		});
+//		this.chooseTable.addPropertyListener(new PropertyChangeListener() {
+//			@Override
+//			public void propertyChange(PropertyChangeEvent evt) {
+//				ArrayList<Dataset> datasets = (ArrayList<Dataset>) evt.getNewValue();
+//				if (datasets == null || datasets.size() == 0) {
+//					sourceDatasource.setEnabled(true);
+//					sourceDataset.setEnabled(true);
+//				} else {
+//					sourceDatasource.setEnabled(false);
+//					sourceDataset.setEnabled(false);
+//				}
+//			}
+//		});
 	}
 
 	@Override

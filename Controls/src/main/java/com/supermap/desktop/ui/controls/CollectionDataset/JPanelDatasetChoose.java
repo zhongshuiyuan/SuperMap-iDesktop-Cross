@@ -42,13 +42,13 @@ public abstract class JPanelDatasetChoose extends JPanel {
 	private JButton buttonMoveLast;
 	//子类中实现
 //	private JButton buttonRefresh;
-	private ArrayList<Dataset> datasets;
+	protected ArrayList<Dataset> datasets;
 	private String[] columnName;
 	private boolean[] enableColumn;
 	protected MultipleCheckboxTableModel tableModel;
 	private DatasetChooser datasetChooser;
 	protected DatasetType[] supportDatasetTypes;
-	private Dataset illegalDataset;
+	protected Dataset illegalDataset;
 
 	private ActionListener addDatasetListener = new ActionListener() {
 		@Override
@@ -371,25 +371,38 @@ public abstract class JPanelDatasetChoose extends JPanel {
 		if (0 < tableDatasetDisplay.getRowCount()) {
 			this.buttonSelectAll.setEnabled(true);
 			this.buttonInvertSelect.setEnabled(true);
-			this.buttonMoveUp.setEnabled(true);
-			this.buttonMoveFirst.setEnabled(true);
-			this.buttonMoveDown.setEnabled(true);
-			this.buttonMoveLast.setEnabled(true);
+
 //			this.buttonRefresh.setEnabled(true);
 
 		} else {
 			this.buttonSelectAll.setEnabled(false);
 			this.buttonInvertSelect.setEnabled(false);
-			this.buttonMoveUp.setEnabled(false);
-			this.buttonMoveFirst.setEnabled(false);
-			this.buttonMoveDown.setEnabled(false);
-			this.buttonMoveLast.setEnabled(false);
 //			this.buttonRefresh.setEnabled(false);
 		}
 		if (tableDatasetDisplay.getSelectedRows().length > 0) {
 			this.buttonDelete.setEnabled(true);
+
+			if (tableDatasetDisplay.getSelectedRows()[tableDatasetDisplay.getSelectedRows().length-1]==tableDatasetDisplay.getRowCount()-1){
+				this.buttonMoveDown.setEnabled(false);
+				this.buttonMoveLast.setEnabled(false);
+			}else{
+				this.buttonMoveDown.setEnabled(true);
+				this.buttonMoveLast.setEnabled(true);
+			}
+
+			if (tableDatasetDisplay.getSelectedRows()[0]==0){
+				this.buttonMoveUp.setEnabled(false);
+				this.buttonMoveFirst.setEnabled(false);
+			}else{
+				this.buttonMoveUp.setEnabled(true);
+				this.buttonMoveFirst.setEnabled(true);
+			}
 		} else {
 			this.buttonDelete.setEnabled(false);
+			this.buttonMoveUp.setEnabled(false);
+			this.buttonMoveFirst.setEnabled(false);
+			this.buttonMoveDown.setEnabled(false);
+			this.buttonMoveLast.setEnabled(false);
 		}
 	}
 
