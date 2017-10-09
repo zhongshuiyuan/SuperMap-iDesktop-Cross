@@ -8,6 +8,7 @@ import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
 import com.supermap.desktop.WorkflowView.meta.MetaKeys;
 import com.supermap.desktop.WorkflowView.meta.MetaProcess;
+import com.supermap.desktop.process.ProcessProperties;
 import com.supermap.desktop.process.constraint.ipls.DatasourceConstraint;
 import com.supermap.desktop.process.constraint.ipls.EqualDatasourceConstraint;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
@@ -45,6 +46,7 @@ public class MetaProcessPickupBorder extends MetaProcess {
 		this.dataset = new ParameterSingleDataset(DatasetType.REGION, DatasetType.LINE);
 		this.saveDataset = new ParameterSaveDataset();
 		this.isPreProcessed = new ParameterCheckBox(CommonProperties.getString("String_TopyPreProcessed"));
+		this.isPreProcessed.setTip(ProcessProperties.getString("String_TopologyPreProcessWarning"));
 
 		ParameterCombine sourceData = new ParameterCombine();
 		sourceData.setDescribe(CommonProperties.getString("String_GroupBox_SourceData"));

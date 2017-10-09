@@ -128,20 +128,6 @@ public class MetaProcessAlgebraOperation extends MetaProcessGridAnalyst {
 				exportXML();
 			}
 		});
-//		this.buttonExpression.addPropertyListener(new PropertyChangeListener() {
-//			@Override
-//			public void propertyChange(PropertyChangeEvent evt) {
-//				if (evt.getNewValue() == null) {
-////					comboBoxPixelFormat.removeAllItems();
-////					ParameterDataNode parameterDataNode = new ParameterDataNode(PixelFormatUtilities.toString(buttonExpression.getPixelFormat()), buttonExpression.getPixelFormat());
-////					comboBoxPixelFormat.addItem(parameterDataNode);
-////					comboBoxPixelFormat.setSelectedItem(parameterDataNode);
-////					checkBoxCompress.setSelectedItem(buttonExpression.isZip());
-////					checkBoxIgnoreNoValueCell.setSelectedItem(buttonExpression.isIgnoreNoValue());
-////					textAreaExpression.setSelectedItem(buttonExpression.getExpression());
-//				}
-//			}
-//		});
 	}
 
 	private void editExpression() {
