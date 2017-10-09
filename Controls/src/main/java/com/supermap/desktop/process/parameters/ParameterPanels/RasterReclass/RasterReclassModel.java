@@ -156,8 +156,8 @@ public class RasterReclassModel extends DefaultTableModel {
 					this.tableDatas.add(new TableData(reclassSegment));
 				}
 			}
-			fireTableDataChanged();
 		}
+		fireTableDataChanged();
 	}
 
 	public void setData(double[] newValues){

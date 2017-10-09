@@ -12,6 +12,7 @@ import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.controls.utilities.ControlsResources;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.controls.DialogResult;
+import com.supermap.desktop.ui.controls.SmComboBox;
 import com.supermap.desktop.ui.controls.SmFileChoose;
 import com.supermap.desktop.ui.controls.TextFields.SmTextFieldLegit;
 import com.supermap.desktop.utilities.CoreResources;
@@ -50,7 +51,7 @@ public class RasterReclassValuePanel extends JPanel {
 	private RasterReclassModel rasterReclassModel;
 	private JScrollPane jScrollPane;
 	private JLabel labelPixFormat;
-	private JComboBox comboBoxPixFormat;
+	private SmComboBox comboBoxPixFormat;
 	private JLabel labelRange;
 	private ButtonGroup buttonGroup;
 	private JRadioButton radioButtonLeftClose;
@@ -89,7 +90,7 @@ public class RasterReclassValuePanel extends JPanel {
 		this.table = new JTable();
 		this.jScrollPane = new JScrollPane();
 		this.labelPixFormat = new JLabel();
-		this.comboBoxPixFormat = new JComboBox();
+		this.comboBoxPixFormat = new SmComboBox();
 		this.labelRange = new JLabel();
 		this.buttonGroup = new ButtonGroup();
 		this.radioButtonLeftClose = new JRadioButton();
@@ -189,7 +190,7 @@ public class RasterReclassValuePanel extends JPanel {
 	}
 
 	private void initResources() {
-		this.buttonBatchAdd.setIcon(ControlsResources.getIcon("/controlsresources/ToolBar/ColorScheme/batchAdd.png"));
+		this.buttonBatchAdd.setIcon(CoreResources.getIcon("/coreresources/ToolBar/Image_ToolButton_Setting.PNG"));
 		this.buttonDefault.setIcon(ControlsResources.getIcon("/controlsresources/ToolBar/ColorScheme/defaultColors.png"));
 		this.buttonSelectedAll.setIcon(CoreResources.getIcon("/coreresources/ToolBar/Image_ToolButton_SelectAll.png"));
 		this.buttonSelectedInverse.setIcon(CoreResources.getIcon("/coreresources/ToolBar/Image_ToolButton_SelectInverse.png"));
@@ -543,8 +544,11 @@ public class RasterReclassValuePanel extends JPanel {
 		if (this.table.getSelectedRowCount() == 1) {
 			this.buttonSplit.setEnabled(true);
 			this.buttonCombine.setEnabled(false);
-		} else {
+		}else {
 			boolean result = true;
+			if (this.table.getSelectedRowCount() == 0){
+				result=false;
+			}
 			int[] rows = this.table.getSelectedRows();
 			for (int i = 0; i < rows.length - 1; i++) {
 				if (rows[i] + 1 != rows[i + 1]) {
@@ -576,6 +580,25 @@ public class RasterReclassValuePanel extends JPanel {
 	}
 
 	public void setDataset(DatasetGrid dataset) {
+		if (this.dataset==null && dataset!=null){
+			this.buttonBatchAdd.setEnabled(true);
+			this.buttonDefault.setEnabled(true);
+			this.buttonSelectedAll.setEnabled(true);
+			this.buttonSelectedInverse.setEnabled(true);
+			this.buttonImport.setEnabled(true);
+			this.buttonExport.setEnabled(true);
+			this.buttonInverse.setEnabled(true);
+		}else if (this.dataset!=null && dataset==null){
+			this.buttonBatchAdd.setEnabled(false);
+			this.buttonDefault.setEnabled(false);
+			this.buttonSelectedAll.setEnabled(false);
+			this.buttonSelectedInverse.setEnabled(false);
+			this.buttonImport.setEnabled(false);
+			this.buttonExport.setEnabled(false);
+			this.buttonInverse.setEnabled(false);
+		}
+		this.buttonSplit.setEnabled(false);
+		this.buttonCombine.setEnabled(false);
 		this.dataset = dataset;
 		this.rasterReclassModel.setDataset(dataset);
 		getNewMappingTable();
@@ -586,8 +609,6 @@ public class RasterReclassValuePanel extends JPanel {
 		this.radioButtonLeftOpen.setSelected(false);
 		this.textFieldLegitNoValue.setEnabled(false);
 		this.textFieldLegitNoClass.setEnabled(false);
-		this.buttonSplit.setEnabled(false);
-		this.buttonCombine.setEnabled(false);
 		if (this.dataset != null) {
 			this.textFieldLegitNoValue.setText(String.valueOf(this.dataset.getNoValue()));
 			this.reclassMappingTable.setChangeNoValueTo(this.dataset.getNoValue());
@@ -595,7 +616,8 @@ public class RasterReclassValuePanel extends JPanel {
 		this.textFieldLegitNoClass.setText("-9999");
 		this.reclassMappingTable.setChangeMissingValueTo(-9999.0);
 		this.reclassMappingTable.setReclassType(ReclassType.RANGE);
-		this.reclassMappingTable.setRetainMissingValue(true);
+		this.reclassMappingTable.setRetainNoValue(!checkBoxNoValueCell.isSelected());
+		this.reclassMappingTable.setRetainMissingValue(!checkBoxNoClassCell.isSelected());
 		this.reclassValueChange.reClassPixelFormat(ReclassPixelFormat.BIT32);
 	}
 
