@@ -4,9 +4,6 @@ import com.supermap.desktop.Application;
 import com.supermap.desktop.process.core.IProcess;
 import com.supermap.desktop.process.core.ReadyEvent;
 import com.supermap.desktop.process.core.Workflow;
-import com.supermap.desktop.process.enums.RunningStatus;
-import com.supermap.desktop.process.events.StatusChangeEvent;
-import com.supermap.desktop.process.events.StatusChangeListener;
 import com.supermap.desktop.process.events.WorkflowChangeEvent;
 import com.supermap.desktop.process.events.WorkflowChangeListener;
 import com.supermap.desktop.process.tasks.events.WorkerStateChangedListener;
@@ -35,7 +32,6 @@ public class TasksManager {
 	private final static int WORKFLOW_STATE_RUNNING = 1;
 	private final static int WORKFLOW_STATE_COMPLETED = 2;
 	private final static int WORKFLOW_STATE_INTERRUPTED = 3;
-	private final static int WORKFLOW_STATE_RERUNNING = 4; // 出错重新运行
 
 	public final static int WORKER_STATE_RUNNING = 1;
 	public final static int WORKER_STATE_READY = 2;
@@ -62,21 +58,6 @@ public class TasksManager {
 				processAdded(e.getProcess());
 			} else if (e.getType() == WorkflowChangeEvent.REMOVED) {
 				processRemoved(e.getProcess());
-			}
-		}
-	};
-	private StatusChangeListener checkReRunListener = new StatusChangeListener() {
-		@Override
-		public void statusChange(StatusChangeEvent e) {
-			if (e.getStatus() == RunningStatus.RUNNING) {
-				if (getStatus() != WORKFLOW_STATE_RUNNING && getStatus() != WORKFLOW_STATE_RERUNNING) {
-					// 如果是当前不是running则说明是重新启动的。
-					status = WORKFLOW_STATE_RERUNNING;
-					if (!scheduler.isRunning()) {
-						workflow.setEditable(false);
-						scheduler.start();
-					}
-				}
 			}
 		}
 	};
@@ -129,7 +110,6 @@ public class TasksManager {
 	private void addNewProcess(IProcess process) {
 		if (!this.workersMap.containsKey(process)) {
 			ProcessWorker worker = new ProcessWorker(process);
-			process.addStatusChangeListener(checkReRunListener);
 			this.workersMap.put(process, worker);
 			taskStateManager.addProcess(process);
 			fireWorkersChanged(new WorkersChangedEvent(this, worker, WorkersChangedEvent.ADD));
@@ -142,7 +122,6 @@ public class TasksManager {
 	private void processRemoved(IProcess process) {
 		if (this.workersMap.containsKey(process)) {
 			fireWorkersChanged(new WorkersChangedEvent(this, workersMap.get(process), WorkersChangedEvent.REMOVE));
-			process.removeStatusChangeListener(checkReRunListener);
 			this.workersMap.remove(process);
 			taskStateManager.removeProcess(process);
 		}
@@ -177,7 +156,7 @@ public class TasksManager {
 	}
 
 	public boolean isExecuting() {
-		return this.status == WORKER_STATE_RUNNING;
+		return this.status == WORKFLOW_STATE_RUNNING;
 	}
 
 	public void cancel() {
@@ -204,6 +183,8 @@ public class TasksManager {
 
 		if (this.scheduler.isRunning()) {
 			this.scheduler.stop();
+			workflow.setEditable(true);
+			isCancel = false;
 		}
 
 		this.status = TasksManager.WORKFLOW_STATE_NORMAL;
@@ -266,6 +247,16 @@ public class TasksManager {
 				}
 
 				// 当等待队列、就绪队列、运行队列均已经清空，则停止任务调度，并输出日志
+				// 任务的执行和任务的调度是不同的线程并发执行的。调用 execute() 方法之后，任务执行线程处理任务状态改变，
+				// 任务调度线程运行到这里根据任务的状态进行判断，它们的先后顺序并不一定
+				// 任务调度线程进行是否停止的判断也仅仅考虑了 waiting/ready/running 三种状态
+				// 任务调度的停止逻辑判断是建立在启动任务调度器的时候，任务管理处于初始状态的情况下，也就是启动前任务只有 waiting/ready 两种状态
+				// 在任务调度器启动前，会有一个初始化的操作用来初始化任务管理器，然后也还会有些过程代码才会执行到 execute() 真正执行任务的地方
+				// 在这个过程中，如果有某些未知的情况更改了任务的状态，则会导致一些异常结果
+				// 举例说明，假设只有一个任务 taskA，调用了 cancel，导致任务从 waiting 队列移动到 cancelled 队列
+				// execute 启动任务，导致 taskA 从 cancelled 队列移动到 running 队列
+				// 调用 execute 之后，任务调度线程先执行到了这一句判定，此时 waiting 队列为空，ready 队列为空，running 队列为空，cancelled 队列有一个任务 taskA
+				// 任务调度器就会通过这个判断，停止工作
 				if (taskStateManager.get(WORKER_STATE_WAITING).size() == 0 && ready.size() == 0 && taskStateManager.get(WORKER_STATE_RUNNING).size() == 0) {
 					scheduler.stop();
 					workflow.setEditable(true);

@@ -382,16 +382,21 @@ public class ImportParameterCreator implements IParameterCreator {
 			ParameterCheckBox parameterFirstRowIsField = new ParameterCheckBox(CommonProperties.getString("String_FirstRowisField"));
 			parameterFirstRowIsField.setSelectedItem(true);
 			setFirstRowIsField.parameter = parameterFirstRowIsField;
+
+			// 分隔符
+			ReflectInfo setSeparator = new ReflectInfo();
+			setSeparator.methodName = "setSeparator";
+			ParameterTextField parameterSeparator = new ParameterTextField(CommonProperties.getString("String_Separator"));
+			parameterSeparator.setSelectedItem(",");
+			setSeparator.parameter = parameterSeparator;
 			if (importSetting instanceof ImportSettingExcel) {
 				result.add(setFirstRowIsField);
 				parameterCombineParamSet.addParameters(setFirstRowIsField.parameter);
+			} else if (importSetting instanceof ImportSettingGPX) {
+				result.add(setFirstRowIsField);
+				result.add(setSeparator);
+				parameterCombineParamSet.addParameters(setFirstRowIsField.parameter, setSeparator.parameter);
 			} else {
-				// 分隔符
-				ReflectInfo setSeparator = new ReflectInfo();
-				setSeparator.methodName = "setSeparator";
-				ParameterTextField parameterSeparator = new ParameterTextField(CommonProperties.getString("String_Separator"));
-				parameterSeparator.setSelectedItem(",");
-				setSeparator.parameter = parameterSeparator;
 				// 导入空间数据
 				ReflectInfo setImportIndexData = new ReflectInfo();
 				setSeparator.methodName = "setImportIndexData";

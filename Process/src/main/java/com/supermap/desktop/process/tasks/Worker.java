@@ -14,8 +14,6 @@ public abstract class Worker<V extends Object> {
 	private String title;
 	private SwingWorkerSub workerSub;
 
-	private boolean isReady;
-
 	public String getTitle() {
 		return title;
 	}
@@ -53,7 +51,7 @@ public abstract class Worker<V extends Object> {
 	}
 
 	public final void execute() {
-		if (this.workerSub != null) {
+		if (this.workerSub != null && !this.workerSub.isDone()) {
 			cancel();
 			try {
 
