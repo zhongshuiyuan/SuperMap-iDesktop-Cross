@@ -1,5 +1,7 @@
 package com.supermap.desktop.ui.controls.ExpressionComponent;
 
+import com.supermap.desktop.ui.controls.SmComboBox;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,7 +9,7 @@ import java.awt.event.ActionListener;
 /**
  * Created by lixiaoyao on 2017/9/18.
  */
-public class FunctionComboBox extends JComboBox<String> {
+public class FunctionComboBox extends SmComboBox<String> {
 
 	private FunctionComboBoxSelectedChangeListener selectedChangeListener=null;
 

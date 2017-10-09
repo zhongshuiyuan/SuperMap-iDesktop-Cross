@@ -168,6 +168,7 @@ public class RasterAlgebraOperationDialog extends SmDialog {
 		this.workspaceTree.setMapsNodeVisible(false);
 		this.workspaceTree.setScenesNodeVisible(false);
 		this.workspaceTree.setResourcesNodeVisible(false);
+		this.workspaceTree.setWorkflowVisible(false);
 
 		this.workspaceTree.setSelectionPath(UICommonToolkit.getWorkspaceManager().getWorkspaceTree().getSelectionPath());
 		for (MouseMotionListener mouseMotionListener : this.workspaceTree.getMouseMotionListeners()) {
