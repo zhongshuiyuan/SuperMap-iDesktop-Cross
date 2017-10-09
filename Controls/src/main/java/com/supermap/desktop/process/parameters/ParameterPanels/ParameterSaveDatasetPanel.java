@@ -67,8 +67,8 @@ public class ParameterSaveDatasetPanel extends SwingPanel implements IParameterP
 	public ParameterSaveDatasetPanel(IParameter parameterSaveDataset) {
 		super(parameterSaveDataset);
 		this.parameterSaveDataset = (ParameterSaveDataset) parameterSaveDataset;
-		labelDatasource = new JLabel(CommonProperties.getString("String_TargetDatasource"));
-		labelDataset = new JLabel(CommonProperties.getString("String_TargetDataset"));
+		labelDatasource = new JLabel(CommonProperties.getString("String_SourceDatasource"));
+		labelDataset = new JLabel(CommonProperties.getString("String_Dataset"));
 		datasourceComboBox = new DatasourceComboBox();
 		textFieldDataset = new SmTextFieldLegit();
 		textFieldDataset.setSmTextFieldLegit(new ISmTextFieldLegit() {
