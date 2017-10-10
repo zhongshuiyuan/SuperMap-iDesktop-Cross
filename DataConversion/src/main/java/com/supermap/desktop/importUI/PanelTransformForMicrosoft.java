@@ -7,6 +7,7 @@ import com.supermap.desktop.baseUI.PanelTransform;
 import com.supermap.desktop.controls.utilities.ComponentUIUtilities;
 import com.supermap.desktop.dataconversion.DataConversionProperties;
 import com.supermap.desktop.implement.UserDefineType.ImportSettingExcel;
+import com.supermap.desktop.implement.UserDefineType.ImportSettingGPX;
 import com.supermap.desktop.localUtilities.CommonUtilities;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.TristateCheckBox;
@@ -26,7 +27,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -225,14 +225,14 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 		this.comboBoxZ = new SteppedComboBox(temp);
 		temp = null;
 		if (!(this.importSetting instanceof ImportSettingExcel)) {
-			String[][] data = getData();
+			String[][] data = XlsUtilities.getData(importSetting.getSourceFilePath());
 			if (null != data) {
 				String[] tempValues = data[0];
 				for (int i = 0, tempLength = tempValues.length; i < tempLength; i++) {
 					tempValues[i] = tempValues[i].replace("\"", "");
 				}
 				String[] indexX = tempValues;
-				int length = getData().length;
+				int length = XlsUtilities.getData(importSetting.getSourceFilePath()).length;
 				String[][] tableValues = new String[length - 1][];
 				for (int i = 1; i < length; i++) {
 					tableValues[i - 1] = data[i];
@@ -267,22 +267,6 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 				comboBoxModelY = null;
 			}
 		}
-	}
-
-	private String[][] getData() {
-		String[][] result = null;
-		ArrayList<String> list = XlsUtilities.readCsv(new File(importSetting.getSourceFilePath()));
-		if (list.size() > 0) {
-			result = new String[list.size()][];
-		}
-		for (int i = 0, size = list.size(); i < size; i++) {
-			String tempStr = list.get(i);
-			if (tempStr.contains("(")) {
-				tempStr = tempStr.substring(0, tempStr.indexOf("(") - 1);
-			}
-			result[i] = tempStr.split(",");
-		}
-		return result;
 	}
 
 	private void setComboboxStepSize(SteppedComboBox... comboBoxes) {
@@ -361,7 +345,8 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 		} else {
 			setIndexPanelEnabled();
 		}
-		if (importSetting instanceof ImportSettingExcel) {
+		if (importSetting instanceof ImportSettingExcel||importSetting instanceof ImportSettingGPX) {
+			this.labelDataPreview.setVisible(false);
 			this.paneForIndexAsPoint.setVisible(false);
 			this.labelSeparator.setVisible(false);
 			this.textFieldSeparator.setVisible(false);

@@ -1,6 +1,8 @@
 package com.supermap.desktop.WorkflowView.meta.metaProcessImplements;
 
-import com.supermap.data.*;
+import com.supermap.data.Charset;
+import com.supermap.data.Dataset;
+import com.supermap.data.Datasource;
 import com.supermap.data.conversion.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
@@ -18,25 +20,17 @@ import com.supermap.desktop.implement.UserDefineType.UserDefineImportResult;
 import com.supermap.desktop.process.ProcessProperties;
 import com.supermap.desktop.process.events.RunningEvent;
 import com.supermap.desktop.process.loader.IProcessLoader;
-import com.supermap.desktop.process.parameter.ParameterDataNode;
-import com.supermap.desktop.process.parameter.interfaces.IParameterPanel;
+import com.supermap.desktop.process.parameter.interfaces.IParameter;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
 import com.supermap.desktop.process.parameter.ipls.*;
 import com.supermap.desktop.ui.UICommonToolkit;
-import com.supermap.desktop.ui.controls.DialogResult;
 import com.supermap.desktop.ui.controls.WorkspaceTree;
-import com.supermap.desktop.ui.controls.prjcoordsys.JDialogPrjCoordSysSettings;
-import com.supermap.desktop.utilities.*;
+import com.supermap.desktop.utilities.DatasourceUtilities;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -48,9 +42,6 @@ public class MetaProcessImport extends MetaProcess {
 
 	private final static String OUTPUT_DATA = "ImportResult";
 	protected ImportSetting importSetting;
-	private CopyOnWriteArrayList<ReflectInfo> sourceImportParameters;
-	private CopyOnWriteArrayList<ReflectInfo> resultImportParameters;
-	private CopyOnWriteArrayList<ReflectInfo> paramParameters;
 	private String importType = "";
 	private ImportParameterCreator parameterCreator;
 	private ImportSteppedListener importStepListener = new ImportSteppedListener() {
@@ -65,166 +56,6 @@ public class MetaProcessImport extends MetaProcess {
 		}
 	};
 
-	// 拓展导入csv文件功能，支持导入点线面
-	private ParameterCheckBox parameterImportIndexData;
-	private ParameterComboBox parameterWKTFieldName;
-	private ParameterComboBox parameterXFieldName;
-	private ParameterComboBox parameterYFieldName;
-	private ParameterComboBox parameterZFieldName;
-
-	// 针对SimpleJson，以文件夹和文件形式选择文件-yuanR2017.9.1
-	private ParameterRadioButton parameterRadioButtonFileSelectType;
-	private ParameterFile parameterFileFolder;
-
-	private ParameterFile parameterFile;
-	private ParameterCharset parameterCharset;
-	private ParameterFile parameterFilePrjChoose;
-	private ParameterButton parameterButton;
-	private ParameterTextArea parameterTextArea;
-	private ParameterRadioButton parameterRadioButton;
-	private ParameterDatasource parameterResultDatasource;
-	private ParameterTextField datasetName;
-	private boolean isSelectingChange = false;
-	private boolean isSelectingFile = false;
-	private PropertyChangeListener fileListener = new PropertyChangeListener() {
-		@Override
-		public void propertyChange(PropertyChangeEvent evt) {
-			if (!isSelectingFile && evt.getNewValue() instanceof String && evt.getSource().equals(parameterFile)) {
-				try {
-					isSelectingFile = true;
-					String fileName = (String) evt.getNewValue();
-					//set dataset name
-					String fileAlis = FileUtilities.getFileAlias(fileName);
-					//文件选择器编辑过程中会不断响应，所以未修改到正确的路径时不变。JFileChooserControl是否需要一个编辑提交listener
-					if (fileAlis != null) {
-						if (parameterResultDatasource != null && parameterResultDatasource.getSelectedItem() != null) {
-							fileAlis = parameterResultDatasource.getSelectedItem().getDatasets().getAvailableDatasetName(fileAlis);
-						}
-						datasetName.setSelectedItem(fileAlis);
-					}
-					//set charset
-					if (importSetting instanceof ImportSettingTAB || importSetting instanceof ImportSettingMIF) {
-						if (fileName != null && new File(fileName).exists()) {
-							importSetting.setSourceFilePath(fileName);
-							Charset charset = importSetting.getSourceFileCharset();
-							parameterCharset.setSelectedItem(charset);
-						}
-					}
-
-					/**
-					 * 给导入csv面板中的文件选择器也添加监听事件，用于当文件文件路径改变时，对选中的csv文件进行预读，得到可供选择的字段-yuanR
-					 */
-					if (importSetting instanceof ImportSettingCSV && !(importSetting instanceof ImportSettingGPX) && !(importSetting instanceof ImportSettingExcel)) {
-						parameterWKTFieldName.removeAllItems();
-						parameterXFieldName.removeAllItems();
-						parameterYFieldName.removeAllItems();
-						parameterZFieldName.removeAllItems();
-						parameterImportIndexData.setSelectedItem(false);
-						parameterImportIndexData.setEnabled(false);
-
-						String path = (String) evt.getNewValue();
-						if (new File(path).exists() && getData(path) != null) {
-							String[][] data = getData(path);
-							String[] tempValues = data[0];
-							for (int i = 0, tempLength = tempValues.length; i < tempLength; i++) {
-								tempValues[i] = tempValues[i].replace("\"", "");
-							}
-							String[] indexX = tempValues;
-							parameterZFieldName.addItem(new ParameterDataNode("", " "));
-							for (int i = 0; i < indexX.length; i++) {
-								parameterWKTFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
-								parameterXFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
-								parameterYFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
-								parameterZFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
-							}
-							parameterWKTFieldName.setSelectedItem(indexX[0]);
-							parameterXFieldName.setSelectedItem(indexX[0]);
-							parameterYFieldName.setSelectedItem(indexX[0]);
-							parameterZFieldName.setSelectedItem(" ");
-							parameterImportIndexData.setEnabled(true);
-						}
-					}
-				} finally {
-					isSelectingFile = false;
-				}
-				// 以文件夹的形式选择导入文件，当选定了文件夹，根据文件夹名称自动设置导入数据集的名称-yuanR2017.9.1
-			} else if (!isSelectingFile && evt.getNewValue() instanceof String && evt.getSource().equals(parameterFileFolder)) {
-				try {
-					isSelectingFile = true;
-					String fileName = (String) evt.getNewValue();
-					//set dataset name
-					String fileAlis = fileName.substring(fileName.lastIndexOf(File.separator) + 1, fileName.length());
-					if (fileAlis.length() > 0) {
-						if (parameterResultDatasource != null && parameterResultDatasource.getSelectedItem() != null) {
-							fileAlis = parameterResultDatasource.getSelectedItem().getDatasets().getAvailableDatasetName(fileAlis);
-						}
-						datasetName.setSelectedItem(fileAlis);
-					}
-				} finally {
-					isSelectingFile = false;
-				}
-			}
-		}
-	};
-
-	private String[][] getData(String filePath) {
-		String[][] result = null;
-		try {
-			ArrayList<String> list = XlsUtilities.readCsv(new File(filePath));
-			if (list.size() > 0) {
-				result = new String[list.size()][];
-			}
-			for (int i = 0, size = list.size(); i < size; i++) {
-				String tempStr = list.get(i);
-				if (tempStr.contains("(")) {
-					tempStr = tempStr.substring(0, tempStr.indexOf("(") - 1);
-				}
-				result[i] = tempStr.split(",");
-			}
-		} catch (Exception ex) {
-			result = null;
-		} finally {
-			return result;
-		}
-	}
-
-	private PropertyChangeListener fileValueListener = new PropertyChangeListener() {
-		@Override
-		public void propertyChange(PropertyChangeEvent evt) {
-			if (parameterFilePrjChoose.getSelectedItem() != null) {
-				String filePath = parameterFilePrjChoose.getSelectedItem();
-
-				// 设置投影信息
-				if (!StringUtilities.isNullOrEmpty(filePath)) {
-					PrjCoordSys newPrjCoorSys = new PrjCoordSys();
-					String fileType = FileUtilities.getFileType(filePath);
-					boolean isPrjFile;
-					if (fileType.equalsIgnoreCase(".prj")) {
-						isPrjFile = newPrjCoorSys.fromFile(filePath, PrjFileType.ESRI);
-					} else {
-						isPrjFile = newPrjCoorSys.fromFile(filePath, PrjFileType.SUPERMAP);
-					}
-					if (isPrjFile) {
-						String prjCoorSysInfo = PrjCoordSysUtilities.getDescription(newPrjCoorSys);
-						parameterTextArea.setSelectedItem(prjCoorSysInfo);
-					}
-				}
-			}
-		}
-	};
-
-
-	public ActionListener actionListener = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			JDialogPrjCoordSysSettings dialogPrjCoordSysSettings = new JDialogPrjCoordSysSettings();
-			if (dialogPrjCoordSysSettings.showDialog() == DialogResult.OK) {
-				PrjCoordSys newPrjCoordSys = dialogPrjCoordSysSettings.getPrjCoordSys();
-				String prjCoorSysInfo = PrjCoordSysUtilities.getDescription(newPrjCoordSys);
-				parameterTextArea.setSelectedItem(prjCoorSysInfo);
-			}
-		}
-	};
 
 	public MetaProcessImport(ImportSetting importSetting, String importType) {
 		this.importSetting = importSetting;
@@ -245,88 +76,18 @@ public class MetaProcessImport extends MetaProcess {
 
 	public void initParameters() {
 		parameterCreator = new ImportParameterCreator();
-		setResultImportParameters(parameterCreator.createResult(importSetting, this.importType));
-		setSourceImportParameters(parameterCreator.createSourceInfo(importSetting, this.importType));
-		setParamParameters(parameterCreator.create(importSetting));
 		updateParameters();
 	}
 
-	public void updateParameters() {
-		parameterResultDatasource = parameterCreator.getParameterResultDatasource();
-		parameterFile = parameterCreator.getParameterFile();
-		datasetName = parameterCreator.getParameterDataset();
-		parameterCharset = parameterCreator.getParameterCharset();
-		if (null != parameterCreator.getParameterCombineSourceInfoSet()) {
-			parameters.addParameters(parameterCreator.getParameterCombineSourceInfoSet());
-		}
-		if (null != parameterCreator.getParameterCombineResultSet()) {
-			parameters.addParameters(parameterCreator.getParameterCombineResultSet());
-		}
-		if (null != parameterCreator.getParameterCombineParamSet()) {
-			parameters.addParameters(parameterCreator.getParameterCombineParamSet());
-		}
+	private void updateParameters() {
+		CopyOnWriteArrayList<IParameter> parameterCombineArray = parameterCreator.getParameterCombineArray(importSetting, importType);
 		addOutPutParameters();
-		parameterFile.addPropertyListener(this.fileListener);
-
-		// 给文件选择类型单选框(文件夹/文件)，增加监听-yuanR2017.9.1
-		if (importSetting instanceof ImportSettingSimpleJson) {
-			parameterFileFolder = parameterCreator.getParameterFileFolder();
-			parameterFileFolder.addPropertyListener(this.fileListener);
-			parameterRadioButtonFileSelectType = parameterCreator.getParameterRadioButtonFolderOrFile();
-			parameterRadioButtonFileSelectType.addPropertyListener(new PropertyChangeListener() {
-				@Override
-				public void propertyChange(PropertyChangeEvent evt) {
-					parameterFile.setEnabled(parameterRadioButtonFileSelectType.getSelectedItem().equals(parameterRadioButtonFileSelectType.getItemAt(1)));
-					parameterFileFolder.setEnabled(parameterRadioButtonFileSelectType.getSelectedItem().equals(parameterRadioButtonFileSelectType.getItemAt(0)));
-					if (!parameterFile.isEnabled) {
-						parameterFile.removePropertyListener(fileListener);
-						parameterFile.setSelectedItem("");
-						parameterFile.addPropertyListener(fileListener);
-					}
-					if (!parameterFileFolder.isEnabled) {
-						parameterFileFolder.removePropertyListener(fileListener);
-						parameterFileFolder.setSelectedItem("");
-						parameterFileFolder.addPropertyListener(fileListener);
-					}
+		if (parameterCombineArray.size() > 0) {
+			for (IParameter parameter : parameterCombineArray) {
+				if (null != parameter) {
+					parameters.addParameters(parameter);
 				}
-			});
-		}
-
-		if (importSetting instanceof ImportSettingModelOSG || importSetting instanceof ImportSettingModelX
-				|| importSetting instanceof ImportSettingModelDXF || importSetting instanceof ImportSettingModelFBX
-				|| importSetting instanceof ImportSettingModelFLT || importSetting instanceof ImportSettingModel3DS) {
-			parameterButton = parameterCreator.getParameterButton();
-			parameterButton.setActionListener(this.actionListener);
-			parameterFilePrjChoose = parameterCreator.getParameterFilePrjChoose();
-			parameterFilePrjChoose.addPropertyListener(this.fileValueListener);
-			parameterTextArea = parameterCreator.getParameterTextArea();
-			parameterTextArea.setEnabled(false);
-			parameterRadioButton = parameterCreator.getParameterSetRadioButton();
-			parameterRadioButton.addPropertyListener(new PropertyChangeListener() {
-				@Override
-				public void propertyChange(PropertyChangeEvent evt) {
-					if (!isSelectingChange) {
-						isSelectingChange = true;
-						ParameterDataNode node = (ParameterDataNode) evt.getNewValue();
-						boolean select = (boolean) node.getData();
-						if (select) {
-							parameterButton.setEnabled(select);
-							parameterFilePrjChoose.setEnabled(!select);
-						} else {
-							parameterButton.setEnabled(select);
-							parameterFilePrjChoose.setEnabled(!select);
-						}
-						isSelectingChange = false;
-					}
-				}
-			});
-		}
-		if (importSetting instanceof ImportSettingCSV && !(importSetting instanceof ImportSettingGPX) && !(importSetting instanceof ImportSettingExcel)) {
-			parameterImportIndexData = parameterCreator.getParameterImportIndexData();
-			parameterWKTFieldName = parameterCreator.getParameterWKTFieldName();
-			parameterXFieldName = parameterCreator.getParameterXFieldName();
-			parameterYFieldName = parameterCreator.getParameterYFieldName();
-			parameterZFieldName = parameterCreator.getParameterZFieldName();
+			}
 		}
 	}
 
@@ -370,26 +131,6 @@ public class MetaProcessImport extends MetaProcess {
 				types, parameterCreator.getParameterCombineResultSet());
 	}
 
-	public void setImportSetting(ImportSetting importSetting) {
-		this.importSetting = importSetting;
-	}
-
-	public void setResultImportParameters(CopyOnWriteArrayList<ReflectInfo> resultImportParameters) {
-		this.resultImportParameters = resultImportParameters;
-	}
-
-	public void setSourceImportParameters(CopyOnWriteArrayList<ReflectInfo> sourceImportParameters) {
-		this.sourceImportParameters = sourceImportParameters;
-	}
-
-	public void setParamParameters(CopyOnWriteArrayList<ReflectInfo> paramParameters) {
-		this.paramParameters = paramParameters;
-	}
-
-	@Override
-	public IParameterPanel getComponent() {
-		return parameters.getPanel();
-	}
 
 	@Override
 	public boolean execute() {
@@ -419,23 +160,24 @@ public class MetaProcessImport extends MetaProcess {
 		long startTime = System.currentTimeMillis();
 		long endTime;
 		long time;
+		CopyOnWriteArrayList<ReflectInfo> parameters = parameterCreator.getReflectInfoArray();
 		if (importSetting instanceof ImportSettingSimpleJson) {
-			if (null == ((ParameterFile) (sourceImportParameters.get(0)).parameter).getSelectedItem() && null == ((ParameterFile) (sourceImportParameters.get(1)).parameter).getSelectedItem()) {
+			if (null == ((ParameterFile) (parameters.get(0)).parameter).getSelectedItem() && null == ((ParameterFile) (parameters.get(1)).parameter).getSelectedItem()) {
 				Application.getActiveApplication().getOutput().output(ProcessProperties.getString("String_ImportFailed"));
 				return isSuccessful;
 			}
 		} else {
-			if (null == ((ParameterFile) (sourceImportParameters.get(0)).parameter).getSelectedItem()) {
+			if (null == ((ParameterFile) (parameters.get(0)).parameter).getSelectedItem()) {
 				Application.getActiveApplication().getOutput().output(ProcessProperties.getString("String_ImportFailed"));
 				return isSuccessful;
 			}
 		}
 
 		if (importSetting instanceof ImportSettingGPX) {
-			importSetting.setSourceFilePath(((ParameterFile) (sourceImportParameters.get(0)).parameter).getSelectedItem().toString());
-			final Datasource datasource = ((ParameterDatasource) resultImportParameters.get(0).parameter).getSelectedItem();
+			importSetting.setSourceFilePath(((ParameterFile) (parameters.get(0)).parameter).getSelectedItem().toString());
+			final Datasource datasource = ((ParameterDatasource) parameters.get(1).parameter).getSelectedItem();
 			importSetting.setTargetDatasource(datasource);
-			importSetting.setTargetDatasetName(((ParameterTextField) resultImportParameters.get(1).parameter).getSelectedItem().toString());
+			importSetting.setTargetDatasetName(((ParameterTextField) parameters.get(2).parameter).getSelectedItem().toString());
 			((ImportSettingGPX) importSetting).addImportSteppedListener(this.importStepListener);
 			UserDefineImportResult result = ((ImportSettingGPX) importSetting).run();
 			if (null != result) {
@@ -449,11 +191,12 @@ public class MetaProcessImport extends MetaProcess {
 			}
 			((ImportSettingGPX) importSetting).removeImportSteppedListener(this.importStepListener);
 		} else if (importSetting instanceof ImportSettingExcel) {
-			importSetting.setSourceFilePath(((ParameterFile) (sourceImportParameters.get(0)).parameter).getSelectedItem().toString());
-			final Datasource datasource = ((ParameterDatasource) resultImportParameters.get(0).parameter).getSelectedItem();
+			importSetting.setSourceFilePath(((ParameterFile) (parameters.get(0)).parameter).getSelectedItem().toString());
+			importSetting.setSourceFileCharset((Charset) ((ParameterCharset) parameters.get(1).parameter).getSelectedData());
+			final Datasource datasource = ((ParameterDatasource) parameters.get(2).parameter).getSelectedItem();
 			importSetting.setTargetDatasource(datasource);
-			importSetting.setTargetDatasetName(((ParameterTextField) resultImportParameters.get(1).parameter).getSelectedItem().toString());
-			((ImportSettingExcel) importSetting).setFirstRowIsField(Boolean.valueOf(((ParameterCheckBox) paramParameters.get(0).parameter).getSelectedItem()));
+			importSetting.setTargetDatasetName(((ParameterTextField) parameters.get(3).parameter).getSelectedItem().toString());
+			((ImportSettingExcel) importSetting).setFirstRowIsField(Boolean.valueOf(((ParameterCheckBox) parameters.get(4).parameter).getSelectedItem()));
 			((ImportSettingExcel) importSetting).addImportSteppedListener(this.importStepListener);
 			startTime = System.currentTimeMillis(); // 获取开始时间
 			UserDefineImportResult[] result = ((ImportSettingExcel) importSetting).run();
@@ -472,53 +215,9 @@ public class MetaProcessImport extends MetaProcess {
 				}
 			}
 			((ImportSettingExcel) importSetting).removeImportSteppedListener(importStepListener);
-		} else if (importSetting instanceof ImportSettingCSV && !(importSetting instanceof ImportSettingGPX) && !(importSetting instanceof ImportSettingExcel)) {
-			importSetting.setSourceFilePath(((ParameterFile) (sourceImportParameters.get(0)).parameter).getSelectedItem().toString());
-			final Datasource datasource = ((ParameterDatasource) resultImportParameters.get(0).parameter).getSelectedItem();
-			importSetting.setTargetDatasource(datasource);
-			importSetting.setTargetDatasetName(((ParameterTextField) resultImportParameters.get(1).parameter).getSelectedItem().toString());
-			((ImportSettingCSV) importSetting).setSeparator((((ParameterTextField) paramParameters.get(0).parameter).getSelectedItem()));
-			((ImportSettingCSV) importSetting).setFirstRowIsField(Boolean.valueOf(((ParameterCheckBox) paramParameters.get(1).parameter).getSelectedItem()));
-			// 当勾选导入空间数据时，必须勾选首行为字段信息，才能导入成功。-yuanR存疑2017.9.28
-			if (Boolean.valueOf(((ParameterCheckBox) paramParameters.get(2).parameter).getSelectedItem())) {
-				if ((Boolean) ((ParameterDataNode) ((ParameterRadioButton) paramParameters.get(3).parameter).getSelectedItem()).getData()) {
-					// 使用wkt
-					//todo 设置后有崩溃问题，暂时屏蔽
-					//((ImportSettingCSV) importSetting).setIndexAsGeometry(((ParameterComboBox) paramParameters.get(4).parameter).getSelectedIndex());
-				} else {
-					// 使用x，y，z
-					//用非法经纬度处理异常数据
-					ArrayList<String> fileds = new ArrayList<>();
-					String tempX = ((ParameterComboBox) paramParameters.get(5).parameter).getSelectedData().toString();
-					if (!StringUtilities.isNullOrEmptyString(tempX)) {
-						fileds.add(tempX);
-					}
-					String tempY = ((ParameterComboBox) paramParameters.get(6).parameter).getSelectedData().toString();
-					if (!StringUtilities.isNullOrEmptyString(tempY)) {
-						fileds.add(tempY);
-					}
-					String tempZ = ((ParameterComboBox) paramParameters.get(7).parameter).getSelectedData().toString();
-					if (!StringUtilities.isNullOrEmptyString(tempZ)) {
-						fileds.add(tempZ);
-					}
-					((ImportSettingCSV) importSetting).setFieldsAsPoint(fileds.toArray(new String[fileds.size()]));
-					fileds.clear();
-				}
-			}
-			try {
-				startTime = System.currentTimeMillis(); // 获取开始时间
-				DataImport dataImport = new DataImport();
-				dataImport.getImportSettings().add(importSetting);
-				dataImport.addImportSteppedListener(this.importStepListener);
-				ImportResult result = dataImport.run();
-				isSuccessful = getCommonResult(isSuccessful, startTime, result);
-				dataImport.removeImportSteppedListener(this.importStepListener);
-			} catch (Exception e) {
-				Application.getActiveApplication().getOutput().output(e);
-			}
 		} else {
 			ImportSetting newImportSetting = new ImportSettingCreator().create(importType);
-			DataImport dataImport = ImportSettingSetter.setParameter(newImportSetting, sourceImportParameters, resultImportParameters, paramParameters);
+			DataImport dataImport = ImportSettingSetter.getDataImport(newImportSetting, parameterCreator.getReflectInfoArray());
 			try {
 				dataImport.addImportSteppedListener(this.importStepListener);
 				ImportResult result = dataImport.run();
@@ -571,8 +270,9 @@ public class MetaProcessImport extends MetaProcess {
 	private void printMessage(UserDefineImportResult result, long time) {
 		if (null != result.getSuccess()) {
 			String successImportInfo = ProcessProperties.getString("String_FormImport_OutPutInfoOne");
-			Application.getActiveApplication().getOutput().output(MessageFormat.format(successImportInfo, result.getSuccess().getSourceFilePath(), "->", result.getSuccess().getTargetDatasetName(), result.getSuccess()
-					.getTargetDatasource().getAlias(), String.valueOf(time / 1000.0)));
+			Application.getActiveApplication().getOutput().output(MessageFormat.format(successImportInfo, result.getSuccess().getSourceFilePath(), "->",
+					result.getSuccess().getTargetDatasetName(), result.getSuccess()
+							.getTargetDatasource().getAlias(), String.valueOf(time / 1000.0)));
 		}
 	}
 
