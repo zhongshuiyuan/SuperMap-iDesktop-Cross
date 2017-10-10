@@ -565,21 +565,25 @@ public class WorkspaceComponentManager extends JComponent {
 
 			// 右键
 			if (buttonType == MouseEvent.BUTTON3 && clickCount == 1) {
-				TreePath[] selectedPaths = this.workspaceTree.getSelectionPaths();
-				CopyOnWriteArrayList<TreeNodeData> selectedNodeDatas = new CopyOnWriteArrayList<TreeNodeData>();
-				for (TreePath selectedPath : selectedPaths) {
-					DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
-					TreeNodeData selectedNodeData = (TreeNodeData) selectedNode.getUserObject();
-					selectedNodeDatas.add(selectedNodeData);
-				}
+				//  fix by lixiaoyao 2017/10/10
+				// 当当前点击的坐标Y超出树当前显示的高度时不需要显示右键菜单，否则显示的右键菜单是当前选中的对象对应的右键菜单，不合理
+				if (evt.getY()<=this.workspaceTree.getRowCount()*this.workspaceTree.getRowHeight()) {
+					TreePath[] selectedPaths = this.workspaceTree.getSelectionPaths();
+					CopyOnWriteArrayList<TreeNodeData> selectedNodeDatas = new CopyOnWriteArrayList<TreeNodeData>();
+					for (TreePath selectedPath : selectedPaths) {
+						DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
+						TreeNodeData selectedNodeData = (TreeNodeData) selectedNode.getUserObject();
+						selectedNodeDatas.add(selectedNodeData);
+					}
 
-				if (!this.isContextMenuBuilded) {
-					this.buildContextMenu();
-				}
+					if (!this.isContextMenuBuilded) {
+						this.buildContextMenu();
+					}
 
-				JPopupMenu popupMenu = this.getPoputMenu(selectedNodeDatas);
-				if (popupMenu != null) {
-					popupMenu.show(this.workspaceTree, evt.getX(), evt.getY());
+					JPopupMenu popupMenu = this.getPoputMenu(selectedNodeDatas);
+					if (popupMenu != null) {
+						popupMenu.show(this.workspaceTree, evt.getX(), evt.getY());
+					}
 				}
 			} else if (buttonType == MouseEvent.BUTTON1 && clickCount == 2 && this.getWorkspaceTree().getLastSelectedPathComponent() != null) {
 				// 双击

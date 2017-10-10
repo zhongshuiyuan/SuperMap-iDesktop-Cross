@@ -40,7 +40,7 @@ public class XlsUtilities {
 	 * @param file csv文件(路径+文件)
 	 * @return
 	 */
-	public static ArrayList<String> readCsv(File file) {
+	private static ArrayList<String> readCsv(File file) {
 		ArrayList<String> result = new ArrayList<>();
 		BufferedReader br = null;
 		try {
@@ -63,6 +63,27 @@ public class XlsUtilities {
 			}
 		}
 		return result;
+	}
+
+	public static String[][] getData(String filePath) {
+		String[][] result = null;
+		try {
+			ArrayList<String> list = readCsv(new File(filePath));
+			if (list.size() > 0) {
+				result = new String[list.size()][];
+			}
+			for (int i = 0, size = list.size(); i < size; i++) {
+				String tempStr = list.get(i);
+				if (tempStr.contains("(")) {
+					tempStr = tempStr.substring(0, tempStr.indexOf("(") - 1);
+				}
+				result[i] = tempStr.split(",");
+			}
+		} catch (Exception ex) {
+			result = null;
+		} finally {
+			return result;
+		}
 	}
 
 	/**

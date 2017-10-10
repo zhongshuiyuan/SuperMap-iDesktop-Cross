@@ -1,7 +1,6 @@
 package com.supermap.desktop.WorkflowView.meta.dataconversion;
 
-import com.supermap.data.Datasource;
-import com.supermap.data.EncodeType;
+import com.supermap.data.*;
 import com.supermap.data.conversion.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.controls.ControlsProperties;
@@ -17,614 +16,150 @@ import com.supermap.desktop.process.parameter.ipls.*;
 import com.supermap.desktop.process.util.EnumParser;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.properties.CoreProperties;
+import com.supermap.desktop.ui.controls.DialogResult;
 import com.supermap.desktop.ui.controls.SmFileChoose;
-import com.supermap.desktop.utilities.EncodeTypeUtilities;
-import com.supermap.desktop.utilities.StringUtilities;
+import com.supermap.desktop.ui.controls.prjcoordsys.JDialogPrjCoordSysSettings;
+import com.supermap.desktop.utilities.*;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Created by xie on 2017/3/31.
+ * Created by xie on 2017/9/28.
+ * 导入界面创建,事件添加类
  */
-public class ImportParameterCreator implements IParameterCreator {
+public class ImportParameterCreator implements IImportParameterCreator {
 
-	private ParameterCombine parameterCombineSourceInfoSet;
 	private ParameterCombine parameterCombineResultSet;
-	private ParameterCombine parameterCombineParamSet;
-	private ParameterCombine parameterCombineModelSet;
-
+	private CopyOnWriteArrayList reflectInfoArray = new CopyOnWriteArrayList();
+	private CopyOnWriteArrayList parameterCombineArray = new CopyOnWriteArrayList();
 	private ParameterFile parameterFile;
-	private ParameterFile parameterFilePrjChoose;
-	private ParameterButton parameterButton;
-	private ParameterTextArea parameterTextArea;
-	private ParameterRadioButton parameterRadioButton;
-	private ParameterCharset parameterCharset;
+	private boolean isSelectingFile = false;
+	private ParameterFile parameterFileFolder;
 	private ParameterDatasourceConstrained parameterDatasource;
 	private ParameterTextField parameterDataset;
-	private ParameterEnum parameterEncodeType;
-	private ParameterEnum parameterImportMode;
-	private ParameterDatasetType parameterDatasetTypeEnum;
-	// 增加导入simpleJson
-	private ParameterRadioButton parameterRadioButtonFolderOrFile;
-	private ParameterFile parameterFileFolder;
-	// 拓展导入csv文件功能，支持导入点线面
-	private ParameterCheckBox parameterImportIndexData;
-	private ParameterRadioButton parameterRadioButtonSetWKTField;
+	private ParameterCharset parameterCharset;
 	private ParameterComboBox parameterWKTFieldName;
 	private ParameterComboBox parameterXFieldName;
 	private ParameterComboBox parameterYFieldName;
 	private ParameterComboBox parameterZFieldName;
+	private ParameterCheckBox parameterImportIndexData;
+	private ImportSetting importSetting;
+
+	PropertyChangeListener fileChangeListener = new PropertyChangeListener() {
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			if (!isSelectingFile && evt.getNewValue() instanceof String && evt.getSource().equals(parameterFile)) {
+				try {
+					isSelectingFile = true;
+					String fileName = (String) evt.getNewValue();
+					//set dataset name
+					String fileAlis = FileUtilities.getFileAlias(fileName);
+					//文件选择器编辑过程中会不断响应，所以未修改到正确的路径时不变。JFileChooserControl是否需要一个编辑提交listener
+					if (fileAlis != null) {
+						if (parameterDatasource != null && parameterDatasource.getSelectedItem() != null) {
+							fileAlis = parameterDatasource.getSelectedItem().getDatasets().getAvailableDatasetName(fileAlis);
+						}
+						parameterDataset.setSelectedItem(fileAlis);
+					}
+					//set charset
+					if (importSetting instanceof ImportSettingTAB || importSetting instanceof ImportSettingMIF) {
+						if (fileName != null && new File(fileName).exists()) {
+							importSetting.setSourceFilePath(fileName);
+							Charset charset = importSetting.getSourceFileCharset();
+							parameterCharset.setSelectedItem(charset);
+						}
+					}
+
+					/**
+					 * 给导入csv面板中的文件选择器也添加监听事件，用于当文件文件路径改变时，对选中的csv文件进行预读，得到可供选择的字段-yuanR
+					 */
+					if (importSetting instanceof ImportSettingCSV && !(importSetting instanceof ImportSettingGPX) && !(importSetting instanceof ImportSettingExcel)) {
+						parameterWKTFieldName.removeAllItems();
+						parameterXFieldName.removeAllItems();
+						parameterYFieldName.removeAllItems();
+						parameterZFieldName.removeAllItems();
+						parameterImportIndexData.setSelectedItem(false);
+						parameterImportIndexData.setEnabled(false);
+
+						String path = (String) evt.getNewValue();
+						if (new File(path).exists() && XlsUtilities.getData(path) != null) {
+							String[][] data = XlsUtilities.getData(path);
+							String[] tempValues = data[0];
+							for (int i = 0, tempLength = tempValues.length; i < tempLength; i++) {
+								tempValues[i] = tempValues[i].replace("\"", "");
+							}
+							String[] indexX = tempValues;
+							parameterZFieldName.addItem(new ParameterDataNode("", " "));
+							for (int i = 0; i < indexX.length; i++) {
+								parameterWKTFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
+								parameterXFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
+								parameterYFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
+								parameterZFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
+							}
+							parameterWKTFieldName.setSelectedItem(indexX[0]);
+							parameterXFieldName.setSelectedItem(indexX[0]);
+							parameterYFieldName.setSelectedItem(indexX[0]);
+							parameterZFieldName.setSelectedItem(" ");
+							parameterImportIndexData.setEnabled(true);
+						}
+					}
+				} finally {
+					isSelectingFile = false;
+				}
+				// 以文件夹的形式选择导入文件，当选定了文件夹，根据文件夹名称自动设置导入数据集的名称-yuanR2017.9.1
+			} else if (!isSelectingFile && evt.getNewValue() instanceof String && evt.getSource().equals(parameterFileFolder)) {
+				try {
+					isSelectingFile = true;
+					String fileName = (String) evt.getNewValue();
+					//set dataset name
+					String fileAlis = fileName.substring(fileName.lastIndexOf(File.separator) + 1, fileName.length());
+					if (fileAlis.length() > 0) {
+						if (parameterDatasource != null && parameterDatasource.getSelectedItem() != null) {
+							fileAlis = parameterDatasource.getSelectedItem().getDatasets().getAvailableDatasetName(fileAlis);
+						}
+						parameterDataset.setSelectedItem(fileAlis);
+					}
+				} finally {
+					isSelectingFile = false;
+				}
+			}
+		}
+	};
 
 
-	/**
-	 * 创建参数面板
-	 *
-	 * @param importSetting
-	 * @return
-	 */
 	@Override
-	public CopyOnWriteArrayList<ReflectInfo> create(Object importSetting) {
-		//转换参数设置
-		parameterCombineParamSet = null;
-		CopyOnWriteArrayList<ReflectInfo> result = new CopyOnWriteArrayList<>();
-		if (importSetting instanceof ImportSettingRAW || importSetting instanceof ImportSettingTEMSClutter
-				|| importSetting instanceof ImportSettingBIP || importSetting instanceof ImportSettingBSQ
-				|| importSetting instanceof ImportSettingGBDEM || importSetting instanceof ImportSettingUSGSDEM
-				|| importSetting instanceof ImportSettingBIL || importSetting instanceof ImportSettingGRD) {
-			ReflectInfo pyramidBuiltInfo = new ReflectInfo();
-			pyramidBuiltInfo.methodName = "setPyramidBuilt";
-			pyramidBuiltInfo.parameter = new ParameterCheckBox(ControlsProperties.getString("String_Form_BuildDatasetPyramid"));
-			result.add(pyramidBuiltInfo);
-			parameterCombineParamSet = new ParameterCombine();
-			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
-			parameterCombineParamSet.addParameters(pyramidBuiltInfo.parameter);
-			return result;
-		}
-		if (importSetting instanceof ImportSettingSHP || importSetting instanceof ImportSettingE00
-				|| importSetting instanceof ImportSettingLIDAR || importSetting instanceof ImportSettingTAB
-				|| importSetting instanceof ImportSettingMIF || importSetting instanceof ImportSettingFileGDBVector) {
-			ReflectInfo setAttributeIgnored = new ReflectInfo();
-			setAttributeIgnored.methodName = "setAttributeIgnored";
-			setAttributeIgnored.parameter = new ParameterCheckBox(CommonProperties.getString("String_IngoreProperty"));
-			result.add(setAttributeIgnored);
-			parameterCombineParamSet = new ParameterCombine();
-			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
-			parameterCombineParamSet.addParameters(setAttributeIgnored.parameter);
-			return result;
-		}
-		if (importSetting instanceof ImportSettingDGN) {
-			ReflectInfo importCellAsPoint = new ReflectInfo();
-			importCellAsPoint.methodName = "setImportingCellAsPoint";
-			ParameterCheckBox parameterImportingCellAsPoint = new ParameterCheckBox(CommonProperties.getString("String_ImportCellAsPoint"));
-			parameterImportingCellAsPoint.setSelectedItem(((ImportSettingDGN) importSetting).isImportingCellAsPoint() ? "true" : "false");
-			importCellAsPoint.parameter = parameterImportingCellAsPoint;
-
-			ReflectInfo setImportingByLayer = new ReflectInfo();
-			setImportingByLayer.methodName = "setImportingByLayer";
-			ParameterCheckBox parameterImportingByLayer = new ParameterCheckBox(CommonProperties.getString("String_MergeLayer"));
-			parameterImportingByLayer.setSelectedItem(((ImportSettingDGN) importSetting).isImportingByLayer() ? "false" : "true");
-			setImportingByLayer.parameter = parameterImportingByLayer;
-
-			result.add(importCellAsPoint);
-			result.add(setImportingByLayer);
-			parameterCombineParamSet = new ParameterCombine();
-			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
-			parameterCombineParamSet.addParameters(parameterImportingCellAsPoint, parameterImportingByLayer);
-			return result;
-		}
-		if (importSetting instanceof ImportSettingDXF || importSetting instanceof ImportSettingDWG) {
-			ReflectInfo setCurveSegment = new ReflectInfo();
-			setCurveSegment.methodName = "setCurveSegment";
-			ReflectInfo setImportingExternalData = new ReflectInfo();
-			setImportingExternalData.methodName = "setImportingExternalData";
-			ReflectInfo setImportingXRecord = new ReflectInfo();
-			setImportingXRecord.methodName = "setImportingXRecord";
-			ReflectInfo setImporttingAs3D = new ReflectInfo();
-			setImporttingAs3D.methodName = "setImporttingAs3D";
-			ReflectInfo setImportingInvisibleLayer = new ReflectInfo();
-			setImportingInvisibleLayer.methodName = "setImportingInvisibleLayer";
-			ReflectInfo setLWPLineWidthIgnored = new ReflectInfo();
-			setLWPLineWidthIgnored.methodName = "setLWPLineWidthIgnored";
-			ReflectInfo setImportingByLayer = new ReflectInfo();
-			setImportingByLayer.methodName = "setImportingByLayer";
-			ReflectInfo setBlockAttributeIgnored = new ReflectInfo();
-			setBlockAttributeIgnored.methodName = "setBlockAttributeIgnored";
-			ReflectInfo setKeepingParametricPart = new ReflectInfo();
-			setKeepingParametricPart.methodName = "setKeepingParametricPart";
-			ReflectInfo setImportingBlockAsPoint = new ReflectInfo();
-			setImportingBlockAsPoint.methodName = "setImportingBlockAsPoint";
-
-			if (importSetting instanceof ImportSettingDXF) {
-				ParameterTextField parameterTextField = new ParameterTextField(CommonProperties.getString("String_CurveSegment"));
-				parameterTextField.setSelectedItem(((ImportSettingDXF) importSetting).getCurveSegment());
-				setCurveSegment.parameter = parameterTextField;
-
-				ParameterCheckBox parameterImportExternalData = new ParameterCheckBox(CommonProperties.getString("string_ImportExtendsData"));
-				parameterImportExternalData.setSelectedItem(((ImportSettingDXF) importSetting).isImportingExternalData() ? "true" : "false");
-				setImportingExternalData.parameter = parameterImportExternalData;
-
-				ParameterCheckBox parameterImportingXRecord = new ParameterCheckBox(CommonProperties.getString("String_ImportExtendsRecord"));
-				parameterImportingXRecord.setSelectedItem(((ImportSettingDXF) importSetting).isImportingXRecord() ? "true" : "false");
-				setImportingXRecord.parameter = parameterImportingXRecord;
-
-				ParameterCheckBox parameterImporttingAs3D = new ParameterCheckBox(CommonProperties.getString("String_SaveHeight"));
-				parameterImporttingAs3D.setSelectedItem(((ImportSettingDXF) importSetting).isImporttingAs3D() ? "true" : "false");
-				setImporttingAs3D.parameter = parameterImporttingAs3D;
-
-				ParameterCheckBox parameterImportingInvisibleLayer = new ParameterCheckBox(CommonProperties.getString("String_ImportInvisibleLayer"));
-				parameterImportingInvisibleLayer.setSelectedItem(((ImportSettingDXF) importSetting).isImportingInvisibleLayer() ? "true" : "false");
-				setImportingInvisibleLayer.parameter = parameterImportingInvisibleLayer;
-
-				ParameterCheckBox parameterLWPLineWidthIgnored = new ParameterCheckBox(CommonProperties.getString("String_SaveWPLineWidth"));
-				parameterLWPLineWidthIgnored.setSelectedItem(((ImportSettingDXF) importSetting).isLWPLineWidthIgnored() ? "false" : "true");
-				setLWPLineWidthIgnored.parameter = parameterLWPLineWidthIgnored;
-
-				ParameterCheckBox parameterImportingByLayer = new ParameterCheckBox(CommonProperties.getString("String_MergeLayer"));
-				parameterImportingByLayer.setSelectedItem(((ImportSettingDXF) importSetting).isImportingByLayer() ? "false" : "true");
-				setImportingByLayer.parameter = parameterImportingByLayer;
-
-				ParameterCheckBox parameterBlockAttributeIgnored = new ParameterCheckBox(CommonProperties.getString("String_ImportProperty"));
-				parameterBlockAttributeIgnored.setSelectedItem(((ImportSettingDXF) importSetting).isBlockAttributeIgnored() ? "false" : "true");
-				setBlockAttributeIgnored.parameter = parameterBlockAttributeIgnored;
-
-				ParameterCheckBox parameterKeepingParametricPart = new ParameterCheckBox(CommonProperties.getString("String_SaveField"));
-				parameterKeepingParametricPart.setSelectedItem(((ImportSettingDXF) importSetting).isKeepingParametricPart() ? "true" : "false");
-				setKeepingParametricPart.parameter = parameterKeepingParametricPart;
-
-				ParameterCheckBox parameterImportingBlockAsPoint = new ParameterCheckBox(CommonProperties.getString("String_ImportingSymbol"));
-				parameterImportingBlockAsPoint.setSelectedItem(((ImportSettingDXF) importSetting).isImportingBlockAsPoint() ? "false" : "true");
-				setImportingBlockAsPoint.parameter = parameterImportingBlockAsPoint;
-			} else {
-				ParameterTextField parameterTextField = new ParameterTextField(CommonProperties.getString("String_CurveSegment"));
-				parameterTextField.setSelectedItem(((ImportSettingDWG) importSetting).getCurveSegment());
-				setCurveSegment.parameter = parameterTextField;
-
-				ParameterCheckBox parameterImportExternalData = new ParameterCheckBox(CommonProperties.getString("string_ImportExtendsData"));
-				parameterImportExternalData.setSelectedItem(((ImportSettingDWG) importSetting).isImportingExternalData() ? "true" : "false");
-				setImportingExternalData.parameter = parameterImportExternalData;
-
-				ParameterCheckBox parameterImportingXRecord = new ParameterCheckBox(CommonProperties.getString("String_ImportExtendsRecord"));
-				parameterImportingXRecord.setSelectedItem(((ImportSettingDWG) importSetting).isImportingXRecord() ? "true" : "false");
-				setImportingXRecord.parameter = parameterImportingXRecord;
-
-				ParameterCheckBox parameterImporttingAs3D = new ParameterCheckBox(CommonProperties.getString("String_SaveHeight"));
-				parameterImporttingAs3D.setSelectedItem(((ImportSettingDWG) importSetting).isImporttingAs3D() ? "true" : "false");
-				setImporttingAs3D.parameter = parameterImporttingAs3D;
-
-				ParameterCheckBox parameterImportingInvisibleLayer = new ParameterCheckBox(CommonProperties.getString("String_ImportInvisibleLayer"));
-				parameterImportingInvisibleLayer.setSelectedItem(((ImportSettingDWG) importSetting).isImportingInvisibleLayer() ? "true" : "false");
-				setImportingInvisibleLayer.parameter = parameterImportingInvisibleLayer;
-
-				ParameterCheckBox parameterLWPLineWidthIgnored = new ParameterCheckBox(CommonProperties.getString("String_SaveWPLineWidth"));
-				parameterLWPLineWidthIgnored.setSelectedItem(((ImportSettingDWG) importSetting).isLWPLineWidthIgnored() ? "false" : "true");
-				setLWPLineWidthIgnored.parameter = parameterLWPLineWidthIgnored;
-
-				ParameterCheckBox parameterImportingByLayer = new ParameterCheckBox(CommonProperties.getString("String_MergeLayer"));
-				parameterImportingByLayer.setSelectedItem(((ImportSettingDWG) importSetting).isImportingByLayer() ? "false" : "true");
-				setImportingByLayer.parameter = parameterImportingByLayer;
-
-				ParameterCheckBox parameterBlockAttributeIgnored = new ParameterCheckBox(CommonProperties.getString("String_ImportProperty"));
-				parameterBlockAttributeIgnored.setSelectedItem(((ImportSettingDWG) importSetting).isBlockAttributeIgnored() ? "false" : "true");
-				setBlockAttributeIgnored.parameter = parameterBlockAttributeIgnored;
-
-				ParameterCheckBox parameterKeepingParametricPart = new ParameterCheckBox(CommonProperties.getString("String_SaveField"));
-				parameterKeepingParametricPart.setSelectedItem(((ImportSettingDWG) importSetting).isKeepingParametricPart() ? "true" : "false");
-				setKeepingParametricPart.parameter = parameterKeepingParametricPart;
-
-				ParameterCheckBox parameterImportingBlockAsPoint = new ParameterCheckBox(CommonProperties.getString("String_ImportingSymbol"));
-				parameterImportingBlockAsPoint.setSelectedItem(((ImportSettingDWG) importSetting).isImportingBlockAsPoint() ? "false" : "true");
-				setImportingBlockAsPoint.parameter = parameterImportingBlockAsPoint;
-			}
-			result.add(setCurveSegment);
-			result.add(setImportingByLayer);
-			result.add(setImportingInvisibleLayer);
-			result.add(setImporttingAs3D);
-			result.add(setImportingBlockAsPoint);
-			result.add(setBlockAttributeIgnored);
-			result.add(setKeepingParametricPart);
-			result.add(setImportingExternalData);
-			result.add(setImportingXRecord);
-			result.add(setLWPLineWidthIgnored);
-			parameterCombineParamSet = new ParameterCombine();
-			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
-			parameterCombineParamSet.addParameters(
-					setCurveSegment.parameter,
-					new ParameterCombine(ParameterCombine.HORIZONTAL).addParameters(
-							new ParameterCombine().addParameters(setImportingByLayer.parameter, setImportingBlockAsPoint.parameter, setImportingExternalData.parameter),
-							new ParameterCombine().addParameters(setImportingInvisibleLayer.parameter, setBlockAttributeIgnored.parameter, setImportingXRecord.parameter),
-							new ParameterCombine().addParameters(setImporttingAs3D.parameter, setKeepingParametricPart.parameter, setLWPLineWidthIgnored.parameter)));
-			return result;
-		}
-		if (importSetting instanceof ImportSettingSIT) {
-			ReflectInfo password = new ReflectInfo();
-			password.methodName = "setPassword";
-			ParameterPassword parameterPassword = new ParameterPassword(CoreProperties.getString("String_FormLogin_Password"));
-			parameterPassword.setSelectedItem(((ImportSettingSIT) importSetting).getPassword());
-			password.parameter = parameterPassword;
-			result.add(password);
-			parameterCombineParamSet = new ParameterCombine();
-			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
-			parameterCombineParamSet.addParameters(password.parameter);
-			return result;
-		}
-		if (importSetting instanceof ImportSettingTIF) {
-			ReflectInfo importBandMode = new ReflectInfo();
-			importBandMode.methodName = "setMultiBandImportMode";
-			ParameterEnum parameterBandMode = new ParameterEnum(new EnumParser(MultiBandImportMode.class, new String[]{"SINGLEBAND", "MULTIBAND", "COMPOSITE"},
-					new String[]{CommonProperties.getString("String_MultiBand_SingleBand"), CommonProperties.getString("String_MultiBand_MultiBand"),
-							CommonProperties.getString("String_MultiBand_Composite")}));
-			parameterBandMode.setSelectedItem(MultiBandImportMode.COMPOSITE);
-			parameterBandMode.setDescribe(ProcessProperties.getString("String_BandImportMode"));
-			importBandMode.parameter = parameterBandMode;
-
-			ReflectInfo pyramidBuiltInfo = new ReflectInfo();
-			pyramidBuiltInfo.methodName = "setPyramidBuilt";
-			pyramidBuiltInfo.parameter = new ParameterCheckBox(ControlsProperties.getString("String_Form_BuildDatasetPyramid"));
-
-			ReflectInfo setWorldFilePath = new ReflectInfo();
-			setWorldFilePath.methodName = "setWorldFilePath";
-			ParameterFile worldFilePath = new ParameterFile(CommonProperties.getString("String_WorldFile"));
-			worldFilePath.setModuleName("WorldFile");
-			worldFilePath.setModuleType("OpenOne");
-			worldFilePath.addExtension(ProcessProperties.getString("string_filetype_tfw"), "tfw");
-			setWorldFilePath.parameter = worldFilePath;
-
-			result.add(importBandMode);
-			result.add(pyramidBuiltInfo);
-			result.add(setWorldFilePath);
-			parameterCombineParamSet = new ParameterCombine();
-			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
-			parameterCombineParamSet.addParameters(importBandMode.parameter, setWorldFilePath.parameter, pyramidBuiltInfo.parameter);
-			return result;
-		}
-		if (importSetting instanceof ImportSettingIMG) {
-			ReflectInfo importBandMode = new ReflectInfo();
-			importBandMode.methodName = "setMultiBandImportMode";
-			ParameterEnum parameterBandMode = new ParameterEnum(new EnumParser(MultiBandImportMode.class, new String[]{"SINGLEBAND", "MULTIBAND", "COMPOSITE"},
-					new String[]{CommonProperties.getString("String_MultiBand_SingleBand"), CommonProperties.getString("String_MultiBand_MultiBand"),
-							CommonProperties.getString("String_MultiBand_Composite")}));
-			parameterBandMode.setDescribe(ProcessProperties.getString("String_BandImportMode"));
-			parameterBandMode.setSelectedItem(MultiBandImportMode.COMPOSITE);
-			importBandMode.parameter = parameterBandMode;
-
-			ReflectInfo pyramidBuiltInfo = new ReflectInfo();
-			pyramidBuiltInfo.methodName = "setPyramidBuilt";
-			pyramidBuiltInfo.parameter = new ParameterCheckBox(ControlsProperties.getString("String_Form_BuildDatasetPyramid"));
-			result.add(importBandMode);
-			result.add(pyramidBuiltInfo);
-			parameterCombineParamSet = new ParameterCombine();
-			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
-			parameterCombineParamSet.addParameters(importBandMode.parameter, pyramidBuiltInfo.parameter);
-			return result;
-		}
-		if (importSetting instanceof ImportSettingMrSID || importSetting instanceof ImportSettingECW) {
-			ReflectInfo importBandMode = new ReflectInfo();
-			importBandMode.methodName = "setMultiBandImportMode";
-			ParameterEnum parameterBandMode = new ParameterEnum(new EnumParser(MultiBandImportMode.class, new String[]{"SINGLEBAND", "MULTIBAND", "COMPOSITE"},
-					new String[]{CommonProperties.getString("String_MultiBand_SingleBand"), CommonProperties.getString("String_MultiBand_MultiBand"),
-							CommonProperties.getString("String_MultiBand_Composite")}));
-			parameterBandMode.setDescribe(ProcessProperties.getString("String_BandImportMode"));
-			parameterBandMode.setSelectedItem(MultiBandImportMode.COMPOSITE);
-			importBandMode.parameter = parameterBandMode;
-			result.add(importBandMode);
-			parameterCombineParamSet = new ParameterCombine();
-			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
-			parameterCombineParamSet.addParameters(parameterBandMode);
-			return result;
-		}
-		if (importSetting instanceof ImportSettingBMP || importSetting instanceof ImportSettingPNG
-				|| importSetting instanceof ImportSettingJPG || importSetting instanceof ImportSettingGIF) {
-			ReflectInfo pyramidBuiltInfo = new ReflectInfo();
-			pyramidBuiltInfo.methodName = "setPyramidBuilt";
-			pyramidBuiltInfo.parameter = new ParameterCheckBox(ControlsProperties.getString("String_Form_BuildDatasetPyramid"));
-
-			ReflectInfo setWorldFilePath = new ReflectInfo();
-			setWorldFilePath.methodName = "setWorldFilePath";
-			ParameterFile worldFilePath = new ParameterFile(CommonProperties.getString("String_WorldFile"));
-			worldFilePath.setModuleName("WorldFile");
-			worldFilePath.setModuleType("OpenOne");
-			worldFilePath.addExtension(ProcessProperties.getString("string_filetype_tfw"), "tfw");
-			setWorldFilePath.parameter = worldFilePath;
-
-			result.add(pyramidBuiltInfo);
-			result.add(setWorldFilePath);
-			parameterCombineParamSet = new ParameterCombine();
-			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
-			parameterCombineParamSet.addParameters(pyramidBuiltInfo.parameter, setWorldFilePath.parameter);
-			return result;
-		}
-		if (importSetting instanceof ImportSettingKML || importSetting instanceof ImportSettingKMZ) {
-			ReflectInfo setUnvisibleObjectIgnored = new ReflectInfo();
-			setUnvisibleObjectIgnored.methodName = "setUnvisibleObjectIgnored";
-			ParameterCheckBox parameterImportUnvisibleObject = new ParameterCheckBox(CommonProperties.getString("String_ImportUnvisibleObject"));
-			if (importSetting instanceof ImportSettingKML) {
-				parameterImportUnvisibleObject.setSelectedItem(((ImportSettingKML) importSetting).isUnvisibleObjectIgnored() ? "false" : "true");
-				setUnvisibleObjectIgnored.parameter = parameterImportUnvisibleObject;
-			} else {
-				parameterImportUnvisibleObject.setSelectedItem(((ImportSettingKMZ) importSetting).isUnvisibleObjectIgnored() ? "false" : "true");
-				setUnvisibleObjectIgnored.parameter = parameterImportUnvisibleObject;
-			}
-			result.add(setUnvisibleObjectIgnored);
-			parameterCombineParamSet = new ParameterCombine();
-			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
-			parameterCombineParamSet.addParameters(setUnvisibleObjectIgnored.parameter);
-			return result;
-		}
-		if (importSetting instanceof ImportSettingMAPGIS) {
-			ReflectInfo setColorIndexFilePath = new ReflectInfo();
-			setColorIndexFilePath.methodName = "setColorIndexFilePath";
-
-			ParameterFile colorIndex = new ParameterFile(CommonProperties.getString("String_ColorIndexFile"));
-			colorIndex.setModuleName("ColorIndexFile");
-			colorIndex.addExtension(ProcessProperties.getString("string_filetype_color"), "wat");
-			String filePath = ((ImportSettingMAPGIS) importSetting).getColorIndexFilePath();
-			if (!StringUtilities.isNullOrEmpty(filePath)) {
-				colorIndex.setSelectedItem(new File(filePath).getAbsolutePath());
-			}
-			setColorIndexFilePath.parameter = colorIndex;
-
-			result.add(setColorIndexFilePath);
-			parameterCombineParamSet = new ParameterCombine();
-			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
-			parameterCombineParamSet.addParameters(setColorIndexFilePath.parameter);
-			return result;
-		}
-		if (importSetting instanceof ImportSettingCSV) {
-			parameterCombineParamSet = new ParameterCombine();
-			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
-			// 对导入CSV文件参数面板进行重构，支持导入点线面
-			// 首行为字段信息
-			ReflectInfo setFirstRowIsField = new ReflectInfo();
-			setFirstRowIsField.methodName = "setFirstRowIsField";
-			ParameterCheckBox parameterFirstRowIsField = new ParameterCheckBox(CommonProperties.getString("String_FirstRowisField"));
-			parameterFirstRowIsField.setSelectedItem(true);
-			setFirstRowIsField.parameter = parameterFirstRowIsField;
-
-			// 分隔符
-			ReflectInfo setSeparator = new ReflectInfo();
-			setSeparator.methodName = "setSeparator";
-			ParameterTextField parameterSeparator = new ParameterTextField(CommonProperties.getString("String_Separator"));
-			parameterSeparator.setSelectedItem(",");
-			setSeparator.parameter = parameterSeparator;
-			if (importSetting instanceof ImportSettingExcel) {
-				result.add(setFirstRowIsField);
-				parameterCombineParamSet.addParameters(setFirstRowIsField.parameter);
-			} else if (importSetting instanceof ImportSettingGPX) {
-				result.add(setFirstRowIsField);
-				result.add(setSeparator);
-				parameterCombineParamSet.addParameters(setFirstRowIsField.parameter, setSeparator.parameter);
-			} else {
-				// 导入空间数据
-				ReflectInfo setImportIndexData = new ReflectInfo();
-				setSeparator.methodName = "setImportIndexData";
-				parameterImportIndexData = new ParameterCheckBox(CommonProperties.getString("String_ImportIndexData"));
-				parameterImportIndexData.setSelectedItem(false);
-				setImportIndexData.parameter = parameterImportIndexData;
-				//设置wkt字段
-				ReflectInfo setWKTField = new ReflectInfo();
-				setWKTField.methodName = "setWKTField";
-				parameterRadioButtonSetWKTField = new ParameterRadioButton();
-				ParameterDataNode[] parameterDataNodes = {new ParameterDataNode(CommonProperties.getString("String_WKTIndex"), true), new ParameterDataNode(CommonProperties.getString("String_XYField"), false)};
-				parameterRadioButtonSetWKTField.setItems(parameterDataNodes);
-				parameterRadioButtonSetWKTField.setSelectedItem(parameterDataNodes[0]);
-				parameterRadioButtonSetWKTField.setEnabled(false);
-				setWKTField.parameter = parameterRadioButtonSetWKTField;
-				//字段选择器
-				ReflectInfo setWKTFieldName = new ReflectInfo();
-				setWKTFieldName.methodName = "setWKTFieldName";
-				parameterWKTFieldName = new ParameterComboBox(CommonProperties.getString("String_WKTIndex"));
-				parameterWKTFieldName.setEnabled(false);
-				setWKTFieldName.parameter = parameterWKTFieldName;
-
-				ReflectInfo setXFieldName = new ReflectInfo();
-				setWKTFieldName.methodName = "setXFieldName";
-				parameterXFieldName = new ParameterComboBox(CommonProperties.getString("string_longitude"));
-				parameterXFieldName.setEnabled(false);
-				setXFieldName.parameter = parameterXFieldName;
-
-				ReflectInfo setYFieldName = new ReflectInfo();
-				setWKTFieldName.methodName = "setYFieldName";
-				parameterYFieldName = new ParameterComboBox(CommonProperties.getString("string_latitude"));
-				parameterYFieldName.setEnabled(false);
-				setYFieldName.parameter = parameterYFieldName;
-
-				ReflectInfo setZFieldName = new ReflectInfo();
-				setWKTFieldName.methodName = "setZFieldName";
-				parameterZFieldName = new ParameterComboBox(CommonProperties.getString("string_elevation"));
-				parameterZFieldName.setEnabled(false);
-				setZFieldName.parameter = parameterZFieldName;
-
-				result.add(setSeparator);
-				result.add(setFirstRowIsField);
-				result.add(setImportIndexData);
-				result.add(setWKTField);
-				result.add(setWKTFieldName);
-				result.add(setXFieldName);
-				result.add(setYFieldName);
-				result.add(setZFieldName);
-
-				parameterCombineParamSet.addParameters(setSeparator.parameter, setFirstRowIsField.parameter, setImportIndexData.parameter, setWKTField.parameter,
-						parameterWKTFieldName, parameterXFieldName, parameterYFieldName, parameterZFieldName);
-
-				// 增加监听事件
-				parameterImportIndexData.addPropertyListener(new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent evt) {
-						Boolean isEnabled = Boolean.valueOf(parameterImportIndexData.getSelectedItem());
-						parameterRadioButtonSetWKTField.setEnabled(isEnabled);
-						parameterWKTFieldName.setEnabled(isEnabled && (Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
-						parameterXFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
-						parameterYFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
-						parameterZFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
-					}
-				});
-
-				parameterRadioButtonSetWKTField.addPropertyListener(new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent evt) {
-						Boolean isEnabled = Boolean.valueOf(parameterImportIndexData.getSelectedItem());
-						parameterWKTFieldName.setEnabled(isEnabled && (Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
-						parameterXFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
-						parameterYFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
-						parameterZFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
-
-					}
-				});
-			}
-			return result;
-		}
-		if (importSetting instanceof ImportSettingModelOSG || importSetting instanceof ImportSettingModelX
-				|| importSetting instanceof ImportSettingModelDXF || importSetting instanceof ImportSettingModelFBX
-				|| importSetting instanceof ImportSettingModelFLT || importSetting instanceof ImportSettingModel3DS) {
-
-			ReflectInfo setX = new ReflectInfo();
-			setX.methodName = "setX";
-			ParameterTextField textFieldX = new ParameterTextField(CommonProperties.getString("string_longitude"));
-			textFieldX.setSelectedItem("0");
-			setX.parameter = textFieldX;
-
-			ReflectInfo setY = new ReflectInfo();
-			setY.methodName = "setY";
-			ParameterTextField textFieldY = new ParameterTextField(CommonProperties.getString("string_latitude"));
-			textFieldY.setSelectedItem("0");
-			setY.parameter = textFieldY;
-
-			ReflectInfo setZ = new ReflectInfo();
-			setZ.methodName = "setZ";
-			ParameterTextField textFieldZ = new ParameterTextField(CommonProperties.getString("string_elevation"));
-			textFieldZ.setSelectedItem("0");
-			setZ.parameter = textFieldZ;
-			result.add(setX);
-			result.add(setY);
-			result.add(setZ);
-			parameterCombineModelSet = new ParameterCombine();
-			parameterCombineModelSet.setDescribe(ProcessProperties.getString("String_modelPoint"));
-			parameterCombineModelSet.addParameters(setX.parameter, setY.parameter, setZ.parameter);
-			ReflectInfo setPrjCoordSys = new ReflectInfo();
-			setPrjCoordSys.methodName = "setTargetPrjCoordSys";
-			parameterRadioButton = new ParameterRadioButton();
-			parameterRadioButton.setLayout(ParameterRadioButton.VATICAL);
-			ParameterDataNode[] parameterDataNodes = {new ParameterDataNode(ProcessProperties.getString("String_setProject"), true), new ParameterDataNode(ControlsProperties.getString("String_ImportPrjFile"), false)};
-			parameterRadioButton.setItems(parameterDataNodes);
-			parameterRadioButton.setSelectedItem(parameterDataNodes[0]);
-			setPrjCoordSys.parameter = parameterRadioButton;
-			result.add(setPrjCoordSys);
-			ReflectInfo chooseFile = new ReflectInfo();
-			chooseFile.methodName = "";
-			String moduleName = "ImportPrjFileFromProcess";
-			if (!SmFileChoose.isModuleExist(moduleName)) {
-				String fileFilters = SmFileChoose.buildFileFilters(
-						SmFileChoose.createFileFilter(ControlsProperties.getString("String_ImportPrjFiles"), "prj", "xml"),
-						SmFileChoose.createFileFilter(ControlsProperties.getString("String_ImportPrjFileShape"), "prj"),
-						SmFileChoose.createFileFilter(ControlsProperties.getString("String_ImportPrjFileXml"), "xml"));
-				SmFileChoose.addNewNode(fileFilters, CommonProperties.getString("String_DefaultFilePath"),
-						ControlsProperties.getString("String_ImportPrjFile"), moduleName, "OpenMany");
-			}
-
-			parameterFilePrjChoose = new ParameterFile();
-			parameterFilePrjChoose.setModuleName(moduleName);
-			parameterFilePrjChoose.setEnabled(false);
-			chooseFile.parameter = parameterFilePrjChoose;
-			result.add(chooseFile);
-			ReflectInfo selectButton = new ReflectInfo();
-			selectButton.methodName = "";
-			parameterButton = new ParameterButton(ProcessProperties.getString("String_setButton"));
-			parameterButton.setEnabled(true);
-			selectButton.parameter = parameterButton;
-			result.add(selectButton);
-			ReflectInfo textArea = new ReflectInfo();
-			textArea.methodName = "";
-			parameterTextArea = new ParameterTextArea();
-			textArea.parameter = parameterTextArea;
-			result.add(textArea);
-			parameterCombineParamSet = new ParameterCombine();
-			ParameterCombine parameterCombineProjectSet = new ParameterCombine();
-			parameterCombineProjectSet.setDescribe(ProcessProperties.getString("String_setProject"));
-			parameterCombineParamSet.setDescribe(ProcessProperties.getString("String_ParamSet"));
-			parameterCombineParamSet.addParameters(parameterCombineModelSet, parameterCombineProjectSet.addParameters(
-					new ParameterCombine(ParameterCombine.HORIZONTAL).addParameters(parameterRadioButton, new ParameterCombine().addParameters(parameterButton, parameterFilePrjChoose)), parameterTextArea));
-			return result;
-		}
-		return null;
+	public ParameterCombine getParameterCombineResultSet() {
+		return parameterCombineResultSet;
 	}
 
 	@Override
-	public CopyOnWriteArrayList<ReflectInfo> createSourceInfo(Object o, final String importType) {
-		//源文件信息设置
-		CopyOnWriteArrayList<ReflectInfo> sourceInfo = new CopyOnWriteArrayList<>();
-		ImportSetting importSetting = null;
+	public CopyOnWriteArrayList<IParameter> getParameterCombineArray(Object o, String type) {
+		if (parameterCombineArray.size() > 0) {
+			parameterCombineArray.clear();
+		}
 		if (o instanceof ImportSetting) {
-			importSetting = (ImportSetting) o;
+			this.importSetting = (ImportSetting) o;
 		}
-		if (importSetting == null) return sourceInfo;
-		ReflectInfo reflectInfoFilePath = new ReflectInfo();
-		reflectInfoFilePath.methodName = "setSourceFilePath";
-		parameterFile = FileType.createImportFileChooser(importType);
-		parameterFile.setRequisite(true);
-		parameterFile.setDescribe(ProcessProperties.getString("label_ChooseFile"));
-		reflectInfoFilePath.parameter = parameterFile;
-
-		// 字符集
-		ReflectInfo reflectInfoCharset = new ReflectInfo();
-		reflectInfoCharset.methodName = "setSourceFileCharset";
-		parameterCharset = new ParameterCharset();
-		if ((importSetting instanceof ImportSettingTAB || importSetting instanceof ImportSettingMIF) && importSetting.getTargetDataInfos("").getCount() > 0) {
-			ImportDataInfos dataInfos = importSetting.getTargetDataInfos("");
-			parameterCharset.setSelectedItem(dataInfos.get(0).getSourceCharset());
-			importSetting.setSourceFileCharset(dataInfos.get(0).getSourceCharset());
-		} else if (null != importSetting.getSourceFileCharset()) {
-			parameterCharset.setSelectedItem(importSetting.getSourceFileCharset());
-		}
-		parameterCharset.setSelectedItem(importSetting.getSourceFileCharset());
-		reflectInfoCharset.parameter = parameterCharset;
-
-		boolean hasCharsetParameter = true;
-		if (importSetting instanceof ImportSettingDXF || importSetting instanceof ImportSettingDWG || importSetting instanceof ImportSettingGPX) {
-			hasCharsetParameter = false;
-		}
-		sourceInfo.add(reflectInfoFilePath);
-		parameterCombineSourceInfoSet = new ParameterCombine();
-		parameterCombineSourceInfoSet.setDescribe(ProcessProperties.getString("String_ImportSettingPanel_SourceFileInfo"));
-		// 将文件类型选择单选组合框加入面板-yuanR2017.9.1
-		if (importSetting instanceof ImportSettingSimpleJson) {
-			// 文件/文件夹，单选框,默认选择文件-yuanR2017.9.1
-			parameterRadioButtonFolderOrFile = new ParameterRadioButton();
-			ParameterDataNode file = new ParameterDataNode(ProcessProperties.getString("String_Label_SelectFolder"), 0);
-			ParameterDataNode folder = new ParameterDataNode(ProcessProperties.getString("String_Label_SelectFile"), 1);
-			parameterRadioButtonFolderOrFile.setItems(new ParameterDataNode[]{file, folder});
-			parameterRadioButtonFolderOrFile.setSelectedItem(parameterRadioButtonFolderOrFile.getItemAt(1));
-
-			parameterCombineSourceInfoSet.addParameters(parameterRadioButtonFolderOrFile);
-			parameterFileFolder = FileType.createImportFolderChooser(importType);
-			parameterFileFolder.setDescribe(ProcessProperties.getString("label_ChooseFolder"));
-			parameterFileFolder.setEnabled(false);
-
-			ReflectInfo reflectInfoFolderPath = new ReflectInfo();
-			reflectInfoFolderPath.methodName = "setSourceFilePath";
-			reflectInfoFolderPath.parameter = parameterFileFolder;
-			sourceInfo.add(reflectInfoFolderPath);
-			parameterCombineSourceInfoSet.addParameters(parameterFileFolder);
-		}
-		parameterCombineSourceInfoSet.addParameters(parameterFile);
-		if (hasCharsetParameter) {
-			sourceInfo.add(reflectInfoCharset);
-			parameterCombineSourceInfoSet.addParameters(parameterCharset);
-		}
-		return sourceInfo;
+		parameterCombineArray.add(getSourceInfoParameterCombine(importSetting, type));
+		parameterCombineArray.add(getResultSetParameterCombine(importSetting));
+		parameterCombineArray.add(getTransformParameterCombine(importSetting));
+		return parameterCombineArray;
 	}
 
 	@Override
-	public CopyOnWriteArrayList<ReflectInfo> createResult(Object o, final String importType) {
-		//结果设置
-		CopyOnWriteArrayList<ReflectInfo> resultInfo = new CopyOnWriteArrayList<>();
-		ImportSetting importSetting = null;
-		if (o instanceof ImportSetting) {
-			importSetting = (ImportSetting) o;
-		}
-		if (importSetting == null) return resultInfo;
+	public CopyOnWriteArrayList<ReflectInfo> getReflectInfoArray() {
+		return reflectInfoArray;
+	}
+
+	//结果设置界面
+	private IParameter getResultSetParameterCombine(ImportSetting importSetting) {
+		if (importSetting == null) return null;
 		//Target dataset reflect info
 		ReflectInfo targetDatasource = new ReflectInfo();
 		targetDatasource.methodName = "setTargetDatasource";
@@ -663,23 +198,20 @@ public class ImportParameterCreator implements IParameterCreator {
 			}
 		}
 		targetDatasource.parameter = parameterDatasource;
-		resultInfo.add(targetDatasource);
 
 		final ReflectInfo targetDatasetName = new ReflectInfo();
 		targetDatasetName.methodName = "setTargetDatasetName";
 		parameterDataset = new ParameterTextField(CommonProperties.getString(CommonProperties.Label_Dataset));
 		parameterDataset.setSelectedItem(importSetting.getTargetDatasetName());
 		targetDatasetName.parameter = parameterDataset;
-		resultInfo.add(targetDatasetName);
 
 		//EncodeType reflect info
-		parameterEncodeType = createEnumParser(importSetting);
+		ParameterEnum parameterEncodeType = createEnumParser(importSetting);
 		ReflectInfo reflectInfoEncodeType = new ReflectInfo();
 		if (null != parameterEncodeType) {
 			reflectInfoEncodeType.methodName = "setTargetEncodeType";
 			reflectInfoEncodeType.parameter = parameterEncodeType;
 			parameterEncodeType.setDescribe(ProcessProperties.getString("label_encodingType"));
-			resultInfo.add(reflectInfoEncodeType);
 		}
 
 		//ImportMode reflect info
@@ -692,15 +224,13 @@ public class ImportParameterCreator implements IParameterCreator {
 
 		ReflectInfo reflectInfoImportMode = new ReflectInfo();
 		reflectInfoImportMode.methodName = "setImportMode";
+		ParameterEnum parameterImportMode = null;
 		if (!(importSetting instanceof ImportSettingGPX)) {
 			parameterImportMode = new ParameterEnum(new EnumParser(ImportMode.class, ReflectInfoImportModelValue, importModel)).setDescribe(ProcessProperties.getString("Label_ImportMode"));
 			parameterImportMode.setSelectedItem(ProcessProperties.getString("String_FormImport_None"));
 			reflectInfoImportMode.parameter = parameterImportMode;
-			resultInfo.add(reflectInfoImportMode);
 		}
-		parameterCombineResultSet = new ParameterCombine();
-		parameterCombineResultSet.setDescribe(CommonProperties.getString("String_ResultSet"));
-		ParameterCombine parameterCombineSaveResult = new ParameterCombine(ParameterCombine.VERTICAL).addParameters(parameterDatasource, this.parameterDataset);
+		ParameterCombine parameterCombineSaveResult = new ParameterCombine(ParameterCombine.VERTICAL).addParameters(parameterDatasource, parameterDataset);
 		ParameterCombine parameterCombineSecond;
 		if (null != parameterEncodeType && null != parameterImportMode) {
 			parameterCombineSecond = new ParameterCombine(ParameterCombine.VERTICAL).addParameters(parameterEncodeType, parameterImportMode);
@@ -709,11 +239,6 @@ public class ImportParameterCreator implements IParameterCreator {
 		} else {
 			parameterCombineSecond = new ParameterCombine();
 		}
-		parameterCombineResultSet.addParameters(
-				parameterCombineSaveResult,
-				parameterCombineSecond
-		);
-
 		//#region specifyResultParameter
 		//创建字段索引
 		ReflectInfo reflectInfoFieldIndex = new ReflectInfo();
@@ -726,102 +251,79 @@ public class ImportParameterCreator implements IParameterCreator {
 		ParameterCheckBox parameterSpatialIndex = new ParameterCheckBox(ProcessProperties.getString("string_checkbox_chckbxSpatialIndex"));
 		reflectInfoSpatialIndex.parameter = parameterSpatialIndex;
 		ParameterCombine parameterCombineDatasetIndex = new ParameterCombine(ParameterCombine.HORIZONTAL).addParameters(parameterSpatialIndex, parameterFieldIndex);
+		ReflectInfo reflectInfoDatasetType;
 		if (importSetting instanceof ImportSettingGPX) {
 			//导入为GPX类型时直接返回
-			return resultInfo;
-		}
-		//导入数据集类型
-		ReflectInfo reflectInfoDatasetType = new ReflectInfo();
-		if (importSetting instanceof ImportSettingCSV) {
-			resultInfo.clear();
-			resultInfo.add(targetDatasource);
-			resultInfo.add(targetDatasetName);
-			parameterCombineResultSet = new ParameterCombine();
-			parameterCombineResultSet.setDescribe(CommonProperties.getString("String_ResultSet"));
-			parameterCombineResultSet.addParameters(parameterCombineSaveResult);
+			reflectInfoArray.add(targetDatasource);
+			reflectInfoArray.add(targetDatasetName);
+			return initResultsetParameterCombine(parameterCombineSaveResult);
+		} else if (importSetting instanceof ImportSettingCSV) {
+			//导入数据集类型
+			reflectInfoArray.add(targetDatasource);
+			reflectInfoArray.add(targetDatasetName);
+			return initResultsetParameterCombine(parameterCombineSaveResult);
 		} else if (importSetting instanceof ImportSettingWOR) {
-			resultInfo.clear();
-			resultInfo.add(targetDatasource);
-			resultInfo.add(reflectInfoEncodeType);
-			resultInfo.add(reflectInfoImportMode);
-			parameterCombineResultSet = new ParameterCombine();
-			parameterCombineResultSet.setDescribe(CommonProperties.getString("String_ResultSet"));
-			parameterCombineResultSet.addParameters(parameterDatasource, parameterEncodeType, parameterImportMode);
+			reflectInfoArray.add(targetDatasource);
+			reflectInfoArray.add(reflectInfoEncodeType);
+			reflectInfoArray.add(reflectInfoImportMode);
+			return initResultsetParameterCombine(parameterDatasource, parameterEncodeType, parameterImportMode);
 		} else if (importSetting instanceof ImportSettingModel3DS || importSetting instanceof ImportSettingModelDXF
 				|| importSetting instanceof ImportSettingModelFBX || importSetting instanceof ImportSettingModelOSG
 				|| importSetting instanceof ImportSettingModelX) {
-			resultInfo.clear();
-			resultInfo.add(targetDatasetName);
-			resultInfo.add(targetDatasource);
-			resultInfo.add(reflectInfoDatasetType);
-			resultInfo.add(reflectInfoImportMode);
 			//数据集类型combobox
 			//// FIXME: 2017/4/25 comboBox形式，实际设置值为Boolean，需要单独解析
-			parameterDatasetTypeEnum = createDatasetTypeEnum(importSetting);
+			ParameterDatasetType parameterDatasetTypeEnum = createDatasetTypeEnum(importSetting);
 			reflectInfoDatasetType = new ReflectInfo();
 			reflectInfoDatasetType.methodName = "setImportingAsCAD";
 			reflectInfoDatasetType.parameter = parameterDatasetTypeEnum;
-			parameterCombineResultSet = new ParameterCombine();
-			parameterCombineResultSet.setDescribe(CommonProperties.getString("String_ResultSet"));
-			parameterCombineResultSet.addParameters(
-					new ParameterCombine(ParameterCombine.VERTICAL).addParameters(parameterDatasource, this.parameterDataset),
-					new ParameterCombine(ParameterCombine.VERTICAL).addParameters(parameterDatasetTypeEnum, parameterImportMode)
-			);
+			reflectInfoArray.add(targetDatasetName);
+			reflectInfoArray.add(targetDatasource);
+			reflectInfoArray.add(reflectInfoDatasetType);
+			reflectInfoArray.add(reflectInfoImportMode);
+			return initResultsetParameterCombine(new ParameterCombine(ParameterCombine.VERTICAL).addParameters(parameterDatasource, parameterDataset),
+					new ParameterCombine(ParameterCombine.VERTICAL).addParameters(parameterDatasetTypeEnum, parameterImportMode));
 		} else if (importSetting instanceof ImportSettingTAB || importSetting instanceof ImportSettingMIF
 				|| importSetting instanceof ImportSettingDWG || importSetting instanceof ImportSettingDXF
 				|| importSetting instanceof ImportSettingKML || importSetting instanceof ImportSettingKMZ
 				|| importSetting instanceof ImportSettingMAPGIS || importSetting instanceof ImportSettingDGN
 				|| importSetting instanceof ImportSettingGeoJson) {
-			parameterDatasetTypeEnum = createDatasetTypeEnum(importSetting);
+			ParameterDatasetType parameterDatasetTypeEnum = createDatasetTypeEnum(importSetting);
 			reflectInfoDatasetType = new ReflectInfo();
 			reflectInfoDatasetType.methodName = "setImportingAsCAD";
 			reflectInfoDatasetType.parameter = parameterDatasetTypeEnum;
-			parameterCombineResultSet = new ParameterCombine();
-			parameterCombineResultSet.setDescribe(CommonProperties.getString("String_ResultSet"));
+			reflectInfoArray.add(targetDatasetName);
+			reflectInfoArray.add(targetDatasource);
+			reflectInfoArray.add(reflectInfoEncodeType);
+			reflectInfoArray.add(reflectInfoImportMode);
+			reflectInfoArray.add(reflectInfoDatasetType);
+			reflectInfoArray.add(reflectInfoSpatialIndex);
+			reflectInfoArray.add(reflectInfoFieldIndex);
 			if (importSetting instanceof ImportSettingGeoJson) {
-				parameterCombineResultSet.addParameters(
-						parameterCombineSaveResult,
+				return initResultsetParameterCombine(parameterCombineSaveResult,
 						parameterCombineSecond,
-						parameterDatasetTypeEnum
-				);
+						parameterDatasetTypeEnum);
 			} else {
-				parameterCombineResultSet.addParameters(
-						parameterCombineSaveResult,
+				return initResultsetParameterCombine(parameterCombineSaveResult,
 						parameterCombineSecond,
 						parameterDatasetTypeEnum,
-						parameterCombineDatasetIndex
-				);
+						parameterCombineDatasetIndex);
 			}
-			resultInfo.clear();
-			resultInfo.add(targetDatasetName);
-			resultInfo.add(targetDatasource);
-			resultInfo.add(reflectInfoEncodeType);
-			resultInfo.add(reflectInfoImportMode);
-			resultInfo.add(reflectInfoDatasetType);
-			resultInfo.add(reflectInfoSpatialIndex);
-			resultInfo.add(reflectInfoFieldIndex);
+
 		} else if (importSetting instanceof ImportSettingJPG || importSetting instanceof ImportSettingJP2 ||
 				importSetting instanceof ImportSettingPNG || importSetting instanceof ImportSettingBMP ||
 				importSetting instanceof ImportSettingIMG || importSetting instanceof ImportSettingTIF ||
 				importSetting instanceof ImportSettingGIF || importSetting instanceof ImportSettingMrSID
 				|| importSetting instanceof ImportSettingECW) {
-			parameterDatasetTypeEnum = createDatasetTypeEnum(importSetting);
+			ParameterDatasetType parameterDatasetTypeEnum = createDatasetTypeEnum(importSetting);
 			reflectInfoDatasetType = new ReflectInfo();
 			reflectInfoDatasetType.methodName = "setImportingAsGrid";
 			reflectInfoDatasetType.parameter = parameterDatasetTypeEnum;
-			parameterCombineResultSet = new ParameterCombine();
-			parameterCombineResultSet.setDescribe(CommonProperties.getString("String_ResultSet"));
-			parameterCombineResultSet.addParameters(
-					parameterCombineSaveResult,
-					parameterCombineSecond,
-					parameterDatasetTypeEnum
-			);
-			resultInfo.clear();
-			resultInfo.add(targetDatasetName);
-			resultInfo.add(targetDatasource);
-			resultInfo.add(reflectInfoEncodeType);
-			resultInfo.add(reflectInfoImportMode);
-			resultInfo.add(reflectInfoDatasetType);
+			reflectInfoArray.add(targetDatasetName);
+			reflectInfoArray.add(targetDatasource);
+			reflectInfoArray.add(reflectInfoEncodeType);
+			reflectInfoArray.add(reflectInfoImportMode);
+			reflectInfoArray.add(reflectInfoDatasetType);
+			return initResultsetParameterCombine(parameterCombineSaveResult, parameterCombineSecond, parameterDatasetTypeEnum);
 		} else if (importSetting instanceof ImportSettingSIT || importSetting instanceof ImportSettingGRD ||
 				importSetting instanceof ImportSettingGBDEM || importSetting instanceof ImportSettingUSGSDEM ||
 				importSetting instanceof ImportSettingSHP || importSetting instanceof ImportSettingE00 ||
@@ -830,62 +332,187 @@ public class ImportParameterCreator implements IParameterCreator {
 				importSetting instanceof ImportSettingTEMSClutter || importSetting instanceof ImportSettingVCT ||
 				importSetting instanceof ImportSettingRAW || importSetting instanceof ImportSettingGJB ||
 				importSetting instanceof ImportSettingTEMSVector || importSetting instanceof ImportSettingTEMSBuildingVector
-				|| importSetting instanceof ImportSettingFileGDBVector) {
-			parameterCombineResultSet = new ParameterCombine();
-			parameterCombineResultSet.setDescribe(CommonProperties.getString("String_ResultSet"));
-			parameterCombineResultSet.addParameters(
-					parameterCombineSaveResult,
-					parameterCombineSecond
-			);
-			resultInfo.clear();
-			resultInfo.add(targetDatasetName);
-			resultInfo.add(targetDatasource);
-			resultInfo.add(reflectInfoEncodeType);
-			resultInfo.add(reflectInfoImportMode);
+				|| importSetting instanceof ImportSettingFileGDBVector||importSetting instanceof ImportSettingSimpleJson) {
+			reflectInfoArray.add(targetDatasetName);
+			reflectInfoArray.add(targetDatasource);
+			reflectInfoArray.add(reflectInfoEncodeType);
+			reflectInfoArray.add(reflectInfoImportMode);
+			if (importSetting instanceof ImportSettingGJB || importSetting instanceof ImportSettingTEMSVector
+					|| importSetting instanceof ImportSettingTEMSBuildingVector || importSetting instanceof ImportSettingFileGDBVector) {
+				parameterDataset.setEnabled(false);
+				parameterDataset.setSelectedItem("");
+			}
 			if (importSetting instanceof ImportSettingSHP) {
-				parameterCombineResultSet.addParameters(parameterCombineDatasetIndex);
+				reflectInfoArray.add(reflectInfoSpatialIndex);
+				reflectInfoArray.add(reflectInfoFieldIndex);
+				return initResultsetParameterCombine(parameterCombineSaveResult, parameterCombineSecond, parameterCombineDatasetIndex);
 			} else if (importSetting instanceof ImportSettingE00 || importSetting instanceof ImportSettingGJB
 					|| importSetting instanceof ImportSettingTEMSVector || importSetting instanceof ImportSettingTEMSBuildingVector
 					|| importSetting instanceof ImportSettingFileGDBVector) {
-				parameterCombineResultSet.addParameters(parameterSpatialIndex);
-				resultInfo.add(reflectInfoSpatialIndex);
-				resultInfo.add(reflectInfoFieldIndex);
+				reflectInfoArray.add(reflectInfoSpatialIndex);
+				return initResultsetParameterCombine(parameterCombineSaveResult, parameterCombineSecond, parameterSpatialIndex);
+			} else {
+				return initResultsetParameterCombine(parameterCombineSaveResult, parameterCombineSecond);
 			}
-			if (importSetting instanceof ImportSettingGJB || importSetting instanceof ImportSettingTEMSVector
-					|| importSetting instanceof ImportSettingTEMSBuildingVector || importSetting instanceof ImportSettingFileGDBVector) {
-				this.parameterDataset.setEnabled(false);
-				this.parameterDataset.setSelectedItem("");
-			}
-
 		} else if (importSetting instanceof ImportSettingLIDAR) {
 			ParameterComboBox parameterDatasetType = new ParameterComboBox();
 			parameterDatasetType.addItem(new ParameterDataNode(ProcessProperties.getString("String_datasetType2D"), false));
 			parameterDatasetType.addItem(new ParameterDataNode(ProcessProperties.getString("String_datasetType3D"), true));
 			parameterDatasetType.setDescribe(ProcessProperties.getString("string_label_lblDatasetType"));
-			if (null != parameterDatasetType) {
-				reflectInfoDatasetType = new ReflectInfo();
-				reflectInfoDatasetType.methodName = "setImportingAs3D";
-				reflectInfoDatasetType.parameter = parameterDatasetType;
-			}
-			parameterCombineResultSet = new ParameterCombine();
-			parameterCombineResultSet.setDescribe(CommonProperties.getString("String_ResultSet"));
-			parameterCombineResultSet.addParameters(
-					parameterCombineSaveResult,
-					parameterCombineSecond,
-					parameterDatasetType,
-					parameterSpatialIndex
-			);
-			resultInfo.clear();
-			resultInfo.add(targetDatasetName);
-			resultInfo.add(targetDatasource);
-			resultInfo.add(reflectInfoEncodeType);
-			resultInfo.add(reflectInfoImportMode);
-			resultInfo.add(reflectInfoDatasetType);
-			resultInfo.add(reflectInfoSpatialIndex);
-			resultInfo.add(reflectInfoFieldIndex);
+			reflectInfoDatasetType = new ReflectInfo();
+			reflectInfoDatasetType.methodName = "setImportingAs3D";
+			reflectInfoDatasetType.parameter = parameterDatasetType;
+			reflectInfoArray.add(targetDatasetName);
+			reflectInfoArray.add(targetDatasource);
+			reflectInfoArray.add(reflectInfoEncodeType);
+			reflectInfoArray.add(reflectInfoImportMode);
+			reflectInfoArray.add(reflectInfoDatasetType);
+			reflectInfoArray.add(reflectInfoSpatialIndex);
+			reflectInfoArray.add(reflectInfoFieldIndex);
+			return initResultsetParameterCombine(parameterCombineSaveResult, parameterCombineSecond, parameterDatasetType, parameterSpatialIndex);
 		}
 		//#endregion
-		return resultInfo;
+		return null;
+	}
+
+
+	//转换参数界面
+	private IParameter getTransformParameterCombine(ImportSetting importSetting) {
+		if (importSetting instanceof ImportSettingRAW || importSetting instanceof ImportSettingTEMSClutter
+				|| importSetting instanceof ImportSettingBIP || importSetting instanceof ImportSettingBSQ
+				|| importSetting instanceof ImportSettingGBDEM || importSetting instanceof ImportSettingUSGSDEM
+				|| importSetting instanceof ImportSettingBIL || importSetting instanceof ImportSettingGRD) {
+			return getGridTransformParameterCombine();
+		}
+		if (importSetting instanceof ImportSettingSHP || importSetting instanceof ImportSettingE00
+				|| importSetting instanceof ImportSettingLIDAR || importSetting instanceof ImportSettingTAB
+				|| importSetting instanceof ImportSettingMIF || importSetting instanceof ImportSettingFileGDBVector) {
+			return getGRDTransformParameterCombine();
+		}
+		if (importSetting instanceof ImportSettingDGN) {
+			return getDGNTransformParameterCombine(importSetting);
+		}
+		if (importSetting instanceof ImportSettingDXF || importSetting instanceof ImportSettingDWG) {
+			return getDTransformParameterCombine(importSetting);
+		}
+		if (importSetting instanceof ImportSettingSIT) {
+			return getSITTransformParameterCombine(importSetting);
+		}
+		if (importSetting instanceof ImportSettingTIF) {
+			return getTIFTransformParameterCombine();
+		}
+		if (importSetting instanceof ImportSettingIMG) {
+			return getIMGTransformParameterCombine();
+		}
+		if (importSetting instanceof ImportSettingMrSID || importSetting instanceof ImportSettingECW) {
+			return getSIDTransformParameterCombine();
+		}
+		if (importSetting instanceof ImportSettingBMP || importSetting instanceof ImportSettingPNG
+				|| importSetting instanceof ImportSettingJPG || importSetting instanceof ImportSettingGIF) {
+			return getBMPTransformParameterCombine();
+		}
+		if (importSetting instanceof ImportSettingKML || importSetting instanceof ImportSettingKMZ) {
+			return getKMLTransformParameterCombine(importSetting);
+		}
+		if (importSetting instanceof ImportSettingMAPGIS) {
+			return getMapGISTransformParameterCombine(importSetting);
+
+		}
+		if (importSetting instanceof ImportSettingCSV) {
+			return getCSVTransformParameterCombine(importSetting);
+		}
+		if (importSetting instanceof ImportSettingModelOSG || importSetting instanceof ImportSettingModelX
+				|| importSetting instanceof ImportSettingModelDXF || importSetting instanceof ImportSettingModelFBX
+				|| importSetting instanceof ImportSettingModelFLT || importSetting instanceof ImportSettingModel3DS) {
+			return getModelTransformParameterCombine();
+		}
+		return null;
+	}
+
+	//源文件信息界面
+	private IParameter getSourceInfoParameterCombine(ImportSetting importSetting, String importType) {
+		if (importSetting == null) return null;
+		ReflectInfo reflectInfoFilePath = new ReflectInfo();
+		reflectInfoFilePath.methodName = "setSourceFilePath";
+		parameterFile = FileType.createImportFileChooser(importType);
+		parameterFile.setDescribe(ProcessProperties.getString("label_ChooseFile"));
+		reflectInfoFilePath.parameter = parameterFile;
+		// 字符集
+		ReflectInfo reflectInfoCharset = new ReflectInfo();
+		reflectInfoCharset.methodName = "setSourceFileCharset";
+		parameterCharset = new ParameterCharset();
+		if ((importSetting instanceof ImportSettingTAB || importSetting instanceof ImportSettingMIF) && importSetting.getTargetDataInfos("").getCount() > 0) {
+			ImportDataInfos dataInfos = importSetting.getTargetDataInfos("");
+			parameterCharset.setSelectedItem(dataInfos.get(0).getSourceCharset());
+			importSetting.setSourceFileCharset(dataInfos.get(0).getSourceCharset());
+		} else if (null != importSetting.getSourceFileCharset()) {
+			parameterCharset.setSelectedItem(importSetting.getSourceFileCharset());
+		}
+		parameterCharset.setSelectedItem(importSetting.getSourceFileCharset());
+		reflectInfoCharset.parameter = parameterCharset;
+
+		boolean hasCharsetParameter = true;
+		if (importSetting instanceof ImportSettingDXF || importSetting instanceof ImportSettingDWG || importSetting instanceof ImportSettingGPX) {
+			hasCharsetParameter = false;
+		}
+		reflectInfoArray.add(reflectInfoFilePath);
+		ParameterCombine parameterCombineSourceInfoSet = new ParameterCombine();
+		parameterCombineSourceInfoSet.setDescribe(ProcessProperties.getString("String_ImportSettingPanel_SourceFileInfo"));
+		parameterFile.addPropertyListener(this.fileChangeListener);
+		// 将文件类型选择单选组合框加入面板-yuanR2017.9.1
+		if (importSetting instanceof ImportSettingSimpleJson) {
+			// 文件/文件夹，单选框,默认选择文件-yuanR2017.9.1
+			final ParameterRadioButton parameterRadioButtonFolderOrFile = new ParameterRadioButton();
+			ParameterDataNode file = new ParameterDataNode(ProcessProperties.getString("String_Label_SelectFolder"), 0);
+			ParameterDataNode folder = new ParameterDataNode(ProcessProperties.getString("String_Label_SelectFile"), 1);
+			parameterRadioButtonFolderOrFile.setItems(new ParameterDataNode[]{file, folder});
+			parameterRadioButtonFolderOrFile.setSelectedItem(parameterRadioButtonFolderOrFile.getItemAt(1));
+
+			parameterCombineSourceInfoSet.addParameters(parameterRadioButtonFolderOrFile);
+			parameterFileFolder = FileType.createImportFolderChooser(importType);
+			parameterFileFolder.setDescribe(ProcessProperties.getString("label_ChooseFolder"));
+			parameterFileFolder.setEnabled(false);
+			ReflectInfo reflectInfoFolderPath = new ReflectInfo();
+			reflectInfoFolderPath.methodName = "setSourceFilePath";
+			reflectInfoFolderPath.parameter = parameterFileFolder;
+			reflectInfoArray.add(reflectInfoFolderPath);
+			parameterCombineSourceInfoSet.addParameters(parameterFileFolder);
+			parameterFileFolder.addPropertyListener(fileChangeListener);
+			parameterRadioButtonFolderOrFile.addPropertyListener(new PropertyChangeListener() {
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					boolean filePathIsSelect = parameterRadioButtonFolderOrFile.getSelectedItem().equals(parameterRadioButtonFolderOrFile.getItemAt(1));
+					parameterFile.setEnabled(filePathIsSelect);
+					parameterFileFolder.setEnabled(!filePathIsSelect);
+					if (!parameterFile.isEnabled) {
+						parameterFile.removePropertyListener(fileChangeListener);
+						parameterFile.setSelectedItem("");
+						parameterFile.addPropertyListener(fileChangeListener);
+					}
+					if (!parameterFileFolder.isEnabled) {
+						parameterFileFolder.removePropertyListener(fileChangeListener);
+						parameterFileFolder.setSelectedItem("");
+						parameterFileFolder.addPropertyListener(fileChangeListener);
+					}
+				}
+			});
+		}else{
+			parameterFile.setRequisite(true);
+		}
+		parameterCombineSourceInfoSet.addParameters(parameterFile);
+		if (hasCharsetParameter) {
+			reflectInfoArray.add(reflectInfoCharset);
+			parameterCombineSourceInfoSet.addParameters(parameterCharset);
+		}
+
+		return parameterCombineSourceInfoSet;
+	}
+
+	private IParameter initResultsetParameterCombine(IParameter... parameter) {
+		parameterCombineResultSet = new ParameterCombine();
+		parameterCombineResultSet.setDescribe(CommonProperties.getString("String_ResultSet"));
+		parameterCombineResultSet.addParameters(parameter);
+		return parameterCombineResultSet;
 	}
 
 	private ParameterDatasetType createDatasetTypeEnum(ImportSetting importSetting) {
@@ -978,76 +605,455 @@ public class ImportParameterCreator implements IParameterCreator {
 		return result;
 	}
 
+	private IParameter getModelTransformParameterCombine() {
+		ParameterTextField textFieldX = new ParameterTextField(CommonProperties.getString("string_longitude"));
+		textFieldX.setSelectedItem("0");
+		ParameterTextField textFieldY = new ParameterTextField(CommonProperties.getString("string_latitude"));
+		textFieldY.setSelectedItem("0");
+		ParameterTextField textFieldZ = new ParameterTextField(CommonProperties.getString("string_elevation"));
+		textFieldZ.setSelectedItem("0");
+		ReflectInfo setPosition = new ReflectInfo();
+		setPosition.methodName = "setPosition";
+		setPosition.mixReflectInfo = new HashMap<>();
+		setPosition.mixReflectInfo.put("setX", textFieldX);
+		setPosition.mixReflectInfo.put("setY", textFieldY);
+		setPosition.mixReflectInfo.put("setZ", textFieldZ);
+		reflectInfoArray.add(setPosition);
+		ParameterCombine parameterCombineModelSet = new ParameterCombine();
+		parameterCombineModelSet.setDescribe(ProcessProperties.getString("String_modelPoint"));
+		parameterCombineModelSet.addParameters(textFieldX, textFieldY, textFieldZ);
+		final ReflectInfo setPrjCoordSys = new ReflectInfo();
+		setPrjCoordSys.methodName = "setTargetPrjCoordSys";
+		ParameterRadioButton parameterRadioButton = new ParameterRadioButton();
+		parameterRadioButton.setLayout(ParameterRadioButton.VATICAL);
+		ParameterDataNode[] parameterDataNodes = {new ParameterDataNode(ProcessProperties.getString("String_setProject"), true), new ParameterDataNode(ControlsProperties.getString("String_ImportPrjFile"), false)};
+		parameterRadioButton.setItems(parameterDataNodes);
+		parameterRadioButton.setSelectedItem(parameterDataNodes[0]);
+		ReflectInfo chooseFile = new ReflectInfo();
+		chooseFile.methodName = "";
+		String moduleName = "ImportPrjFileFromProcess";
+		if (!SmFileChoose.isModuleExist(moduleName)) {
+			String fileFilters = SmFileChoose.buildFileFilters(
+					SmFileChoose.createFileFilter(ControlsProperties.getString("String_ImportPrjFiles"), "prj", "xml"),
+					SmFileChoose.createFileFilter(ControlsProperties.getString("String_ImportPrjFileShape"), "prj"),
+					SmFileChoose.createFileFilter(ControlsProperties.getString("String_ImportPrjFileXml"), "xml"));
+			SmFileChoose.addNewNode(fileFilters, CommonProperties.getString("String_DefaultFilePath"),
+					ControlsProperties.getString("String_ImportPrjFile"), moduleName, "OpenMany");
+		}
 
-	public ParameterFile getParameterFile() {
-		return parameterFile;
+		final ParameterFile parameterFilePrjChoose = new ParameterFile();
+		parameterFilePrjChoose.setModuleName(moduleName);
+		parameterFilePrjChoose.setEnabled(false);
+		chooseFile.parameter = parameterFilePrjChoose;
+		ReflectInfo selectButton = new ReflectInfo();
+		selectButton.methodName = "";
+		final ParameterButton parameterButton = new ParameterButton(ProcessProperties.getString("String_setButton"));
+		parameterButton.setEnabled(true);
+		selectButton.parameter = parameterButton;
+		ReflectInfo textArea = new ReflectInfo();
+		textArea.methodName = "";
+		final ParameterTextArea parameterTextArea = new ParameterTextArea();
+		textArea.parameter = parameterTextArea;
+		ParameterCombine parameterCombineProjectSet = new ParameterCombine();
+		parameterCombineProjectSet.setDescribe(ProcessProperties.getString("String_setProject"));
+		parameterFilePrjChoose.addPropertyListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (parameterFilePrjChoose.getSelectedItem() != null) {
+					String filePath = parameterFilePrjChoose.getSelectedItem();
+
+					// 设置投影信息
+					if (!StringUtilities.isNullOrEmpty(filePath)) {
+						PrjCoordSys newPrjCoordSys = new PrjCoordSys();
+						String fileType = FileUtilities.getFileType(filePath);
+						boolean isPrjFile;
+						if (fileType.equalsIgnoreCase(".prj")) {
+							isPrjFile = newPrjCoordSys.fromFile(filePath, PrjFileType.ESRI);
+						} else {
+							isPrjFile = newPrjCoordSys.fromFile(filePath, PrjFileType.SUPERMAP);
+						}
+						if (isPrjFile) {
+							addPrj(newPrjCoordSys, setPrjCoordSys);
+							String prjCoordSysInfo = PrjCoordSysUtilities.getDescription(newPrjCoordSys);
+							parameterTextArea.setSelectedItem(prjCoordSysInfo);
+						}
+					}
+				}
+			}
+		});
+		final boolean[] isSelectingChange = new boolean[1];
+		parameterRadioButton.addPropertyListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (!isSelectingChange[0]) {
+					isSelectingChange[0] = true;
+					ParameterDataNode node = (ParameterDataNode) evt.getNewValue();
+					boolean select = (boolean) node.getData();
+					if (select) {
+						parameterButton.setEnabled(select);
+						parameterFilePrjChoose.setEnabled(!select);
+					} else {
+						parameterButton.setEnabled(select);
+						parameterFilePrjChoose.setEnabled(!select);
+					}
+					isSelectingChange[0] = false;
+				}
+			}
+		});
+		parameterButton.setActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JDialogPrjCoordSysSettings dialogPrjCoordSysSettings = new JDialogPrjCoordSysSettings();
+				if (dialogPrjCoordSysSettings.showDialog() == DialogResult.OK) {
+					PrjCoordSys newPrjCoordSys = dialogPrjCoordSysSettings.getPrjCoordSys();
+					addPrj(newPrjCoordSys, setPrjCoordSys);
+					String prjCoorSysInfo = PrjCoordSysUtilities.getDescription(newPrjCoordSys);
+					parameterTextArea.setSelectedItem(prjCoorSysInfo);
+				}
+			}
+		});
+		return initTransformParameterCombine(parameterCombineModelSet, parameterCombineProjectSet.addParameters(
+				new ParameterCombine(ParameterCombine.HORIZONTAL).addParameters(parameterRadioButton,
+						new ParameterCombine().addParameters(parameterButton, parameterFilePrjChoose)), parameterTextArea));
 	}
 
-	public ParameterFile getParameterFileFolder() {
-		return parameterFileFolder;
+	private void addPrj(PrjCoordSys newPrjCoorSys, ReflectInfo setPrjCoordSys) {
+		setPrjCoordSys.mixReflectInfo = new HashMap<>();
+		setPrjCoordSys.mixReflectInfo.put("newPrjCoordSys",newPrjCoorSys);
+		reflectInfoArray.add(setPrjCoordSys);
 	}
 
-	public ParameterFile getParameterFilePrjChoose() {
-		return parameterFilePrjChoose;
+	private IParameter getMapGISTransformParameterCombine(Object importSetting) {
+		ReflectInfo setColorIndexFilePath = new ReflectInfo();
+		setColorIndexFilePath.methodName = "setColorIndexFilePath";
+
+		ParameterFile colorIndex = new ParameterFile(CommonProperties.getString("String_ColorIndexFile"));
+		colorIndex.setModuleName("ColorIndexFile");
+		colorIndex.addExtension(ProcessProperties.getString("string_filetype_color"), "wat");
+		String filePath = ((ImportSettingMAPGIS) importSetting).getColorIndexFilePath();
+		if (!StringUtilities.isNullOrEmpty(filePath)) {
+			colorIndex.setSelectedItem(new File(filePath).getAbsolutePath());
+		}
+		setColorIndexFilePath.parameter = colorIndex;
+
+		reflectInfoArray.add(setColorIndexFilePath);
+		return initTransformParameterCombine(setColorIndexFilePath.parameter);
 	}
 
-	public ParameterButton getParameterButton() {
-		return parameterButton;
+	private IParameter getKMLTransformParameterCombine(Object importSetting) {
+		ReflectInfo setUnvisibleObjectIgnored = new ReflectInfo();
+		setUnvisibleObjectIgnored.methodName = "setUnvisibleObjectIgnored";
+		ParameterCheckBox parameterImportUnvisibleObject = new ParameterCheckBox(CommonProperties.getString("String_ImportUnvisibleObject"));
+		parameterImportUnvisibleObject.setSelectedItem(importSetting instanceof ImportSettingKML ? (((ImportSettingKML) importSetting).isUnvisibleObjectIgnored() ? "false" : "true")
+				: (((ImportSettingKMZ) importSetting).isUnvisibleObjectIgnored() ? "false" : "true"));
+		setUnvisibleObjectIgnored.parameter = parameterImportUnvisibleObject;
+		reflectInfoArray.add(setUnvisibleObjectIgnored);
+		return initTransformParameterCombine(setUnvisibleObjectIgnored.parameter);
 	}
 
-	public ParameterTextArea getParameterTextArea() {
-		return parameterTextArea;
+	private IParameter getBMPTransformParameterCombine() {
+		ReflectInfo pyramidBuiltInfo = new ReflectInfo();
+		pyramidBuiltInfo.methodName = "setPyramidBuilt";
+		pyramidBuiltInfo.parameter = new ParameterCheckBox(ControlsProperties.getString("String_Form_BuildDatasetPyramid"));
+
+		ReflectInfo setWorldFilePath = new ReflectInfo();
+		setWorldFilePath.methodName = "setWorldFilePath";
+		ParameterFile worldFilePath = new ParameterFile(CommonProperties.getString("String_WorldFile"));
+		worldFilePath.setModuleName("WorldFile");
+		worldFilePath.setModuleType("OpenOne");
+		worldFilePath.addExtension(ProcessProperties.getString("string_filetype_tfw"), "tfw");
+		setWorldFilePath.parameter = worldFilePath;
+
+		reflectInfoArray.add(pyramidBuiltInfo);
+		reflectInfoArray.add(setWorldFilePath);
+		return initTransformParameterCombine(pyramidBuiltInfo.parameter, setWorldFilePath.parameter);
 	}
 
-	public ParameterRadioButton getParameterSetRadioButton() {
-		return parameterRadioButton;
+	private IParameter getSIDTransformParameterCombine() {
+		ReflectInfo importBandMode = new ReflectInfo();
+		importBandMode.methodName = "setMultiBandImportMode";
+		ParameterEnum parameterBandMode = new ParameterEnum(new EnumParser(MultiBandImportMode.class, new String[]{"SINGLEBAND", "MULTIBAND", "COMPOSITE"},
+				new String[]{CommonProperties.getString("String_MultiBand_SingleBand"), CommonProperties.getString("String_MultiBand_MultiBand"),
+						CommonProperties.getString("String_MultiBand_Composite")}));
+		parameterBandMode.setDescribe(ProcessProperties.getString("String_BandImportMode"));
+		parameterBandMode.setSelectedItem(MultiBandImportMode.COMPOSITE);
+		importBandMode.parameter = parameterBandMode;
+		reflectInfoArray.add(importBandMode);
+		return initTransformParameterCombine(parameterBandMode);
 	}
 
-	public ParameterDatasource getParameterResultDatasource() {
-		return parameterDatasource;
+	private IParameter getGridTransformParameterCombine() {
+		ReflectInfo pyramidBuiltInfo = new ReflectInfo();
+		pyramidBuiltInfo.methodName = "setPyramidBuilt";
+		pyramidBuiltInfo.parameter = new ParameterCheckBox(ControlsProperties.getString("String_Form_BuildDatasetPyramid"));
+		reflectInfoArray.add(pyramidBuiltInfo);
+		return initTransformParameterCombine(pyramidBuiltInfo.parameter);
 	}
 
-	public IParameter getParameterCombineResultSet() {
-		return parameterCombineResultSet;
+	private IParameter getGRDTransformParameterCombine() {
+		ReflectInfo setAttributeIgnored = new ReflectInfo();
+		setAttributeIgnored.methodName = "setAttributeIgnored";
+		setAttributeIgnored.parameter = new ParameterCheckBox(CommonProperties.getString("String_IngoreProperty"));
+		reflectInfoArray.add(setAttributeIgnored);
+		return initTransformParameterCombine(setAttributeIgnored.parameter);
 	}
 
-	public IParameter getParameterCombineParamSet() {
-		return parameterCombineParamSet;
+	private IParameter getDGNTransformParameterCombine(Object importSetting) {
+		ReflectInfo importCellAsPoint = new ReflectInfo();
+		importCellAsPoint.methodName = "setImportingCellAsPoint";
+		ParameterCheckBox parameterImportingCellAsPoint = new ParameterCheckBox(CommonProperties.getString("String_ImportCellAsPoint"));
+		parameterImportingCellAsPoint.setSelectedItem(((ImportSettingDGN) importSetting).isImportingCellAsPoint() ? "true" : "false");
+		importCellAsPoint.parameter = parameterImportingCellAsPoint;
+
+		ReflectInfo setImportingByLayer = new ReflectInfo();
+		setImportingByLayer.methodName = "setImportingByLayer";
+		ParameterCheckBox parameterImportingByLayer = new ParameterCheckBox(CommonProperties.getString("String_MergeLayer"));
+		parameterImportingByLayer.setSelectedItem(((ImportSettingDGN) importSetting).isImportingByLayer() ? "false" : "true");
+		setImportingByLayer.parameter = parameterImportingByLayer;
+
+		reflectInfoArray.add(importCellAsPoint);
+		reflectInfoArray.add(setImportingByLayer);
+		return initTransformParameterCombine(parameterImportingCellAsPoint, parameterImportingByLayer);
 	}
 
-	public ParameterCombine getParameterCombineSourceInfoSet() {
-		return parameterCombineSourceInfoSet;
+	private IParameter getSITTransformParameterCombine(Object importSetting) {
+		ReflectInfo password = new ReflectInfo();
+		password.methodName = "setPassword";
+		ParameterPassword parameterPassword = new ParameterPassword(CoreProperties.getString("String_FormLogin_Password"));
+		parameterPassword.setSelectedItem(((ImportSettingSIT) importSetting).getPassword());
+		password.parameter = parameterPassword;
+		reflectInfoArray.add(password);
+		return initTransformParameterCombine(password.parameter);
 	}
 
-	public ParameterTextField getParameterDataset() {
-		return parameterDataset;
+	private IParameter getTIFTransformParameterCombine() {
+		ReflectInfo importBandMode = new ReflectInfo();
+		importBandMode.methodName = "setMultiBandImportMode";
+		ParameterEnum parameterBandMode = new ParameterEnum(new EnumParser(MultiBandImportMode.class, new String[]{"SINGLEBAND", "MULTIBAND", "COMPOSITE"},
+				new String[]{CommonProperties.getString("String_MultiBand_SingleBand"), CommonProperties.getString("String_MultiBand_MultiBand"),
+						CommonProperties.getString("String_MultiBand_Composite")}));
+		parameterBandMode.setSelectedItem(MultiBandImportMode.COMPOSITE);
+		parameterBandMode.setDescribe(ProcessProperties.getString("String_BandImportMode"));
+		importBandMode.parameter = parameterBandMode;
+
+		ReflectInfo pyramidBuiltInfo = new ReflectInfo();
+		pyramidBuiltInfo.methodName = "setPyramidBuilt";
+		pyramidBuiltInfo.parameter = new ParameterCheckBox(ControlsProperties.getString("String_Form_BuildDatasetPyramid"));
+
+		ReflectInfo setWorldFilePath = new ReflectInfo();
+		setWorldFilePath.methodName = "setWorldFilePath";
+		ParameterFile worldFilePath = new ParameterFile(CommonProperties.getString("String_WorldFile"));
+		worldFilePath.setModuleName("WorldFile");
+		worldFilePath.setModuleType("OpenOne");
+		worldFilePath.addExtension(ProcessProperties.getString("string_filetype_tfw"), "tfw");
+		setWorldFilePath.parameter = worldFilePath;
+		reflectInfoArray.add(importBandMode);
+		reflectInfoArray.add(pyramidBuiltInfo);
+		reflectInfoArray.add(setWorldFilePath);
+		return initTransformParameterCombine(importBandMode.parameter, setWorldFilePath.parameter, pyramidBuiltInfo.parameter);
 	}
 
-	public ParameterCharset getParameterCharset() {
-		return parameterCharset;
+	private IParameter getIMGTransformParameterCombine() {
+		ReflectInfo importBandMode = new ReflectInfo();
+		importBandMode.methodName = "setMultiBandImportMode";
+		ParameterEnum parameterBandMode = new ParameterEnum(new EnumParser(MultiBandImportMode.class, new String[]{"SINGLEBAND", "MULTIBAND", "COMPOSITE"},
+				new String[]{CommonProperties.getString("String_MultiBand_SingleBand"), CommonProperties.getString("String_MultiBand_MultiBand"),
+						CommonProperties.getString("String_MultiBand_Composite")}));
+		parameterBandMode.setDescribe(ProcessProperties.getString("String_BandImportMode"));
+		parameterBandMode.setSelectedItem(MultiBandImportMode.COMPOSITE);
+		importBandMode.parameter = parameterBandMode;
+
+		ReflectInfo pyramidBuiltInfo = new ReflectInfo();
+		pyramidBuiltInfo.methodName = "setPyramidBuilt";
+		pyramidBuiltInfo.parameter = new ParameterCheckBox(ControlsProperties.getString("String_Form_BuildDatasetPyramid"));
+		reflectInfoArray.add(importBandMode);
+		reflectInfoArray.add(pyramidBuiltInfo);
+		return initTransformParameterCombine(importBandMode.parameter, pyramidBuiltInfo.parameter);
 	}
 
-	public ParameterRadioButton getParameterRadioButtonFolderOrFile() {
-		return parameterRadioButtonFolderOrFile;
+	private IParameter initTransformParameterCombine(IParameter... parameter) {
+		ParameterCombine parameterCombineTransform = new ParameterCombine();
+		parameterCombineTransform.setDescribe(ProcessProperties.getString("String_ParamSet"));
+		parameterCombineTransform.addParameters(parameter);
+		return parameterCombineTransform;
 	}
 
-	public ParameterCheckBox getParameterImportIndexData() {
-		return parameterImportIndexData;
+	private IParameter getCSVTransformParameterCombine(Object importSetting) {
+		// 对导入CSV文件参数面板进行重构，支持导入点线面
+		// 首行为字段信息
+		ReflectInfo setFirstRowIsField = new ReflectInfo();
+		setFirstRowIsField.methodName = "setFirstRowIsField";
+		ParameterCheckBox parameterSetFirstRowIsField = new ParameterCheckBox(CommonProperties.getString("String_FirstRowisField"));
+		parameterSetFirstRowIsField.setSelectedItem("true");
+		setFirstRowIsField.parameter = parameterSetFirstRowIsField;
+		if (importSetting instanceof ImportSettingExcel || importSetting instanceof ImportSettingGPX) {
+			reflectInfoArray.add(setFirstRowIsField);
+			return initTransformParameterCombine(setFirstRowIsField.parameter);
+		} else {
+			// 分隔符
+			ReflectInfo setSeparator = new ReflectInfo();
+			setSeparator.methodName = "setSeparator";
+			ParameterTextField parameterSeparator = new ParameterTextField(CommonProperties.getString("String_Separator"));
+			parameterSeparator.setSelectedItem(",");
+			setSeparator.parameter = parameterSeparator;
+			// 导入空间数据
+			ReflectInfo setImportIndexData = new ReflectInfo();
+			setSeparator.methodName = "setImportIndexData";
+			parameterImportIndexData = new ParameterCheckBox(CommonProperties.getString("String_ImportIndexData"));
+			parameterImportIndexData.setSelectedItem(false);
+			setImportIndexData.parameter = parameterImportIndexData;
+			//设置wkt字段
+			ReflectInfo setWKTField = new ReflectInfo();
+			setWKTField.methodName = "setWKTField";
+			final ParameterRadioButton parameterRadioButtonSetWKTField = new ParameterRadioButton();
+			ParameterDataNode[] parameterDataNodes = {new ParameterDataNode(CommonProperties.getString("String_WKTIndex"), true), new ParameterDataNode(CommonProperties.getString("String_XYField"), false)};
+			parameterRadioButtonSetWKTField.setItems(parameterDataNodes);
+			parameterRadioButtonSetWKTField.setSelectedItem(parameterDataNodes[0]);
+			parameterRadioButtonSetWKTField.setEnabled(false);
+			setWKTField.parameter = parameterRadioButtonSetWKTField;
+			//字段选择器
+			ReflectInfo setIndexAsGeometry = new ReflectInfo();
+			setIndexAsGeometry.methodName = "setIndexAsGeometry";
+			parameterWKTFieldName = new ParameterComboBox(CommonProperties.getString("String_WKTIndex"));
+			parameterWKTFieldName.setEnabled(false);
+			setIndexAsGeometry.parameter = parameterWKTFieldName;
+
+			ReflectInfo setFieldsAsPoint = new ReflectInfo();
+			setFieldsAsPoint.methodName = "setFieldsAsPoint";
+
+
+			parameterXFieldName = new ParameterComboBox(CommonProperties.getString("string_longitude"));
+			parameterXFieldName.setEnabled(false);
+			setFieldsAsPoint.mixReflectInfo = new HashMap<>();
+			setFieldsAsPoint.mixReflectInfo.put("setXFieldName", parameterXFieldName);
+
+			parameterYFieldName = new ParameterComboBox(CommonProperties.getString("string_latitude"));
+			setFieldsAsPoint.mixReflectInfo.put("setYFieldName", parameterYFieldName);
+			parameterYFieldName.setEnabled(false);
+
+			parameterZFieldName = new ParameterComboBox(CommonProperties.getString("string_elevation"));
+			parameterZFieldName.setEnabled(false);
+			setFieldsAsPoint.mixReflectInfo.put("setZFieldName", parameterZFieldName);
+
+			reflectInfoArray.add(setSeparator);
+			reflectInfoArray.add(setFirstRowIsField);
+			reflectInfoArray.add(setImportIndexData);
+			reflectInfoArray.add(setIndexAsGeometry);
+			reflectInfoArray.add(setFieldsAsPoint);
+
+			// 增加监听事件
+			parameterImportIndexData.addPropertyListener(new PropertyChangeListener() {
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					Boolean isEnabled = Boolean.valueOf(parameterImportIndexData.getSelectedItem());
+					parameterRadioButtonSetWKTField.setEnabled(isEnabled);
+					parameterWKTFieldName.setEnabled(isEnabled && (Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+					parameterXFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+					parameterYFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+					parameterZFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+				}
+			});
+
+			parameterRadioButtonSetWKTField.addPropertyListener(new PropertyChangeListener() {
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					Boolean isEnabled = Boolean.valueOf(parameterImportIndexData.getSelectedItem());
+					parameterWKTFieldName.setEnabled(isEnabled && (Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+					parameterXFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+					parameterYFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+					parameterZFieldName.setEnabled(isEnabled && !(Boolean) ((ParameterDataNode) parameterRadioButtonSetWKTField.getSelectedItem()).getData());
+
+				}
+			});
+			return initTransformParameterCombine(setSeparator.parameter, setFirstRowIsField.parameter, setImportIndexData.parameter, setWKTField.parameter,
+					parameterWKTFieldName, parameterXFieldName, parameterYFieldName, parameterZFieldName);
+		}
 	}
 
-	public ParameterComboBox getParameterWKTFieldName() {
-		return parameterWKTFieldName;
-	}
+	private IParameter getDTransformParameterCombine(Object importSetting) {
+		ReflectInfo setCurveSegment = new ReflectInfo();
+		setCurveSegment.methodName = "setCurveSegment";
+		ReflectInfo setImportingExternalData = new ReflectInfo();
+		setImportingExternalData.methodName = "setImportingExternalData";
+		ReflectInfo setImportingXRecord = new ReflectInfo();
+		setImportingXRecord.methodName = "setImportingXRecord";
+		ReflectInfo setImporttingAs3D = new ReflectInfo();
+		setImporttingAs3D.methodName = "setImporttingAs3D";
+		ReflectInfo setImportingInvisibleLayer = new ReflectInfo();
+		setImportingInvisibleLayer.methodName = "setImportingInvisibleLayer";
+		ReflectInfo setLWPLineWidthIgnored = new ReflectInfo();
+		setLWPLineWidthIgnored.methodName = "setLWPLineWidthIgnored";
+		ReflectInfo setImportingByLayer = new ReflectInfo();
+		setImportingByLayer.methodName = "setImportingByLayer";
+		ReflectInfo setBlockAttributeIgnored = new ReflectInfo();
+		setBlockAttributeIgnored.methodName = "setBlockAttributeIgnored";
+		ReflectInfo setKeepingParametricPart = new ReflectInfo();
+		setKeepingParametricPart.methodName = "setKeepingParametricPart";
+		ReflectInfo setImportingBlockAsPoint = new ReflectInfo();
+		setImportingBlockAsPoint.methodName = "setImportingBlockAsPoint";
 
-	public ParameterComboBox getParameterXFieldName() {
-		return parameterXFieldName;
-	}
+		ParameterTextField parameterTextField = new ParameterTextField(CommonProperties.getString("String_CurveSegment"));
+		parameterTextField.setSelectedItem(importSetting instanceof ImportSettingDXF ? ((ImportSettingDXF) importSetting).getCurveSegment() : ((ImportSettingDWG) importSetting).getCurveSegment());
+		setCurveSegment.parameter = parameterTextField;
 
-	public ParameterComboBox getParameterYFieldName() {
-		return parameterYFieldName;
-	}
+		ParameterCheckBox parameterImportExternalData = new ParameterCheckBox(CommonProperties.getString("string_ImportExtendsData"));
+		parameterImportExternalData.setSelectedItem(importSetting instanceof ImportSettingDXF ? (((ImportSettingDXF) importSetting).isImportingExternalData() ? "true" : "false")
+				: (((ImportSettingDWG) importSetting).isImportingExternalData() ? "true" : "false"));
+		setImportingExternalData.parameter = parameterImportExternalData;
 
-	public ParameterComboBox getParameterZFieldName() {
-		return parameterZFieldName;
+		ParameterCheckBox parameterImportingXRecord = new ParameterCheckBox(CommonProperties.getString("String_ImportExtendsRecord"));
+		parameterImportingXRecord.setSelectedItem(importSetting instanceof ImportSettingDXF ? (((ImportSettingDXF) importSetting).isImportingXRecord() ? "true" : "false") :
+				(((ImportSettingDWG) importSetting).isImportingXRecord() ? "true" : "false"));
+		setImportingXRecord.parameter = parameterImportingXRecord;
+
+		ParameterCheckBox parameterImporttingAs3D = new ParameterCheckBox(CommonProperties.getString("String_SaveHeight"));
+		parameterImporttingAs3D.setSelectedItem(importSetting instanceof ImportSettingDXF ? (((ImportSettingDXF) importSetting).isImporttingAs3D() ? "true" : "false")
+				: (((ImportSettingDWG) importSetting).isImporttingAs3D() ? "true" : "false"));
+		setImporttingAs3D.parameter = parameterImporttingAs3D;
+
+		ParameterCheckBox parameterImportingInvisibleLayer = new ParameterCheckBox(CommonProperties.getString("String_ImportInvisibleLayer"));
+		parameterImportingInvisibleLayer.setSelectedItem(importSetting instanceof ImportSettingDXF ? (((ImportSettingDXF) importSetting).isImportingInvisibleLayer() ? "true" : "false")
+				: (((ImportSettingDWG) importSetting).isImportingInvisibleLayer() ? "true" : "false"));
+		setImportingInvisibleLayer.parameter = parameterImportingInvisibleLayer;
+
+		ParameterCheckBox parameterLWPLineWidthIgnored = new ParameterCheckBox(CommonProperties.getString("String_SaveWPLineWidth"));
+		parameterLWPLineWidthIgnored.setSelectedItem(importSetting instanceof ImportSettingDXF ? (((ImportSettingDXF) importSetting).isLWPLineWidthIgnored() ? "false" : "true")
+				: (((ImportSettingDWG) importSetting).isLWPLineWidthIgnored() ? "false" : "true"));
+		setLWPLineWidthIgnored.parameter = parameterLWPLineWidthIgnored;
+
+		ParameterCheckBox parameterImportingByLayer = new ParameterCheckBox(CommonProperties.getString("String_MergeLayer"));
+		parameterImportingByLayer.setSelectedItem(importSetting instanceof ImportSettingDXF ? (((ImportSettingDXF) importSetting).isImportingByLayer() ? "false" : "true")
+				: (((ImportSettingDWG) importSetting).isImportingByLayer() ? "false" : "true"));
+		setImportingByLayer.parameter = parameterImportingByLayer;
+
+		ParameterCheckBox parameterBlockAttributeIgnored = new ParameterCheckBox(CommonProperties.getString("String_ImportProperty"));
+		parameterBlockAttributeIgnored.setSelectedItem(importSetting instanceof ImportSettingDXF ? (((ImportSettingDXF) importSetting).isBlockAttributeIgnored() ? "false" : "true")
+				: (((ImportSettingDWG) importSetting).isBlockAttributeIgnored() ? "false" : "true"));
+		setBlockAttributeIgnored.parameter = parameterBlockAttributeIgnored;
+
+		ParameterCheckBox parameterKeepingParametricPart = new ParameterCheckBox(CommonProperties.getString("String_SaveField"));
+		parameterKeepingParametricPart.setSelectedItem(importSetting instanceof ImportSettingDXF ? (((ImportSettingDXF) importSetting).isKeepingParametricPart() ? "true" : "false")
+				: (((ImportSettingDWG) importSetting).isKeepingParametricPart() ? "true" : "false"));
+		setKeepingParametricPart.parameter = parameterKeepingParametricPart;
+
+		ParameterCheckBox parameterImportingBlockAsPoint = new ParameterCheckBox(CommonProperties.getString("String_ImportingSymbol"));
+		parameterImportingBlockAsPoint.setSelectedItem(importSetting instanceof ImportSettingDXF ? (((ImportSettingDXF) importSetting).isImportingBlockAsPoint() ? "false" : "true")
+				: (((ImportSettingDWG) importSetting).isImportingBlockAsPoint() ? "false" : "true"));
+		setImportingBlockAsPoint.parameter = parameterImportingBlockAsPoint;
+		reflectInfoArray.add(setCurveSegment);
+		reflectInfoArray.add(setImportingByLayer);
+		reflectInfoArray.add(setImportingInvisibleLayer);
+		reflectInfoArray.add(setImporttingAs3D);
+		reflectInfoArray.add(setImportingBlockAsPoint);
+		reflectInfoArray.add(setBlockAttributeIgnored);
+		reflectInfoArray.add(setKeepingParametricPart);
+		reflectInfoArray.add(setImportingExternalData);
+		reflectInfoArray.add(setImportingXRecord);
+		reflectInfoArray.add(setLWPLineWidthIgnored);
+		return initTransformParameterCombine(setCurveSegment.parameter,
+				new ParameterCombine(ParameterCombine.HORIZONTAL).addParameters(
+						new ParameterCombine().addParameters(setImportingByLayer.parameter, setImportingBlockAsPoint.parameter, setImportingExternalData.parameter),
+						new ParameterCombine().addParameters(setImportingInvisibleLayer.parameter, setBlockAttributeIgnored.parameter, setImportingXRecord.parameter),
+						new ParameterCombine().addParameters(setImporttingAs3D.parameter, setKeepingParametricPart.parameter, setLWPLineWidthIgnored.parameter)));
 	}
 }
