@@ -63,6 +63,42 @@ public class JPanelDatasetChooseForParameter extends JPanelDatasetChoose {
 
 	@Override
 	public void setSupportDatasetTypes(DatasetType[] supportDatasetTypes) {
+		// Currently, only dataset types are considered single type, without considering multiple types.          ————fix by lixiaoyao   2017.10.09
+		if (this.supportDatasetTypes!=null && this.supportDatasetTypes.length==1 && supportDatasetTypes.length==1){
+			if (!this.supportDatasetTypes[0].equals(supportDatasetTypes[0])){
+				for (int i=datasets.size()-1;i>=0;i--){
+					this.tableModel.removeRow(i);
+				}
+				datasets.clear();
+			}else{
+				Vector vector= this.tableModel.getDataVector();
+				for (int index = 0; index <vector.size(); index++){
+					DataCell tempDataCell= (DataCell)((Vector) vector.get(index)).get(COLUMN_DATASET);
+					if (((Dataset)tempDataCell.getData()).equals(illegalDataset)){
+						int[] selectRows=new int[]{index};
+						int size = selectRows.length;
+						int exchangeSize = selectRows[size - 1] + 1;
+						int rowCount = tableDatasetDisplay.getRowCount() - 1;
+						for (int i = exchangeSize; i <= rowCount; i++) {
+							int row = i;
+							for (int j = size - 1; j >= 0; j--) {
+								exchangeItem(selectRows[j], row);
+								selectRows[j] = row;
+								row--;
+							}
+						}
+						tableDatasetDisplay.clearSelection();
+						for (int i = 0; i < size; i++) {
+							tableDatasetDisplay.addRowSelectionInterval(rowCount - i, rowCount - i);
+						}
+						datasets.remove(vector.size()-1);
+						this.tableModel.removeRow(vector.size()-1);
+						break;
+					}
+				}
+			}
+		}
+
 		this.supportDatasetTypes = supportDatasetTypes;
 	}
 
