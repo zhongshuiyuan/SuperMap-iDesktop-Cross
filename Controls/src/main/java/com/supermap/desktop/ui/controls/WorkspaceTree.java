@@ -1486,10 +1486,14 @@ public class WorkspaceTree extends JTree implements IDisposable {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
-				TreePath mouseLocationPath = WorkspaceTree.this.getClosestPathForLocation(e.getX(), e.getY());
-				if (mouseLocationPath != null && mouseLocationPath.getPath() != null && mouseLocationPath.getPath().length > 0
-						&& !WorkspaceTree.this.isPathSelected(mouseLocationPath)) {
-					WorkspaceTree.this.setSelectionPath(mouseLocationPath);
+				//  fix by lixiaoyao 2017/10/10
+				// 当当前点击的坐标Y超出树当前显示的高度那么不需要改变工作空间树当前选择的对象
+				if (e.getY()<=WorkspaceTree.this.getRowCount()*WorkspaceTree.this.getRowHeight()) {
+					TreePath mouseLocationPath = WorkspaceTree.this.getClosestPathForLocation(e.getX(), e.getY());
+					if (mouseLocationPath != null && mouseLocationPath.getPath() != null && mouseLocationPath.getPath().length > 0
+							&& !WorkspaceTree.this.isPathSelected(mouseLocationPath)) {
+						WorkspaceTree.this.setSelectionPath(mouseLocationPath);
+					}
 				}
 			}
 		}
