@@ -1138,7 +1138,7 @@ public class JDialogTabularUpdateColumn extends SmDialog {
 
 
 	private void buttonApplyClicked() {
-		CursorUtilities.setWaitCursor();
+		this.buttonApply.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		try {
 			String updateMode = comboBoxSourceOfField.getSelectedItem().toString();
 			if (updateMode.equals(TabularViewProperties.getString("String_FormTabularUpdataColumn_UpdataModeSetValue"))) {
@@ -1157,7 +1157,7 @@ public class JDialogTabularUpdateColumn extends SmDialog {
 						//这里判断一下，如果以''开始和结束的字符串，表示用户传入的是一个字符串
 						//否则，可能是自定义表达式，自定义表达式就不做任何处理
 						if (isSurroundByQuotationMarks(result)) {
-							result = result.substring(1, result.length() - 2);
+							result = result.substring(1, result.length() - 1);
 							if (fieldInfo.getMaxLength() < result.length()) {
 								result = result.substring(0, fieldInfo.getMaxLength());
 								textFieldSecondField.setText(result);
@@ -1179,7 +1179,7 @@ public class JDialogTabularUpdateColumn extends SmDialog {
 		} catch (Exception ex) {
 			Application.getActiveApplication().getOutput().output(ex);
 		}
-		CursorUtilities.setDefaultCursor();
+		this.buttonApply.setCursor(Cursor.getDefaultCursor());
 		ToolbarUIUtilities.updataToolbarsState();
 	}
 
@@ -1401,23 +1401,30 @@ public class JDialogTabularUpdateColumn extends SmDialog {
 	}
 
 	private String getAttributeFilter() {
-		String result = "SmID in (";
-
+		StringBuffer buffer = new StringBuffer("SmID in (");
 		if (radioButtonUpdateColumn.isSelected()) {
 			int tableCount = tabular.getRowCount();
 			for (int i = 0; i < tableCount; i++) {
-				result += tabular.getSmId(i) + ",";
+				if (i != tableCount-1) {
+					buffer.append(i + 1 + ",");
+				} else {
+					buffer.append(i + 1);
+				}
 			}
 		} else {
 			//获取到当前展示的Smid 进行更新
 			int[] selectRows = tabular.getSelectedRows();
 			int length = selectRows.length;
 			for (int i = 0; i < length; i++) {
-				result += tabular.getSmId(selectRows[i]) + ",";
+				if (i != length-1) {
+					buffer.append(tabular.getSmId(selectRows[i]) + ",");
+				} else {
+					buffer.append(tabular.getSmId(selectRows[i]));
+				}
 			}
 		}
-		result = result.substring(0, result.length() - 1) + ")";
-		return result;
+		buffer.append(")");
+		return buffer.toString();
 	}
 
 	private void updateModeMathDate(int[] selectRows) {
