@@ -81,8 +81,8 @@ public class MetaProcessSolarRadiation extends MetaProcess {
 		this.parameters.setParameters(sourceData, this.solarRadiationAnalysisType, radiationSetting, resultData);
 		this.parameters.addInputParameters(INPUT_DATA, DatasetTypes.GRID, sourceData);
 		this.parameters.addOutputParameters(OUTPUT_DATA_TOTAL, ProcessOutputResultProperties.getString("String_SolarRadiationTotal"), DatasetTypes.GRID, this.textFieldTotal);
-		this.parameters.addOutputParameters(OUTPUT_DATA_DIFFUSE, ProcessOutputResultProperties.getString("String_SolarRadiationDiffuse"), DatasetTypes.GRID, this.checkboBoxAndTextFieldDiffuse);
 		this.parameters.addOutputParameters(OUTPUT_DATA_DIRECTION, ProcessOutputResultProperties.getString("String_SolarRadiationDirection"), DatasetTypes.GRID, this.checkboBoxAndTextFieldDirection);
+		this.parameters.addOutputParameters(OUTPUT_DATA_DIFFUSE, ProcessOutputResultProperties.getString("String_SolarRadiationDiffuse"), DatasetTypes.GRID, this.checkboBoxAndTextFieldDiffuse);
 		this.parameters.addOutputParameters(OUTPUT_DATA_DURATION, ProcessOutputResultProperties.getString("String_SolarRadiationDuration"), DatasetTypes.GRID, this.checkboBoxAndTextFieldDuration);
 	}
 
