@@ -23,9 +23,9 @@ import java.util.ArrayList;
 /**
  * Created by lixiaoyao on 2017/8/15.
  */
-public class TableRarefyPoints extends SmSortTable implements ITable{
-	private ModelRarefyPoints modelRarefyPoints=null;
-	private DatasetVector datasetVector=null;
+public class TableRarefyPoints extends SmSortTable implements ITable {
+	private ModelRarefyPoints modelRarefyPoints = null;
+	private DatasetVector datasetVector = null;
 	private final static int CHECK_COLUMN_INDEX_MAX_SIZE = 30;
 	private static final int TABLE_COLUMN_CHECKABLE = 0;
 	private static final int TABLE_COLUMN_STATISTICS_TYPE = 4;
@@ -57,20 +57,20 @@ public class TableRarefyPoints extends SmSortTable implements ITable{
 
 	public void setDatasetVector(DatasetVector datasetVector) {
 		this.datasetVector = datasetVector;
-		if (this.modelRarefyPoints==null){
+		if (this.modelRarefyPoints == null) {
 			init();
-		}else{
+		} else {
 			this.modelRarefyPoints.setDataset(this.datasetVector);
 		}
 	}
 
-	public void setAllStatisticsFieldType(StatisticsFieldType statisticsFieldType){
-		for (int i=0;i<this.modelRarefyPoints.getRowCount();i++) {
-			this.modelRarefyPoints.setValueAt(statisticsFieldType,i,TABLE_COLUMN_STATISTICS_TYPE);
+	public void setAllStatisticsFieldType(StatisticsFieldType statisticsFieldType) {
+		for (int i = 0; i < this.modelRarefyPoints.getRowCount(); i++) {
+			this.modelRarefyPoints.setValueAt(statisticsFieldType, i, TABLE_COLUMN_STATISTICS_TYPE);
 		}
 	}
 
-	public TableRarefyPoints(){
+	public TableRarefyPoints() {
 
 	}
 
@@ -101,7 +101,7 @@ public class TableRarefyPoints extends SmSortTable implements ITable{
 
 
 	public StatisticsField[] getStatisticsField() {
-		this.statisticsField=this.modelRarefyPoints.getSelectedStatisticsField();
+		this.statisticsField = this.modelRarefyPoints.getSelectedStatisticsField();
 		return this.statisticsField;
 	}
 

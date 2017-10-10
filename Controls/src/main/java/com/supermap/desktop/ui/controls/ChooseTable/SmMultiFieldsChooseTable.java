@@ -7,14 +7,7 @@ import com.supermap.desktop.ui.controls.CheckHeaderCellRenderer;
 import com.supermap.desktop.utilities.FieldTypeUtilities;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 
 /**
  * Created by xie on 2017/8/7.
@@ -40,7 +33,7 @@ public class SmMultiFieldsChooseTable extends JTable {
 		this.setModel(this.checkTableModle);
 		this.getColumn(this.getModel().getColumnName(TABLE_COLUMN_CHECKABLE)).setMaxWidth(checkColumnIndexMaxSize);
 		this.setRowHeight(rowHeight);
-		this.getColumnModel().getColumn(TABLE_COLUMN_CHECKABLE).setCellRenderer(new MultipleCheckboxTableRenderer());
+		//this.getColumnModel().getColumn(TABLE_COLUMN_CHECKABLE).setCellRenderer(new MultipleCheckboxTableRenderer());
 		this.getTableHeader().getColumnModel().getColumn(TABLE_COLUMN_CHECKABLE).setHeaderRenderer(new CheckHeaderCellRenderer(this, "", false));
 	}
 

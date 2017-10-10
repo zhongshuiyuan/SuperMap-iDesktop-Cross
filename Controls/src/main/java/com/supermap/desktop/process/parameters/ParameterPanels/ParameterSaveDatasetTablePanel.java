@@ -50,7 +50,7 @@ public class ParameterSaveDatasetTablePanel extends SwingPanel implements IParam
 	}
 
 	private void initComponent() {
-		labelDatasource =new JLabel(ControlsProperties.getString("String_Label_ResultDatasource"));
+		labelDatasource =new JLabel(ControlsProperties.getString("String_Label_Datasource"));
 		datasourceComboBox = new DatasourceComboBox();
 		initTable();
 		initParameterSaveDatasetTable();

@@ -139,8 +139,10 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 		this.parameterDataset.addPropertyListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				parameterSaveDataset.setEnabled(parameterDataset.getSelectedDataset().getType().equals(DatasetType.GRID)
-						|| parameterDataset.getSelectedDataset().getType().equals(DatasetType.IMAGE));
+				if (parameterDataset.getSelectedDataset() != null) {
+					parameterSaveDataset.setEnabled(parameterDataset.getSelectedDataset().getType().equals(DatasetType.GRID)
+							|| parameterDataset.getSelectedDataset().getType().equals(DatasetType.IMAGE));
+				}
 			}
 		});
 
