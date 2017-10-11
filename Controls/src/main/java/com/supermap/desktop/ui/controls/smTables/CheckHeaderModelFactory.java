@@ -1,5 +1,6 @@
 package com.supermap.desktop.ui.controls.smTables;
 
+import com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels.TableModelBatchPrjTranslatorDatasetsList;
 import com.supermap.desktop.ui.controls.smTables.models.ModelFieldName;
 import com.supermap.desktop.ui.controls.smTables.models.ModelRarefyPoints;
 
@@ -15,6 +16,8 @@ public class CheckHeaderModelFactory {
 			jCheckBox = new JCheckBox(((ModelFieldName) iModel).getColumnName(0));
 		} else if (iModel instanceof ModelRarefyPoints) {
 			jCheckBox = new JCheckBox(((ModelRarefyPoints) iModel).getColumnName(0));
+		} else if (iModel instanceof TableModelBatchPrjTranslatorDatasetsList) {
+			jCheckBox = new JCheckBox(((TableModelBatchPrjTranslatorDatasetsList) iModel).getColumnName(0));
 		}
 		return jCheckBox;
 	}
