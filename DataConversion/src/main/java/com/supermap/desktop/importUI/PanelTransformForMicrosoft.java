@@ -53,6 +53,7 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 	private JLabel labelDataPreview;
 	private JTable tablePreviewCSV;
 	private JScrollPane scrollPanePreviewCSV;
+	private static String[] indexX;
 
 	private CompTitledPane paneForIndexAsPoint;
 
@@ -119,7 +120,16 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 
 	private void setImportAsPointWKT() {
 		//todo 设置后有崩溃问题，暂时屏蔽
-//		((ImportSettingCSV) importSetting).setIndexAsGeometry(comboBoxWKT.getSelectedIndex());
+		if (null != comboBoxWKT.getSelectedItem()) {
+			int index = -1;
+			for (int i = 0; i < indexX.length; i++) {
+				if ("Geometry".equals(indexX[i])) {
+					index = i;
+					break;
+				}
+			}
+			((ImportSettingCSV) importSetting).setIndexAsGeometry(index);
+		}
 	}
 
 	private ItemListener commonItemListener = new ItemListener() {
@@ -231,7 +241,7 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 				for (int i = 0, tempLength = tempValues.length; i < tempLength; i++) {
 					tempValues[i] = tempValues[i].replace("\"", "");
 				}
-				String[] indexX = tempValues;
+				indexX = tempValues;
 				int length = XlsUtilities.getData(importSetting.getSourceFilePath()).length;
 				String[][] tableValues = new String[length - 1][];
 				for (int i = 1; i < length; i++) {
@@ -245,7 +255,20 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 				this.tablePreviewCSV.getTableHeader().setPreferredSize(
 						new Dimension(this.tablePreviewCSV.getTableHeader().getPreferredSize().width, 30));
 				this.scrollPanePreviewCSV.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-				DefaultComboBoxModel comboBoxModelWkt = new DefaultComboBoxModel(indexX);
+				String[] wktStrs = new String[]{"Geometry"};
+				boolean hasGeometry = false;
+				for (int i = 0, size = indexX.length; i < size; i++) {
+					if (wktStrs[0].equals(indexX[i])) {
+						hasGeometry = true;
+						break;
+					}
+				}
+				DefaultComboBoxModel comboBoxModelWkt;
+				if (hasGeometry) {
+					comboBoxModelWkt = new DefaultComboBoxModel(wktStrs);
+				} else {
+					comboBoxModelWkt = new DefaultComboBoxModel();
+				}
 				DefaultComboBoxModel comboBoxModelX = new DefaultComboBoxModel(indexX);
 				DefaultComboBoxModel comboBoxModelY = new DefaultComboBoxModel(indexX);
 				this.comboBoxWKT.setModel(comboBoxModelWkt);
@@ -260,7 +283,6 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 				data = null;
 				tempValues = null;
 				tableValues = null;
-				indexX = null;
 				indexZ = null;
 				comboBoxModelWkt = null;
 				comboBoxModelX = null;
@@ -345,7 +367,7 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 		} else {
 			setIndexPanelEnabled();
 		}
-		if (importSetting instanceof ImportSettingExcel||importSetting instanceof ImportSettingGPX) {
+		if (importSetting instanceof ImportSettingExcel || importSetting instanceof ImportSettingGPX) {
 			this.labelDataPreview.setVisible(false);
 			this.paneForIndexAsPoint.setVisible(false);
 			this.labelSeparator.setVisible(false);

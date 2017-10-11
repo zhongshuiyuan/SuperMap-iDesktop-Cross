@@ -126,7 +126,7 @@ public class PrjCoordSysUtilities {
 				text = text.substring(0, text.length() - 2);
 			}
 		} catch (Exception ex) {
-			Application.getActiveApplication().getOutput().output(ex);
+			//Application.getActiveApplication().getOutput().output(ex);
 		}
 		return text;
 	}

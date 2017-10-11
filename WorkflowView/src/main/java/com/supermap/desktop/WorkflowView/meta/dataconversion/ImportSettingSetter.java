@@ -40,7 +40,7 @@ public class ImportSettingSetter {
 				for (Method method : methods) {
 					methodName = method.getName();
 					//todo 设置后有崩溃问题，暂时屏蔽
-					if (methodName.equals(reflectInfo.methodName) && !methodName.equals("setIndexAsGeometry")) {
+					if (methodName.equals(reflectInfo.methodName)) {
 						Object arg = null;
 						if (null != reflectInfo.mixReflectInfo && !reflectInfo.mixReflectInfo.isEmpty()) {
 							if (methodName.equals("setTargetPrjCoordSys")) {
@@ -94,6 +94,7 @@ public class ImportSettingSetter {
 							} else if (reflectInfo.parameter instanceof ParameterEnum
 									|| reflectInfo.parameter instanceof ParameterComboBox
 									|| reflectInfo.parameter instanceof ParameterCharset) {
+
 								arg = ((ParameterDataNode) selectItem).getData();
 							} else if (reflectInfo.parameter instanceof ParameterCheckBox) {
 								if (methodName.equals("setImportingByLayer")
