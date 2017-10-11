@@ -19,8 +19,8 @@ public class JPanelDatasetChooseForParameter extends JPanelDatasetChoose {
 	private final int COLUMN_DATASET = 1;
 	private final int COLUMN_DATASOURCE = 2;
 	private final int MAX_SIZE = 40;
-	private boolean isOnly= true;// 加入唯一性验证，即已经加入到table中的数据集，再次加入时如果isOnly= true，则进行验证，如果当前数据集已经存在
-	                             // 则不加入，如果不存在则加入，默认是开启了唯一性验证
+	private boolean isOnly = true;// 加入唯一性验证，即已经加入到table中的数据集，再次加入时如果isOnly= true，则进行验证，如果当前数据集已经存在
+	// 则不加入，如果不存在则加入，默认是开启了唯一性验证
 
 	public JPanelDatasetChooseForParameter(ArrayList<Dataset> datasets, String[] columnName, boolean[] enableColumn) {
 		super(datasets, columnName, enableColumn);
@@ -52,7 +52,7 @@ public class JPanelDatasetChooseForParameter extends JPanelDatasetChoose {
 				}
 			}
 			datasetInfo = new Object[3];
-			datasetInfo[COLUMN_INDEX] = tableModel.getRowCount() + 1+" ";
+			datasetInfo[COLUMN_INDEX] = tableModel.getRowCount() + 1 + " ";
 			datasetInfo[COLUMN_DATASET] = new DataCell(dataset);
 			DataCell cell = new DataCell();
 			cell.initDatasourceType(dataset.getDatasource());
@@ -64,18 +64,18 @@ public class JPanelDatasetChooseForParameter extends JPanelDatasetChoose {
 	@Override
 	public void setSupportDatasetTypes(DatasetType[] supportDatasetTypes) {
 		// Currently, only dataset types are considered single type, without considering multiple types.          ————fix by lixiaoyao   2017.10.09
-		if (this.supportDatasetTypes!=null && this.supportDatasetTypes.length==1 && supportDatasetTypes.length==1){
-			if (!this.supportDatasetTypes[0].equals(supportDatasetTypes[0])){
-				for (int i=datasets.size()-1;i>=0;i--){
+		if (this.supportDatasetTypes != null && this.supportDatasetTypes.length == 1 && supportDatasetTypes.length == 1) {
+			if (!this.supportDatasetTypes[0].equals(supportDatasetTypes[0])) {
+				for (int i = datasets.size() - 1; i >= 0; i--) {
 					this.tableModel.removeRow(i);
 				}
 				datasets.clear();
-			}else{
-				Vector vector= this.tableModel.getDataVector();
-				for (int index = 0; index <vector.size(); index++){
-					DataCell tempDataCell= (DataCell)((Vector) vector.get(index)).get(COLUMN_DATASET);
-					if (((Dataset)tempDataCell.getData()).equals(illegalDataset)){
-						int[] selectRows=new int[]{index};
+			} else {
+				Vector vector = this.tableModel.getDataVector();
+				for (int index = 0; index < vector.size(); index++) {
+					DataCell tempDataCell = (DataCell) ((Vector) vector.get(index)).get(COLUMN_DATASET);
+					if (((Dataset) tempDataCell.getData()).equals(illegalDataset)) {
+						int[] selectRows = new int[]{index};
 						int size = selectRows.length;
 						int exchangeSize = selectRows[size - 1] + 1;
 						int rowCount = tableDatasetDisplay.getRowCount() - 1;
@@ -91,8 +91,8 @@ public class JPanelDatasetChooseForParameter extends JPanelDatasetChoose {
 						for (int i = 0; i < size; i++) {
 							tableDatasetDisplay.addRowSelectionInterval(rowCount - i, rowCount - i);
 						}
-						datasets.remove(vector.size()-1);
-						this.tableModel.removeRow(vector.size()-1);
+						datasets.remove(vector.size() - 1);
+						this.tableModel.removeRow(vector.size() - 1);
 						break;
 					}
 				}
@@ -123,13 +123,13 @@ public class JPanelDatasetChooseForParameter extends JPanelDatasetChoose {
 		return result;
 	}
 
-	private boolean onlyProcessResult(Dataset dataset){
-		boolean result=true;
-		Vector vector= tableModel.getDataVector();
-		for (int i=0;i<vector.size();i++){
-			DataCell tempDataCell= (DataCell)((Vector) vector.get(i)).get(COLUMN_DATASET);
-			if (((Dataset)tempDataCell.getData()).equals(dataset)){
-				result=false;
+	private boolean onlyProcessResult(Dataset dataset) {
+		boolean result = true;
+		Vector vector = tableModel.getDataVector();
+		for (int i = 0; i < vector.size(); i++) {
+			DataCell tempDataCell = (DataCell) ((Vector) vector.get(i)).get(COLUMN_DATASET);
+			if (((Dataset) tempDataCell.getData()).equals(dataset)) {
+				result = false;
 				break;
 			}
 		}

@@ -61,7 +61,7 @@ public class ParameterDatasetChooserPanel extends SwingPanel implements IParamet
 	}
 
 	private void initResources() {
-		this.labelDatasetName.setText(CommonProperties.getString("String_Dataset"));
+		this.labelDatasetName.setText(CommonProperties.getString("String_Label_Dataset"));
 		this.buttonChooseDataset.setText(CommonProperties.getString("String_Choose"));
 	}
 

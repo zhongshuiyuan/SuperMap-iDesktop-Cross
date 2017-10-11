@@ -98,8 +98,8 @@ public class PanelResultDataset extends JPanel {
 
 	private void initResources() {
 		this.checkBoxUsed.setText(ControlsProperties.getString("String_Label_ResultDataSetting"));
-		this.labelDatasource.setText(ControlsProperties.getString("String_Label_ResultDatasource"));
-		this.labelResultDatasetName.setText(ControlsProperties.getString("String_Label_ResultDataset"));
+		this.labelDatasource.setText(ControlsProperties.getString("String_Label_Datasource"));
+		this.labelResultDatasetName.setText(ControlsProperties.getString("String_Label_Dataset"));
 	}
 
 	private void setComponentName() {

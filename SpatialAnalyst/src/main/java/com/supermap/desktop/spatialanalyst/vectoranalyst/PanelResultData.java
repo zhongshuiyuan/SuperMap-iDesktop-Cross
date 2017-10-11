@@ -48,8 +48,8 @@ public class PanelResultData extends JPanel {
 	}
 
 	private void initResources() {
-		this.labelDatasource.setText(ControlsProperties.getString("String_Label_ResultDatasource"));
-		this.labelDataset.setText(ControlsProperties.getString("String_Label_ResultDataset"));
+		this.labelDatasource.setText(ControlsProperties.getString("String_Label_Datasource"));
+		this.labelDataset.setText(ControlsProperties.getString("String_Label_Dataset"));
 	}
 
 	private void initComponent() {

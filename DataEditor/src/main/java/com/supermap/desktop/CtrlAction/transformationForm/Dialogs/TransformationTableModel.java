@@ -24,8 +24,8 @@ public class TransformationTableModel extends DefaultTableModel {
 			CommonProperties.getString("String_ColumnHeader_SourceDataset"),
 			CommonProperties.getString("String_ColumnHeader_SourceDatasource"),
 			DataEditorProperties.getString("String_Transformation_ColumnNeedResave"),
-			CommonProperties.getString("String_Label_ResultDatasource"),
-			CommonProperties.getString("String_Label_ResultDataset"),
+			CommonProperties.getString("String_Label_Datasource"),
+			CommonProperties.getString("String_Label_Dataset"),
 	};
 	public static final int COLUMN_DATASET = 0;
 	public static final int COLUMN_DATA_SOURCE = 1;

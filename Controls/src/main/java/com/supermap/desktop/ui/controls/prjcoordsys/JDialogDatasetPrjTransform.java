@@ -26,7 +26,7 @@ import java.text.MessageFormat;
  * Created by yuanR on 2017/9/25 0025.
  * 投影转换主窗体
  */
-public class JDialogPrjTransform extends SmDialog {
+public class JDialogDatasetPrjTransform extends SmDialog {
 
 	/**
 	 *
@@ -138,7 +138,7 @@ public class JDialogPrjTransform extends SmDialog {
 			} else {
 				dialogResult = DialogResult.CANCEL;
 			}
-			JDialogPrjTransform.this.dispose();
+			JDialogDatasetPrjTransform.this.dispose();
 		}
 	};
 
@@ -189,7 +189,7 @@ public class JDialogPrjTransform extends SmDialog {
 		return result;
 	}
 
-	public JDialogPrjTransform() {
+	public JDialogDatasetPrjTransform() {
 		initializeComponents();
 		initializeResources();
 		initializeLayout();
@@ -245,8 +245,8 @@ public class JDialogPrjTransform extends SmDialog {
 
 	private void initializeResources() {
 		this.setTitle(ControlsProperties.getString("String_Title_DatasetPrjTransform"));
-		this.labelDatasource.setText(ControlsProperties.getString("String_Label_ResultDatasource"));
-		this.labelDataset.setText(ControlsProperties.getString("String_Label_ResultDataset"));
+		this.labelDatasource.setText(ControlsProperties.getString("String_Label_Datasource"));
+		this.labelDataset.setText(ControlsProperties.getString("String_Label_Dataset"));
 		this.panelSourceData.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_SourceDataset")));
 		this.panelCoordSysInfo.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_SrcCoordSys")));
 		this.panelReferSysTransSettings.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_CoordSysTranslatorSetting")));

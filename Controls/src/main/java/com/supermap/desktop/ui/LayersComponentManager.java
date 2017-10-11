@@ -13,6 +13,7 @@ import com.supermap.realspace.Scene;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.event.MouseEvent;
 
 public class LayersComponentManager extends JComponent {
@@ -53,6 +54,7 @@ public class LayersComponentManager extends JComponent {
 		this.layersTree.addMouseListener(new java.awt.event.MouseAdapter() {
 			@Override
 			public void mousePressed(java.awt.event.MouseEvent evt) {
+				layersTreeSelectDataChange(evt);
 				layersTreeMousePressed(evt);
 			}
 		});
@@ -83,6 +85,21 @@ public class LayersComponentManager extends JComponent {
 		// 默认实现，后续进行初始化操作
 	}
 
+	//  Create by lixiaoyao 2017/10/10
+	// 当点击鼠标右键时，当坐标Y超出图层树当前显示的高度时那么不需要改变图层树当前选择的对象，
+	// 如果没超过那么就需要改变图层树中当前选择的对象，效果类似于工作空间树
+	private void layersTreeSelectDataChange(java.awt.event.MouseEvent e){
+		if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
+			if (e.getY()<=this.layersTree.getRowCount()*this.layersTree.getRowHeight()) {
+				TreePath mouseLocationPath = this.layersTree.getClosestPathForLocation(e.getX(), e.getY());
+				if (mouseLocationPath != null && mouseLocationPath.getPath() != null && mouseLocationPath.getPath().length > 0
+						&& !this.layersTree.isPathSelected(mouseLocationPath)) {
+					this.layersTree.setSelectionPath(mouseLocationPath);
+				}
+			}
+		}
+	}
+
 	private void layersTreeMousePressed(java.awt.event.MouseEvent evt) {
 		try {
 			int buttonType = evt.getButton();
@@ -95,8 +112,12 @@ public class LayersComponentManager extends JComponent {
 					if (!this.isContextMenuBuilded) {
 						this.buildContextMenu();
 					}
-
-					JPopupMenu popupMenu = this.getPopupMenu(selectedNodeData);
+					JPopupMenu popupMenu=null;
+					if (evt.getY()<=this.layersTree.getRowCount()*this.layersTree.getRowHeight()) {
+						popupMenu = this.getPopupMenu(selectedNodeData);
+					}else{// fix by lixiaoyao 2017/10/11 当点击的鼠标Y大于树当前显示的高度时，显示图层树的右键菜单
+						popupMenu=this.layersTreeToolBarPopupMenu;
+					}
 					if (popupMenu != null) {
 						popupMenu.show(this.layersTree, evt.getX(), evt.getY());
 					}
@@ -172,9 +193,9 @@ public class LayersComponentManager extends JComponent {
 						popupMenu = this.layerVectorThemeOtherPopupMenu;
 					}
 				} else if (layer.getDataset() != null) {
-					if (layer instanceof LayerHeatmap || layer instanceof LayerGridAggregation){
-						popupMenu=this.layerHeatmapAndAggregation;
-					}else if (layer.getDataset().getType() == DatasetType.CAD) {
+					if (layer instanceof LayerHeatmap || layer instanceof LayerGridAggregation) {
+						popupMenu = this.layerHeatmapAndAggregationPopupMenu;
+					} else if (layer.getDataset().getType() == DatasetType.CAD) {
 						popupMenu = this.layerVectorCADPopupMenu;
 					} else if (layer.getDataset().getType() == DatasetType.TEXT) {
 						popupMenu = this.layerTextPopupMenu;
@@ -567,7 +588,7 @@ public class LayersComponentManager extends JComponent {
 		return this.layer3DMapPopupMenu;
 	}
 
-	private JPopupMenu layerHeatmapAndAggregation=null;
+	private JPopupMenu layerHeatmapAndAggregationPopupMenu = null;
 
 	/**
 	 * 获取热力图或网格图的右键菜单。
@@ -575,7 +596,18 @@ public class LayersComponentManager extends JComponent {
 	 * @return
 	 */
 	public JPopupMenu getLayerHeatmapAndAggregationPopupMenu() {
-		return this.layerHeatmapAndAggregation;
+		return this.layerHeatmapAndAggregationPopupMenu;
+	}
+
+	private JPopupMenu layersTreeToolBarPopupMenu = null;
+
+	/**
+	 * 获取图层管理器工具条对应的右键菜单。
+	 *
+	 * @return
+	 */
+	public JPopupMenu getLayersTreeToolBarPopupMenu() {
+		return this.layersTreeToolBarPopupMenu;
 	}
 
 	public JPopupMenu getLayerWMSPopupMenu() {
@@ -619,7 +651,8 @@ public class LayersComponentManager extends JComponent {
 				this.layer3DPopupMenu = (JPopupMenu) manager.get("SuperMap.Desktop.UI.LayersControlManager.ContextMenuLayer3D");
 				this.layer3DMapPopupMenu = (JPopupMenu) manager.get("SuperMap.Desktop.UI.LayersControlManager.ContextMenuLayer3DMap");
 				this.layerWMSPopupMenu = (JPopupMenu) manager.get("SuperMap.Desktop.UI.LayersControlManager.ContextMenuLayerWMS");
-				this.layerHeatmapAndAggregation=(JPopupMenu)manager.get("SuperMap.Desktop.UI.LayersControlManager.ContextMenuHeatmapAndAggregation");
+				this.layerHeatmapAndAggregationPopupMenu = (JPopupMenu) manager.get("SuperMap.Desktop.UI.LayersControlManager.ContextMenuHeatmapAndAggregation");
+				this.layersTreeToolBarPopupMenu = (JPopupMenu) manager.get("SuperMap.Desktop.UI.LayersControlManager.ContextMenuLayersTreeToolBar");
 				this.isContextMenuBuilded = true;
 			}
 		} catch (Exception ex) {

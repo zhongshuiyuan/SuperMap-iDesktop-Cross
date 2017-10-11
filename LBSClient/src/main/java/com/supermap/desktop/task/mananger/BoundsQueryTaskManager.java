@@ -9,7 +9,6 @@ import com.supermap.desktop.Application;
 import com.supermap.desktop.lbsclient.LBSClientProperties;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.UICommonToolkit;
-import com.supermap.desktop.ui.controls.DataCell;
 import com.supermap.desktop.ui.controls.DatasetComboBox;
 import com.supermap.desktop.ui.controls.DatasourceComboBox;
 import com.supermap.desktop.utilities.CursorUtilities;
@@ -42,7 +41,7 @@ public class BoundsQueryTaskManager extends JPanel implements ITaskManager {
 
 	private void initiallizeResources() {
 		this.labelDatasource.setText(CommonProperties.getString("String_Label_Datasource"));
-		this.labelResult.setText(CommonProperties.getString("String_Label_ResultDataset") + ":");
+		this.labelResult.setText(CommonProperties.getString("String_Label_Dataset") + ":");
 		this.labelBounds.setText(LBSClientProperties.getString("String_BoundsDataset"));
 	}
 
