@@ -114,13 +114,16 @@ public class ProcessTree extends JTree implements SearchItemValueGetter<DefaultM
 		@Override
 		public Object getTransferData(DragGestureEvent dge) {
 			JTree tree = (JTree) dge.getComponent();
-			Object userObject = ((DefaultMutableTreeNode) tree.getLastSelectedPathComponent()).getUserObject();
+			if (null != tree.getLastSelectedPathComponent()) {
+				Object userObject = ((DefaultMutableTreeNode) tree.getLastSelectedPathComponent()).getUserObject();
 
-			if (userObject instanceof IProcessLoader) {
-				return ((IProcessLoader) userObject).getKey();
-			} else {
-				return "";
+				if (userObject instanceof IProcessLoader) {
+					return ((IProcessLoader) userObject).getKey();
+				} else {
+					return "";
+				}
 			}
+			return "";
 		}
 	}
 
