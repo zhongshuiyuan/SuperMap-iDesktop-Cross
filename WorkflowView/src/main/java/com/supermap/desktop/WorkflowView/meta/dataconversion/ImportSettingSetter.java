@@ -52,6 +52,9 @@ public class ImportSettingSetter {
 								point3D.setZ(Double.valueOf(((ISelectionParameter) reflectInfo.mixReflectInfo.get("setZ")).getSelectedItem().toString()));
 								arg = point3D;
 							} else if (methodName.equals("setFieldsAsPoint")) {
+								if (!((ParameterComboBox) reflectInfo.mixReflectInfo.get("setXFieldName")).isEnabled()) {
+									continue;
+								}
 								ArrayList<String> fields = new ArrayList();
 								Object setXFieldName = ((ISelectionParameter) reflectInfo.mixReflectInfo.get("setXFieldName")).getSelectedItem();
 								if (null != setXFieldName) {
