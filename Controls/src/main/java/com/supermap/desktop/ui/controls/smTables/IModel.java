@@ -5,5 +5,5 @@ package com.supermap.desktop.ui.controls.smTables;
  */
 public interface IModel {
 
-	public IModelController getModelController();
+	IModelController getModelController();
 }

@@ -14,6 +14,11 @@ import java.awt.event.MouseEvent;
 public class CheckHeaderCellRender implements TableCellRenderer {
 	IModel tableModel;
 	JTableHeader tableHeader;
+
+	public JCheckBox getCheckBox() {
+		return checkBox;
+	}
+
 	final JCheckBox checkBox;
 
 	/*
