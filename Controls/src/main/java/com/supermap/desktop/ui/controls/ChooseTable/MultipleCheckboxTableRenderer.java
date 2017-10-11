@@ -36,11 +36,11 @@ public class MultipleCheckboxTableRenderer implements TableCellRenderer {
 			if (!StringUtilities.isNullOrEmpty(((MultipleCheckboxItem) value).getText())) {
 				checkBox.setText(((MultipleCheckboxItem) value).getText());
 			}
-		}else{
+		} else {
 			checkBox.setSelected((Boolean) value);
 		}
 		panelContent.setLayout(new GridBagLayout());
-		panelContent.add(checkBox,new GridBagConstraintsHelper(0,0,1,1).setWeight(0,0));
+		panelContent.add(checkBox, new GridBagConstraintsHelper(0, 0, 1, 1).setWeight(1, 0).setAnchor(GridBagConstraintsHelper.WEST));
 		setComponentTheme(panelContent);
 		setComponentTheme(checkBox);
 		return panelContent;

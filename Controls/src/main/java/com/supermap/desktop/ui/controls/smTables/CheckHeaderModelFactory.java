@@ -13,8 +13,8 @@ public class CheckHeaderModelFactory {
 		JCheckBox jCheckBox = null;
 		if (iModel instanceof ModelFieldName) {
 			jCheckBox = new JCheckBox(((ModelFieldName) iModel).getColumnName(0));
-		}else if (iModel instanceof ModelRarefyPoints){
-			jCheckBox=new JCheckBox(((ModelRarefyPoints)iModel).getColumnName(0));
+		} else if (iModel instanceof ModelRarefyPoints) {
+			jCheckBox = new JCheckBox(((ModelRarefyPoints) iModel).getColumnName(0));
 		}
 		return jCheckBox;
 	}

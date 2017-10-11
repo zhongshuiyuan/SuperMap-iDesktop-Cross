@@ -135,8 +135,8 @@ public class LayerRelocateDatasetPropertyControl extends AbstractLayerPropertyCo
 	@Override
 	protected void initializeResources() {
 		((TitledBorder) this.getBorder()).setTitle(MapViewProperties.getString("String_FormRelateDataset_Title"));
-		this.labelDatasource.setText(ControlsProperties.getString("String_Label_ResultDatasource"));
-		this.labelDataset.setText(ControlsProperties.getString("String_Label_ResultDataset"));
+		this.labelDatasource.setText(ControlsProperties.getString("String_Label_Datasource"));
+		this.labelDataset.setText(ControlsProperties.getString("String_Label_Dataset"));
 	}
 
 	private DatasetType[] getSupportDatasetTypes() {

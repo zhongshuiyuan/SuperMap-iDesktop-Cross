@@ -1,6 +1,5 @@
 package com.supermap.desktop.ui.controls.ChooseTable;
 
-import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -20,11 +19,7 @@ public class MultipleCheckboxTableModel extends DefaultTableModel {
 	// */
 	@Override
 	public Class getColumnClass(int c) {
-//		if (c == 0) {
-//			return JCheckBox.class;
-//		} else {
-			return getValueAt(0, c).getClass();
-//		}
+		return getValueAt(0, c).getClass();
 	}
 
 	@Override

@@ -98,9 +98,9 @@ public class ModelFieldNameCaptionType extends DefaultTableModel implements IMod
 		return this.dataset;
 	}
 
-	public void setDataset(DatasetVector dataset,boolean isShowSystemField){
-		this.dataset=dataset;
-		this.isShowSystemField=isShowSystemField;
+	public void setDataset(DatasetVector dataset, boolean isShowSystemField) {
+		this.dataset = dataset;
+		this.isShowSystemField = isShowSystemField;
 		resetTableData();
 	}
 
@@ -109,10 +109,10 @@ public class ModelFieldNameCaptionType extends DefaultTableModel implements IMod
 		resetTableData();
 	}
 
-	public void resetTableData(){
+	public void resetTableData() {
 		this.tableDatas.clear();
 		if (dataset != null) {
-			FieldInfos fieldInfos = ((DatasetVector)this.dataset).getFieldInfos();
+			FieldInfos fieldInfos = ((DatasetVector) this.dataset).getFieldInfos();
 			int count = fieldInfos.getCount();
 			for (int i = 0; i < count; i++) {
 				if (this.fieldTypes == null || ArrayUtilities.isArrayContains(this.fieldTypes, fieldInfos.get(i).getType())) {
