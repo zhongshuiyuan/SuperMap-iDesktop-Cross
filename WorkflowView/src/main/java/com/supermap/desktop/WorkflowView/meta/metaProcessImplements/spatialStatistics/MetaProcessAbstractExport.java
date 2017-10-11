@@ -33,7 +33,7 @@ import java.text.MessageFormat;
  * Created by xie on 2017/6/29.
  */
 public class MetaProcessAbstractExport extends MetaProcess {
-	protected final static String INPUT_DATA = "SourceDataset";
+	protected final static String INPUT_DATA = CommonProperties.getString("String_GroupBox_SourceData");
 	protected final static String OUTPUT_DATA = "ExportResult";
 	protected static String OUTPUT_DATA_TYPE;
 	//	protected ParameterDatasetChooser chooseDataset;
