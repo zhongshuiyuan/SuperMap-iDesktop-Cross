@@ -245,8 +245,7 @@ public class RasterAlgebraOperationDialog extends SmDialog {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 2) {
-				int index = workspaceTree.getRowForLocation(e.getX(), e.getY());
-				TreePath treePath = workspaceTree.getPathForRow(index);
+				TreePath treePath = workspaceTree.getSelectionPath();
 				if (treePath != null) {
 					DefaultMutableTreeNode selNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
 					Object data = ((TreeNodeData) selNode.getUserObject()).getData();
