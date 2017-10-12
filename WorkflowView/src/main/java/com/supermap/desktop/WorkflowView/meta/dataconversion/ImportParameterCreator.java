@@ -112,7 +112,7 @@ public class ImportParameterCreator implements IImportParameterCreator {
 								parameterYFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
 								parameterZFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
 							}
-							parameterWKTFieldName.setSelectedItem("Geometry");
+							parameterWKTFieldName.setSelectedItem(dataNode);
 							parameterXFieldName.setSelectedItem(indexX[0]);
 							parameterYFieldName.setSelectedItem(indexX[0]);
 							parameterZFieldName.setSelectedItem(" ");
