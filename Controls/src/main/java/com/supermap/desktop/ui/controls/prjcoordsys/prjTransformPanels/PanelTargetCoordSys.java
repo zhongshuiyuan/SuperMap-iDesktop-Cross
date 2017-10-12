@@ -36,7 +36,7 @@ public class PanelTargetCoordSys extends JPanel {
 	private PrjCoordSys targetPrjCoordSys = null;
 	private PrjCoordSys buttonSetPrjCoordSys = null;
 	private PrjCoordSys importFilePrjCoordSys = null;
-	private DoSome doSome;
+	protected DoSome doSome;
 
 	/**
 	 * 获得设置好的坐标系
@@ -228,10 +228,12 @@ public class PanelTargetCoordSys extends JPanel {
 	private void setPrjCoordSysInfo(PrjCoordSys prjCoordSysInfo) {
 		this.targetPrjCoordSys = prjCoordSysInfo;
 		this.panelCoordSysInfo.setCoordInfo(PrjCoordSysUtilities.getDescription(prjCoordSysInfo));
-		// 通过doSome，将改变后的targetPrjCoordSys值传给主面板
-		this.doSome.setTargetPrjCoordSys(this.targetPrjCoordSys);
-		// 如果值为空，控制主面板确定按钮不可用
-		this.doSome.setOKButtonEnabled(this.targetPrjCoordSys != null);
+		if (this.doSome != null) {
+			// 通过doSome，将改变后的targetPrjCoordSys值传给主面板
+			this.doSome.setTargetPrjCoordSys(this.targetPrjCoordSys);
+			// 如果值为空，控制主面板确定按钮不可用
+			this.doSome.setOKButtonEnabled(this.targetPrjCoordSys != null);
+		}
 	}
 
 	/**
@@ -274,4 +276,6 @@ public class PanelTargetCoordSys extends JPanel {
 		this.fileChooser.setEnabled(isEnable);
 		this.panelCoordSysInfo.setEnabled(isEnable);
 	}
+
+
 }
