@@ -14,6 +14,7 @@ import com.supermap.desktop.dialog.symbolDialogs.SymbolDialog;
 import com.supermap.desktop.ui.UICommonToolkit;
 import com.supermap.desktop.utilities.CursorUtilities;
 import com.supermap.desktop.utilities.MapUtilities;
+import com.supermap.desktop.utilities.SystemPropertyUtilities;
 import com.supermap.mapping.*;
 
 import javax.swing.*;
@@ -111,6 +112,9 @@ public class LayersTree extends JTree {
 	}
 
 	private void initDrag() {
+		if (SystemPropertyUtilities.isLinux() && this.getRowHeight() == -1) {
+			this.setRowHeight(17);
+		}
 		this.setDragEnabled(true);
 		dragSource = DragSource.getDefaultDragSource();
 		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_MOVE, new LayersTreeDragGestureListener());
