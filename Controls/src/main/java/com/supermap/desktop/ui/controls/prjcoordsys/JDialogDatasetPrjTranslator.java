@@ -26,7 +26,7 @@ import java.text.MessageFormat;
  * Created by yuanR on 2017/9/25 0025.
  * 投影转换主窗体
  */
-public class JDialogDatasetPrjTransform extends SmDialog {
+public class JDialogDatasetPrjTranslator extends SmDialog {
 
 	/**
 	 *
@@ -138,7 +138,7 @@ public class JDialogDatasetPrjTransform extends SmDialog {
 			} else {
 				dialogResult = DialogResult.CANCEL;
 			}
-			JDialogDatasetPrjTransform.this.dispose();
+			JDialogDatasetPrjTranslator.this.dispose();
 		}
 	};
 
@@ -189,7 +189,7 @@ public class JDialogDatasetPrjTransform extends SmDialog {
 		return result;
 	}
 
-	public JDialogDatasetPrjTransform() {
+	public JDialogDatasetPrjTranslator() {
 		initializeComponents();
 		initializeResources();
 		initializeLayout();

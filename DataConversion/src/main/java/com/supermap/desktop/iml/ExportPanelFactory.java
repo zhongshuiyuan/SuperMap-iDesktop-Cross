@@ -42,11 +42,11 @@ public class ExportPanelFactory implements IExportPanelFactory {
 				exportPanel = new PanelExportTransformForVector(panelExports, SAMETYPE);
 			}
 		} else if (isGridTypes(panelExports)) {
-			exportPanel = new PanelExportTransformForVector(panelExports, GRIDTYPE);
+			exportPanel = new PanelExportTransformForGrid(owner, panelExports, GRIDTYPE);
 		} else if (isVectorTypes(panelExports)) {
 			exportPanel = new PanelExportTransformForVector(panelExports, VECTORTYPE);
 		} else {
-			exportPanel = new PanelExportTransformForVector(panelExports, GRID_AND_VECTORTYPE);
+			exportPanel = new PanelExportTransform(panelExports, GRID_AND_VECTORTYPE);
 		}
 		return exportPanel;
 	}

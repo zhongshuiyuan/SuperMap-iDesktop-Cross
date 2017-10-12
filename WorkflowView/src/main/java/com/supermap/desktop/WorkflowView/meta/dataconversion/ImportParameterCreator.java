@@ -95,14 +95,24 @@ public class ImportParameterCreator implements IImportParameterCreator {
 								tempValues[i] = tempValues[i].replace("\"", "");
 							}
 							String[] indexX = tempValues;
+							int geoIndex = -1;
+							for (int i = 0, size = indexX.length; i < size; i++) {
+								if ("Geometry".equals(indexX[i])) {
+									geoIndex = i;
+								}
+							}
+							ParameterDataNode dataNode = null;
+							if (geoIndex != -1) {
+								dataNode = new ParameterDataNode("Geometry", geoIndex);
+								parameterWKTFieldName.addItem(new ParameterDataNode("Geometry", geoIndex));
+							}
 							parameterZFieldName.addItem(new ParameterDataNode("", " "));
 							for (int i = 0; i < indexX.length; i++) {
-								parameterWKTFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
 								parameterXFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
 								parameterYFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
 								parameterZFieldName.addItem(new ParameterDataNode(indexX[i], indexX[i]));
 							}
-							parameterWKTFieldName.setSelectedItem(indexX[0]);
+							parameterWKTFieldName.setSelectedItem(dataNode);
 							parameterXFieldName.setSelectedItem(indexX[0]);
 							parameterYFieldName.setSelectedItem(indexX[0]);
 							parameterZFieldName.setSelectedItem(" ");
@@ -332,7 +342,7 @@ public class ImportParameterCreator implements IImportParameterCreator {
 				importSetting instanceof ImportSettingTEMSClutter || importSetting instanceof ImportSettingVCT ||
 				importSetting instanceof ImportSettingRAW || importSetting instanceof ImportSettingGJB ||
 				importSetting instanceof ImportSettingTEMSVector || importSetting instanceof ImportSettingTEMSBuildingVector
-				|| importSetting instanceof ImportSettingFileGDBVector||importSetting instanceof ImportSettingSimpleJson) {
+				|| importSetting instanceof ImportSettingFileGDBVector || importSetting instanceof ImportSettingSimpleJson) {
 			reflectInfoArray.add(targetDatasetName);
 			reflectInfoArray.add(targetDatasource);
 			reflectInfoArray.add(reflectInfoEncodeType);
@@ -496,7 +506,7 @@ public class ImportParameterCreator implements IImportParameterCreator {
 					}
 				}
 			});
-		}else{
+		} else {
 			parameterFile.setRequisite(true);
 		}
 		parameterCombineSourceInfoSet.addParameters(parameterFile);
@@ -719,7 +729,7 @@ public class ImportParameterCreator implements IImportParameterCreator {
 
 	private void addPrj(PrjCoordSys newPrjCoorSys, ReflectInfo setPrjCoordSys) {
 		setPrjCoordSys.mixReflectInfo = new HashMap<>();
-		setPrjCoordSys.mixReflectInfo.put("newPrjCoordSys",newPrjCoorSys);
+		setPrjCoordSys.mixReflectInfo.put("newPrjCoordSys", newPrjCoorSys);
 		reflectInfoArray.add(setPrjCoordSys);
 	}
 
