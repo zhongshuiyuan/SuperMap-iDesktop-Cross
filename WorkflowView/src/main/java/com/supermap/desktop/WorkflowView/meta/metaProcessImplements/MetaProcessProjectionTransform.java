@@ -15,10 +15,10 @@ import com.supermap.desktop.process.parameter.interfaces.IParameterPanel;
 import com.supermap.desktop.process.parameter.interfaces.IParameters;
 import com.supermap.desktop.process.parameter.interfaces.datas.types.DatasetTypes;
 import com.supermap.desktop.process.parameter.ipls.*;
+import com.supermap.desktop.process.parameters.ParameterPanels.PrjTranslator.ParameterTargetCoordSys;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.properties.CoordSysTransMethodProperties;
 import com.supermap.desktop.ui.controls.DialogResult;
-import com.supermap.desktop.ui.controls.prjcoordsys.JDialogPrjCoordSysSettings;
 import com.supermap.desktop.ui.controls.prjcoordsys.JDialogPrjCoordSysTranslatorSettings;
 import com.supermap.desktop.utilities.DatasetUtilities;
 
@@ -43,7 +43,10 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 
 	private ParameterComboBox parameterMode = new ParameterComboBox(ControlsProperties.getString("String_TransMethod"));
 	private ParameterButton parameterSetTransform = new ParameterButton(ProcessProperties.getString("String_ParamSet"));
-	private ParameterButton parameterSetProjection = new ParameterButton(ProcessProperties.getString("String_setProject"));
+	//private ParameterButton parameterSetProjection = new ParameterButton(ProcessProperties.getString("String_setProject"));
+
+	// 目标坐标系
+	private ParameterTargetCoordSys parameterTargetCoordSys = new ParameterTargetCoordSys();
 
 	private ParameterSaveDataset parameterSaveDataset;
 
@@ -77,11 +80,15 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 		);
 
 		ParameterCombine parameterCombine = new ParameterCombine(ParameterCombine.HORIZONTAL);
-		parameterCombine.addParameters(new ParameterCombine(), this.parameterSetTransform, this.parameterSetProjection);
+		parameterCombine.addParameters(this.parameterMode, this.parameterSetTransform);
 		parameterCombine.setWeightIndex(0);
+
+		ParameterCombine parameterCombineTargetCoordSys = new ParameterCombine();
+		parameterCombineTargetCoordSys.setDescribe(ControlsProperties.getString("String_GroupBox_TarCoorSys"));
+		parameterCombineTargetCoordSys.addParameters(this.parameterTargetCoordSys);
 		ParameterCombine parameterCombineSetting = new ParameterCombine();
 		parameterCombineSetting.setDescribe(SETTING_PANEL_DESCRIPTION);
-		parameterCombineSetting.addParameters(this.parameterMode, parameterCombine);
+		parameterCombineSetting.addParameters(parameterCombine, parameterCombineTargetCoordSys);
 
 		this.parameterSaveDataset = new ParameterSaveDataset();
 		this.parameterSaveDataset.setDefaultDatasetName("result_prjTransform");
@@ -115,15 +122,15 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 	}
 
 	private void initParameterListeners() {
-		this.parameterSetProjection.setActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JDialogPrjCoordSysSettings jDialogPrjCoordSysSettings = new JDialogPrjCoordSysSettings();
-				if (jDialogPrjCoordSysSettings.showDialog() == DialogResult.OK) {
-					prjCoordSys = jDialogPrjCoordSysSettings.getPrjCoordSys();
-				}
-			}
-		});
+		//this.parameterSetProjection.setActionListener(new ActionListener() {
+		//	@Override
+		//	public void actionPerformed(ActionEvent e) {
+		//		JDialogPrjCoordSysSettings jDialogPrjCoordSysSettings = new JDialogPrjCoordSysSettings();
+		//		if (jDialogPrjCoordSysSettings.showDialog() == DialogResult.OK) {
+		//			prjCoordSys = jDialogPrjCoordSysSettings.getPrjCoordSys();
+		//		}
+		//	}
+		//});
 
 		this.parameterSetTransform.setActionListener(new ActionListener() {
 			@Override
@@ -164,6 +171,8 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 		} else {
 			src = this.parameterDataset.getSelectedItem();
 		}
+
+		this.prjCoordSys = parameterTargetCoordSys.getTargetPrjCoordSys();
 		// 当未设置投影时，给定原数据集投影,防止参数为空报错-yuanR2017.9.6
 		if (this.prjCoordSys == null) {
 			this.prjCoordSys = src.getPrjCoordSys();
@@ -173,18 +182,18 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 		try {
 			CoordSysTransMethod method = (CoordSysTransMethod) this.parameterMode.getSelectedData();
 			fireRunning(new RunningEvent(this, 0, "Start set geoCoorSys"));
-			if (parameterSaveDataset.isEnabled()) {
-				String resultDatasetName = parameterSaveDataset.getResultDatasource().getDatasets().getAvailableDatasetName(parameterSaveDataset.getDatasetName());
-				Dataset dataset = CoordSysTranslator.convert(src, this.prjCoordSys, parameterSaveDataset.getResultDatasource(), resultDatasetName, this.parameter, method);
+			if (this.parameterSaveDataset.isEnabled()) {
+				String resultDatasetName = this.parameterSaveDataset.getResultDatasource().getDatasets().getAvailableDatasetName(this.parameterSaveDataset.getDatasetName());
+				Dataset dataset = CoordSysTranslator.convert(src, this.prjCoordSys, this.parameterSaveDataset.getResultDatasource(), resultDatasetName, this.parameter, method);
 				isSuccessful = (dataset != null);
 
 				if (isSuccessful) {
 					getParameters().getOutputs().getData(OUTPUT_DATA).setValue(dataset);
 					Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_RasterSuccess"),
-							src.getDatasource().getAlias(), src.getName(), parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
+							src.getDatasource().getAlias(), src.getName(), this.parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
 				} else {
 					Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
-							src.getDatasource().getAlias(), src.getName(), parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
+							src.getDatasource().getAlias(), src.getName(), this.parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
 				}
 
 			} else {
