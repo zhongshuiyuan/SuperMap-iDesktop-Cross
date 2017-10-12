@@ -54,14 +54,14 @@ public class WorkspaceComponentManager extends JComponent {
 
 		initializeComponent();
 		initializeResources();
-		initilize(Application.getActiveApplication().getWorkspace());
+		initialize(Application.getActiveApplication().getWorkspace());
 	}
 
 	public WorkspaceComponentManager(Workspace workspace) {
 
 		initializeComponent();
 		initializeResources();
-		initilize(workspace);
+		initialize(workspace);
 	}
 
 	private void initializeComponent() {
@@ -430,7 +430,7 @@ public class WorkspaceComponentManager extends JComponent {
 		}
 	}
 
-	private void initilize(Workspace workspace) {
+	private void initialize(Workspace workspace) {
 		try {
 			this.workspaceTree.setWorkspace(workspace);
 
@@ -475,12 +475,12 @@ public class WorkspaceComponentManager extends JComponent {
 						if (nodeData != null) {
 							if (nodeData instanceof Datasource) {
 								if (activeDatasources == null) {
-									activeDatasources = new ArrayList<Datasource>();
+									activeDatasources = new ArrayList<>();
 								}
 								activeDatasources.add((Datasource) nodeData);
 							} else if (nodeData instanceof Dataset) {
 								if (activeDatasets == null) {
-									activeDatasets = new ArrayList<Dataset>();
+									activeDatasets = new ArrayList<>();
 								}
 								activeDatasets.add((Dataset) nodeData);
 							}
