@@ -185,7 +185,7 @@ public class XlsUtilities {
 						fieldInfo = new FieldInfo();
 						fieldInfo.setType(FieldType.TEXT);
 						String name = sheet.getRow(0).getCell(j).getStringCellValue();
-						fieldInfo.setName(name);
+						fieldInfo.setName("Field_" + name);
 						fieldInfos.add(fieldInfo);
 						fieldNames.add(name);
 					}
