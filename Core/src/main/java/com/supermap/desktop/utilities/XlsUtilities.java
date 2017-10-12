@@ -185,6 +185,9 @@ public class XlsUtilities {
 						fieldInfo = new FieldInfo();
 						fieldInfo.setType(FieldType.TEXT);
 						String name = sheet.getRow(0).getCell(j).getStringCellValue();
+						if (name.startsWith("Sm")) {
+							name = "Field_" + name;
+						}
 						fieldInfo.setName(name);
 						fieldInfos.add(fieldInfo);
 						fieldNames.add(name);
@@ -205,6 +208,9 @@ public class XlsUtilities {
 				HashMap map = new HashMap();
 				int j = 0;
 				int resultCount = rowCount;
+				if (rowCount == 0) {
+					continue;
+				}
 				if (importFieldName) {
 					j = 1;
 					resultCount = rowCount - 1;
@@ -244,8 +250,7 @@ public class XlsUtilities {
 				fieldInfo.dispose();
 			}
 		} catch (Exception e) {
-			//todo 为字段设置名称时有可能异常（首行作为字段信息时，数据库字段类型长度名称重复问题）,直接输出异常终止导入
-			Application.getActiveApplication().getOutput().output(CommonProperties.getString("String_FieldName_Illegal"));
+			Application.getActiveApplication().getOutput().output(e);
 		}
 		return importResults;
 	}
@@ -300,6 +305,9 @@ public class XlsUtilities {
 						fieldInfo = new FieldInfo();
 						fieldInfo.setType(FieldType.TEXT);
 						String name = sheet.getRow(0).getCell(j).getStringCellValue();
+						if (name.startsWith("Sm")) {
+							name = "Field_" + name;
+						}
 						fieldInfo.setName(name);
 						fieldInfos.add(fieldInfo);
 						fieldNames.add(name);
@@ -320,6 +328,9 @@ public class XlsUtilities {
 				HashMap map = new HashMap();
 				int j = 0;
 				int resultCount = rowCount;
+				if (rowCount == 0) {
+					continue;
+				}
 				if (importFieldName) {
 					j = 1;
 					resultCount = rowCount - 1;
