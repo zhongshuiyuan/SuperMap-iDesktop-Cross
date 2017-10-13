@@ -139,7 +139,7 @@ public class ParameterInputDataType extends ParameterCombine {
 		bigDataStoreName.addPropertyListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				if (evt.getPropertyName().equals("LeftButtonClicked"))
+				if (evt.getPropertyName().equals("ComboBoxClicked"))
 					loginAndInitInputDataType();
 			}
 		});
@@ -210,7 +210,7 @@ public class ParameterInputDataType extends ParameterCombine {
 	}
 
 	private void initBigDataStoreName() {
-		String ipAndPort = parameterTextFieldAddress.getSelectedItem().toString();
+		String ipAndPort = IServerLoginInfo.ipAddr + ":" + IServerLoginInfo.port;
 		String datasetsURL = service.HTTP_STR + ipAndPort + DATASETS_URL;
 		String resultDatasets = service.query(datasetsURL);
 		QueryDatasetNamesResult queryDatasetNamesResult = JSON.parseObject(resultDatasets, QueryDatasetNamesResult.class);
