@@ -2,6 +2,7 @@ package com.supermap.desktop.ui.mdi.plaf.feature;
 
 import com.supermap.desktop.ui.mdi.MdiGroup;
 import com.supermap.desktop.ui.mdi.MdiPage;
+import com.supermap.desktop.ui.mdi.MdiTabsContextMenu.MdiTabContextMenuUtilities;
 import com.supermap.desktop.ui.mdi.action.IMdiAction;
 import com.supermap.desktop.ui.mdi.plaf.properties.MdiTabUIProperties;
 import com.supermap.desktop.ui.mdi.util.MdiResource;
@@ -167,28 +168,33 @@ class MdiTabFeature extends AbstractMdiFeature {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if (SwingUtilities.isLeftMouseButton(e)) {
-			if (this.iconFeature.isContains(e.getPoint()) || this.textFeature.isContains(e.getPoint())) {
-				this.page.active();
-			} else {
-				boolean isChildPressed = false; // 子 feature 是否被点击
-				for (int i = 0; i < this.features.size(); i++) {
-					IMdiFeature feature = this.features.get(i);
-					if (feature.isContains(e.getPoint())) {
-						feature.mousePressed(e);
-						isChildPressed = true;
-					}
-				}
-
-				// 没有点击子 feature，就激活当前选项卡
-				if (!isChildPressed) {
-					this.page.active();
-				}
-			}
+			activeCurrentPage(e);
 		} else if (SwingUtilities.isRightMouseButton(e)) {
-			// TODO 右键菜单，留空
+			activeCurrentPage(e);
+			MdiTabContextMenuUtilities.showMdiTabsContextMenu(e,this.page);
 		} else if (SwingUtilities.isMiddleMouseButton(e)) {
 			if (this.iconFeature.isContains(e.getPoint()) || this.textFeature.isContains(e.getPoint())) {
 				this.page.close();
+			}
+		}
+	}
+
+	private void activeCurrentPage(MouseEvent e){
+		if (this.iconFeature.isContains(e.getPoint()) || this.textFeature.isContains(e.getPoint())) {
+			this.page.active();
+		} else {
+			boolean isChildPressed = false; // 子 feature 是否被点击
+			for (int i = 0; i < this.features.size(); i++) {
+				IMdiFeature feature = this.features.get(i);
+				if (feature.isContains(e.getPoint())) {
+					feature.mousePressed(e);
+					isChildPressed = true;
+				}
+			}
+
+			// 没有点击子 feature，就激活当前选项卡
+			if (!isChildPressed) {
+				this.page.active();
 			}
 		}
 	}

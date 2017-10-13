@@ -147,13 +147,13 @@ public class MetaProcessAbstractExport extends MetaProcess {
 		tempExportSetting.setSourceData(selectDataset);
 		FileType[] fileTypes = tempExportSetting.getSupportedFileType();
 		int size = fileTypes.length;
+		supportType.removeAllItems();
+		ParameterDataNode selectNode = null;
 		if (size > 0) {
 			boolean isGpx = false;
 			if (tempExportSetting.getSourceData() instanceof DatasetVector) {
 				isGpx = GPXAnalytic.isGPXType((DatasetVector) tempExportSetting.getSourceData());
 			}
-			supportType.removeAllItems();
-			ParameterDataNode selectNode = null;
 			if (isGpx) {
 				selectNode = new ParameterDataNode(ExportSettingUtilities.getDatasetName(UserDefineFileType.GPX.toString()), UserDefineFileType.GPX);
 				supportType.addItem(selectNode);
@@ -178,9 +178,14 @@ public class MetaProcessAbstractExport extends MetaProcess {
 				supportType.setSelectedItem(selectNode);
 				exportSetting = ExportSettingUtilities.createExportSetting(fileTypes[0]);
 			}
-		}
-		if (selectDataset instanceof DatasetVector) {
-			supportType.addItem(new ParameterDataNode(ExportSettingUtilities.getDatasetName(UserDefineFileType.EXCEL.toString()), UserDefineFileType.EXCEL));
+			if (selectDataset instanceof DatasetVector) {
+				supportType.addItem(new ParameterDataNode(ExportSettingUtilities.getDatasetName(UserDefineFileType.EXCEL.toString()), UserDefineFileType.EXCEL));
+			}
+		} else if (size == 0 && tempExportSetting.getSourceData() instanceof DatasetVector) {
+			selectNode = new ParameterDataNode(ExportSettingUtilities.getDatasetName(UserDefineFileType.EXCEL.toString()), UserDefineFileType.EXCEL);
+			supportType.addItem(selectNode);
+			supportType.setSelectedItem(selectNode);
+			exportSetting = ExportSettingUtilities.createExportSetting(UserDefineFileType.EXCEL);
 		}
 		exportSetting.setSourceData(selectDataset);
 		targetName.setSelectedItem(selectDataset.getName());

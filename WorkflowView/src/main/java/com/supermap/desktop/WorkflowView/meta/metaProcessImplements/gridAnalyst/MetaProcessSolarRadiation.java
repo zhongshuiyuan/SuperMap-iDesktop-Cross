@@ -3,6 +3,7 @@ package com.supermap.desktop.WorkflowView.meta.metaProcessImplements.gridAnalyst
 import com.supermap.analyst.spatialanalyst.SolarRadiation;
 import com.supermap.analyst.spatialanalyst.SolarRadiationParameter;
 import com.supermap.analyst.spatialanalyst.SolarRadiationResult;
+import com.supermap.analyst.spatialanalyst.SolarTimeMode;
 import com.supermap.data.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.WorkflowView.ProcessOutputResultProperties;
@@ -97,6 +98,11 @@ public class MetaProcessSolarRadiation extends MetaProcess {
 			this.checkboBoxAndTextFieldDiffuse.setSelectedItem(dataset.getDatasource().getDatasets().getAvailableDatasetName("result_Diffuse"));
 			this.checkboBoxAndTextFieldDuration.setSelectedItem(dataset.getDatasource().getDatasets().getAvailableDatasetName("result_Duration"));
 			changeLatitude((DatasetGrid) dataset);
+		} else {
+			this.textFieldTotal.setSelectedItem("result_Total");
+			this.checkboBoxAndTextFieldDirection.setSelectedItem("result_Direction");
+			this.checkboBoxAndTextFieldDiffuse.setSelectedItem("result_Diffuse");
+			this.checkboBoxAndTextFieldDuration.setSelectedItem("result_Duration");
 		}
 		this.resultDatasource.setReadOnlyNeeded(false);
 		this.parameterNumberLatitude.setMinValue(-90);
@@ -185,6 +191,16 @@ public class MetaProcessSolarRadiation extends MetaProcess {
 			solarRadiationParameter.setTransmittance(Double.valueOf(this.parameterNumberTransmittance.getSelectedItem().toString()));
 			solarRadiationParameter.setZFactor(Double.valueOf(this.parameterNumberZFactor.getSelectedItem().toString()));
 
+			// fix by lixiaoyao 2017/10/13
+			// 当日辐射分析设置的起始时间比终止时间大时，返回进行年辐射分析，会抛异常，原因是虽然进行的是年辐射分析，但是组件的接口还是检查了
+			// 日辐射分析起始时间与终止时间，因此就转换，不让抛异常
+			if (solarRadiationParameter.getTimeMode() == SolarTimeMode.MULTIDAYS &&
+					Double.compare(solarRadiationParameter.getHourStart(), solarRadiationParameter.getHourEnd()) == 1) {
+				double temp = solarRadiationParameter.getHourStart();
+				solarRadiationParameter.setHourStart(solarRadiationParameter.getHourEnd());
+				solarRadiationParameter.setHourEnd(temp);
+			}
+
 			SolarRadiation.addSteppedListener(steppedListener);
 			SolarRadiationResult solarRadiationResult = SolarRadiation.areaSolarRadiation(src, solarRadiationParameter,
 					this.resultDatasource.getSelectedItem(), totalDatasetName, directionDatasetName, diffuseDatasetName, durationDatasetName);
@@ -194,7 +210,7 @@ public class MetaProcessSolarRadiation extends MetaProcess {
 			this.getParameters().getOutputs().getData(OUTPUT_DATA_DURATION).setValue(solarRadiationResult.getDurationDatasetGrid());
 			isSuccessful = solarRadiationResult != null;
 		} catch (Exception e) {
-			if (e.getMessage() != null && (e.getMessage().toString().indexOf("StartHour") != -1 || e.getMessage().toString().indexOf("StartDay") != -1)) {
+			if (e.getMessage() != null && e.getMessage().toString().indexOf("StartHour") != -1) {
 				Application.getActiveApplication().getOutput().output(ProcessProperties.getString("String_StartTimeNotEqualEndTime"));
 			} else {
 				Application.getActiveApplication().getOutput().output(e);

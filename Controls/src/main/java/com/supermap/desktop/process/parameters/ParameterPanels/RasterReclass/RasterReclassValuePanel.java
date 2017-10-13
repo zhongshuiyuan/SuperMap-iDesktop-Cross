@@ -588,7 +588,7 @@ public class RasterReclassValuePanel extends JPanel {
 			this.buttonImport.setEnabled(true);
 			this.buttonExport.setEnabled(true);
 			this.buttonInverse.setEnabled(true);
-		}else if (this.dataset!=null && dataset==null){
+		}else if (dataset==null){
 			this.buttonBatchAdd.setEnabled(false);
 			this.buttonDefault.setEnabled(false);
 			this.buttonSelectedAll.setEnabled(false);
@@ -601,6 +601,10 @@ public class RasterReclassValuePanel extends JPanel {
 		this.buttonCombine.setEnabled(false);
 		this.dataset = dataset;
 		this.rasterReclassModel.setDataset(dataset);
+		if (this.dataset != null) {
+			this.textFieldLegitNoValue.setText(String.valueOf(this.dataset.getNoValue()));
+			this.reclassMappingTable.setChangeNoValueTo(this.dataset.getNoValue());
+		}
 		getNewMappingTable();
 	}
 
