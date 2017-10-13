@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1507777242919
+Bnd-LastModified: 1507866524704
 Build-Jdk: 1.7.0_80
-Built-By: Administrator
+Built-By: lixiaoyao
 Bundle-Activator: com.supermap.desktop.controls.ControlsActivator
 Bundle-ClassPath: .,lib/commons-lang-2.6.jar
 Bundle-ManifestVersion: 2
@@ -46,8 +46,8 @@ Export-Package: com.supermap.desktop.controls.colorScheme;version="1.0.0
  ui.controls.CollectionDataset,com.supermap.desktop.ui.controls.TextFiel
  ds",com.supermap.desktop.process.parameters.ParameterPanels.MultiBuffer
  RadioList;version="1.0.0",com.supermap.desktop.process.parameters.Param
- eterPanels.PrjTranslator;uses:="com.supermap.desktop.ui.controls.prjcoo
- rdsys.prjTransformPanels";version="1.0.0",com.supermap.desktop.process.
+ eterPanels.PrjTranslator;version="1.0.0";uses:="com.supermap.desktop.ui
+ .controls.prjcoordsys.prjTransformPanels",com.supermap.desktop.process.
  parameters.ParameterPanels.RasterReclass;version="1.0.0";uses:="com.sup
  ermap.desktop.process.parameters.ParameterPanels,com.supermap.desktop.u
  i.controls",com.supermap.desktop.process.parameters.ParameterPanels.Sol
@@ -74,8 +74,8 @@ Export-Package: com.supermap.desktop.controls.colorScheme;version="1.0.0
  esktop.ui.controls.button",com.supermap.desktop.ui.controls.DateTimeCom
  ponent;version="1.0.0",com.supermap.desktop.ui.controls.dialogs.dialogJ
  oinItems;version="1.0.0";uses:="com.supermap.desktop.ui.controls",com.s
- upermap.desktop.ui.controls.ExpressionComponent;uses:="com.supermap.des
- ktop.ui.controls";version="1.0.0",com.supermap.desktop.ui.controls.labe
+ upermap.desktop.ui.controls.ExpressionComponent;version="1.0.0";uses:="
+ com.supermap.desktop.ui.controls",com.supermap.desktop.ui.controls.labe
  ls;version="1.0.0",com.supermap.desktop.ui.controls.mutiTable.component
  ;version="1.0.0";uses:="com.supermap.desktop.ui.controls.comboBox",com.
  supermap.desktop.ui.controls.mutiTable;version="1.0.0";uses:="com.super
@@ -83,8 +83,8 @@ Export-Package: com.supermap.desktop.controls.colorScheme;version="1.0.0
  ntrols.prjcoordsys;version="1.0.0";uses:="com.supermap.desktop.ui.contr
  ols,com.supermap.desktop.ui.controls.comboBox,com.supermap.desktop.ui.c
  ontrols.prjcoordsys.prjTransformPanels",com.supermap.desktop.ui.control
- s.prjcoordsys.prjTransformPanels;uses:="com.supermap.desktop.ui.control
- s.smTables";version="1.0.0",com.supermap.desktop.ui.controls.progress;v
+ s.prjcoordsys.prjTransformPanels;version="1.0.0";uses:="com.supermap.de
+ sktop.ui.controls.smTables",com.supermap.desktop.ui.controls.progress;v
  ersion="1.0.0";uses:="com.supermap.desktop.ui.controls",com.supermap.de
  sktop.ui.controls.ProviderLabel;version="1.0.0",com.supermap.desktop.ui
  .controls.scrollPanel;version="1.0.0",com.supermap.desktop.ui.controls.
@@ -110,96 +110,97 @@ Export-Package: com.supermap.desktop.controls.colorScheme;version="1.0.0
  upermap.desktop.ui.mdi.events,com.supermap.desktop.ui.mdi.layout,com.su
  permap.desktop.ui.mdi.plaf",com.supermap.desktop.ui.mdi.layout;version=
  "1.0.0";uses:="com.supermap.desktop.ui.mdi",com.supermap.desktop.ui.mdi
- .plaf.feature;version="1.0.0";uses:="com.supermap.desktop.ui.mdi,com.su
- permap.desktop.ui.mdi.action",com.supermap.desktop.ui.mdi.plaf;version=
- "1.0.0";uses:="com.supermap.desktop.ui.mdi,com.supermap.desktop.ui.mdi.
- plaf.feature",com.supermap.desktop.ui.mdi.plaf.properties;version="1.0.
- 0",com.supermap.desktop.ui.mdi.test;version="1.0.0",com.supermap.deskto
- p.ui.mdi.util;version="1.0.0",com.supermap.desktop;version="1.0.0";uses
- :="com.supermap.desktop.ui,org.osgi.framework",org.flexdock.demos;versi
- on="1.0.0",org.flexdock.demos.maximizing;version="1.0.0";uses:="org.fle
- xdock.docking.defaults",org.flexdock.demos.perspective;version="1.0.0";
- uses:="org.flexdock.docking",org.flexdock.demos.raw.adapter;version="1.
- 0.0",org.flexdock.demos.raw.border;version="1.0.0";uses:="org.flexdock.
- docking,org.flexdock.docking.defaults",org.flexdock.demos.raw;version="
- 1.0.0";uses:="org.flexdock.docking",org.flexdock.demos.raw.elegant;vers
- ion="1.0.0";uses:="org.flexdock.demos.util,org.flexdock.docking,org.fle
- xdock.docking.defaults",org.flexdock.demos.util;version="1.0.0";uses:="
- org.flexdock.docking,org.flexdock.docking.event,org.flexdock.docking.pr
- ops",org.flexdock.demos.view;version="1.0.0";uses:="org.flexdock.dockin
- g",org.flexdock.dockbar.activation;version="1.0.0";uses:="org.flexdock.
- dockbar,org.flexdock.dockbar.event",org.flexdock.dockbar;version="1.0.0
- ";uses:="org.flexdock.dockbar.event,org.flexdock.dockbar.layout,org.fle
- xdock.docking,org.flexdock.docking.state,org.flexdock.util",org.flexdoc
- k.dockbar.event;version="1.0.0";uses:="org.flexdock.dockbar,org.flexdoc
- k.docking,org.flexdock.docking.props,org.flexdock.event",org.flexdock.d
- ockbar.layout;version="1.0.0";uses:="org.flexdock.dockbar,org.flexdock.
- docking,org.flexdock.plaf.common.border",org.flexdock.dockbar.util;vers
- ion="1.0.0",org.flexdock.docking.activation;version="1.0.0";uses:="org.
- flexdock.docking",org.flexdock.docking.adapter;version="1.0.0",org.flex
- dock.docking.defaults;version="1.0.0";uses:="org.flexdock.docking,org.f
- lexdock.docking.adapter,org.flexdock.docking.drag,org.flexdock.docking.
- event,org.flexdock.docking.props,org.flexdock.docking.state",org.flexdo
- ck.docking;version="1.0.0";uses:="org.flexdock.dockbar.event,org.flexdo
- ck.docking.drag,org.flexdock.docking.drag.effects,org.flexdock.docking.
- event,org.flexdock.docking.event.hierarchy,org.flexdock.docking.props,o
- rg.flexdock.docking.state,org.flexdock.util",org.flexdock.docking.drag;
- version="1.0.0";uses:="org.flexdock.docking,org.flexdock.docking.drag.e
- ffects,org.flexdock.util",org.flexdock.docking.drag.effects;version="1.
- 0.0";uses:="org.flexdock.docking",org.flexdock.docking.drag.preview;ver
- sion="1.0.0";uses:="org.flexdock.docking,org.flexdock.docking.drag.effe
- cts",org.flexdock.docking.event;version="1.0.0";uses:="org.flexdock.doc
- king,org.flexdock.event",org.flexdock.docking.event.hierarchy;version="
- 1.0.0";uses:="org.flexdock.docking,org.flexdock.util",org.flexdock.dock
- ing.floating.frames;version="1.0.0";uses:="org.flexdock.docking,org.fle
- xdock.docking.defaults,org.flexdock.docking.event,org.flexdock.docking.
- state",org.flexdock.docking.floating.policy;version="1.0.0";uses:="org.
- flexdock.docking,org.flexdock.docking.event",org.flexdock.docking.props
- ;version="1.0.0";uses:="org.flexdock.docking,org.flexdock.util",org.fle
- xdock.docking.state;version="1.0.0";uses:="org.flexdock.docking,org.fle
- xdock.docking.floating.frames,org.flexdock.docking.state.tree",org.flex
- dock.docking.state.tree;version="1.0.0";uses:="org.flexdock.docking,org
- .flexdock.docking.state",org.flexdock.event;version="1.0.0";uses:="org.
- flexdock.docking",org.flexdock.perspective.actions;version="1.0.0";uses
- :="org.flexdock.perspective",org.flexdock.perspective;version="1.0.0";u
- ses:="org.flexdock.docking,org.flexdock.docking.event,org.flexdock.dock
- ing.floating.frames,org.flexdock.docking.state,org.flexdock.perspective
- .event,org.flexdock.perspective.persist,org.flexdock.perspective.restor
- e.handlers,org.flexdock.util",org.flexdock.perspective.event;version="1
- .0.0";uses:="org.flexdock.docking,org.flexdock.event,org.flexdock.persp
- ective",org.flexdock.perspective.persist;version="1.0.0";uses:="org.fle
- xdock.docking.state,org.flexdock.perspective",org.flexdock.perspective.
- persist.xml;version="1.0.0";uses:="org.flexdock.docking.state,org.flexd
- ock.perspective.persist",org.flexdock.perspective.restore.handlers;vers
- ion="1.0.0";uses:="org.flexdock.docking,org.flexdock.docking.state",org
- .flexdock.plaf.common.border;version="1.0.0";uses:="org.flexdock.dockin
- g",org.flexdock.plaf;version="1.0.0";uses:="org.flexdock.plaf.theme",or
- g.flexdock.plaf.icons;version="1.0.0";uses:="org.flexdock.plaf",org.fle
- xdock.plaf.mappings;version="1.0.0";uses:="org.flexdock.plaf",org.flexd
- ock.plaf.resources.action;version="1.0.0",org.flexdock.plaf.resources;v
- ersion="1.0.0";uses:="org.flexdock.plaf",org.flexdock.plaf.resources.bo
- rder;version="1.0.0";uses:="org.flexdock.plaf.resources",org.flexdock.p
- laf.resources.paint;version="1.0.0";uses:="org.flexdock.plaf",org.flexd
- ock.plaf.theme;version="1.0.0";uses:="org.flexdock.plaf,org.flexdock.pl
- af.icons,org.flexdock.plaf.resources.paint,org.flexdock.view",org.flexd
- ock.plaf.theme.eclipse2;version="1.0.0";uses:="org.flexdock.plaf.resour
- ces.paint",org.flexdock.plaf.theme.metal;version="1.0.0";uses:="org.fle
- xdock.plaf.resources.paint,org.flexdock.plaf.theme,org.flexdock.view",o
- rg.flexdock.plaf.theme.officexp;version="1.0.0";uses:="org.flexdock.pla
- f.resources.paint",org.flexdock.plaf.theme.skinlf;version="1.0.0";uses:
- ="org.flexdock.plaf.resources.paint,org.flexdock.plaf.theme,org.flexdoc
- k.view",org.flexdock.test.dockbar;version="1.0.0";uses:="org.flexdock.d
- ocking",org.flexdock.test.drag;version="1.0.0",org.flexdock.test.perspe
- ctive;version="1.0.0";uses:="org.flexdock.docking",org.flexdock.test;ve
- rsion="1.0.0";uses:="org.flexdock.docking",org.flexdock.test.view;versi
- on="1.0.0";uses:="org.flexdock.docking,org.flexdock.plaf.theme",org.fle
- xdock.test.xml;version="1.0.0",org.flexdock.util;version="1.0.0";uses:=
- "org.flexdock.docking",org.flexdock.view.actions;version="1.0.0";uses:=
- "org.flexdock.docking.state,org.flexdock.view",org.flexdock.view;versio
- n="1.0.0";uses:="org.flexdock.docking,org.flexdock.docking.defaults,org
- .flexdock.docking.event,org.flexdock.docking.props",org.flexdock.view.m
- odel;version="1.0.0";uses:="org.flexdock.docking.state,org.flexdock.vie
- w"
+ .MdiTabsContextMenu;uses:="com.supermap.desktop.ui.mdi";version="1.0.0"
+ ,com.supermap.desktop.ui.mdi.plaf.feature;version="1.0.0";uses:="com.su
+ permap.desktop.ui.mdi,com.supermap.desktop.ui.mdi.action",com.supermap.
+ desktop.ui.mdi.plaf;version="1.0.0";uses:="com.supermap.desktop.ui.mdi,
+ com.supermap.desktop.ui.mdi.plaf.feature",com.supermap.desktop.ui.mdi.p
+ laf.properties;version="1.0.0",com.supermap.desktop.ui.mdi.test;version
+ ="1.0.0",com.supermap.desktop.ui.mdi.util;version="1.0.0",com.supermap.
+ desktop;version="1.0.0";uses:="com.supermap.desktop.ui,org.osgi.framewo
+ rk",org.flexdock.demos;version="1.0.0",org.flexdock.demos.maximizing;ve
+ rsion="1.0.0";uses:="org.flexdock.docking.defaults",org.flexdock.demos.
+ perspective;version="1.0.0";uses:="org.flexdock.docking",org.flexdock.d
+ emos.raw.adapter;version="1.0.0",org.flexdock.demos.raw.border;version=
+ "1.0.0";uses:="org.flexdock.docking,org.flexdock.docking.defaults",org.
+ flexdock.demos.raw;version="1.0.0";uses:="org.flexdock.docking",org.fle
+ xdock.demos.raw.elegant;version="1.0.0";uses:="org.flexdock.demos.util,
+ org.flexdock.docking,org.flexdock.docking.defaults",org.flexdock.demos.
+ util;version="1.0.0";uses:="org.flexdock.docking,org.flexdock.docking.e
+ vent,org.flexdock.docking.props",org.flexdock.demos.view;version="1.0.0
+ ";uses:="org.flexdock.docking",org.flexdock.dockbar.activation;version=
+ "1.0.0";uses:="org.flexdock.dockbar,org.flexdock.dockbar.event",org.fle
+ xdock.dockbar;version="1.0.0";uses:="org.flexdock.dockbar.event,org.fle
+ xdock.dockbar.layout,org.flexdock.docking,org.flexdock.docking.state,or
+ g.flexdock.util",org.flexdock.dockbar.event;version="1.0.0";uses:="org.
+ flexdock.dockbar,org.flexdock.docking,org.flexdock.docking.props,org.fl
+ exdock.event",org.flexdock.dockbar.layout;version="1.0.0";uses:="org.fl
+ exdock.dockbar,org.flexdock.docking,org.flexdock.plaf.common.border",or
+ g.flexdock.dockbar.util;version="1.0.0",org.flexdock.docking.activation
+ ;version="1.0.0";uses:="org.flexdock.docking",org.flexdock.docking.adap
+ ter;version="1.0.0",org.flexdock.docking.defaults;version="1.0.0";uses:
+ ="org.flexdock.docking,org.flexdock.docking.adapter,org.flexdock.dockin
+ g.drag,org.flexdock.docking.event,org.flexdock.docking.props,org.flexdo
+ ck.docking.state",org.flexdock.docking;version="1.0.0";uses:="org.flexd
+ ock.dockbar.event,org.flexdock.docking.drag,org.flexdock.docking.drag.e
+ ffects,org.flexdock.docking.event,org.flexdock.docking.event.hierarchy,
+ org.flexdock.docking.props,org.flexdock.docking.state,org.flexdock.util
+ ",org.flexdock.docking.drag;version="1.0.0";uses:="org.flexdock.docking
+ ,org.flexdock.docking.drag.effects,org.flexdock.util",org.flexdock.dock
+ ing.drag.effects;version="1.0.0";uses:="org.flexdock.docking",org.flexd
+ ock.docking.drag.preview;version="1.0.0";uses:="org.flexdock.docking,or
+ g.flexdock.docking.drag.effects",org.flexdock.docking.event;version="1.
+ 0.0";uses:="org.flexdock.docking,org.flexdock.event",org.flexdock.docki
+ ng.event.hierarchy;version="1.0.0";uses:="org.flexdock.docking,org.flex
+ dock.util",org.flexdock.docking.floating.frames;version="1.0.0";uses:="
+ org.flexdock.docking,org.flexdock.docking.defaults,org.flexdock.docking
+ .event,org.flexdock.docking.state",org.flexdock.docking.floating.policy
+ ;version="1.0.0";uses:="org.flexdock.docking,org.flexdock.docking.event
+ ",org.flexdock.docking.props;version="1.0.0";uses:="org.flexdock.dockin
+ g,org.flexdock.util",org.flexdock.docking.state;version="1.0.0";uses:="
+ org.flexdock.docking,org.flexdock.docking.floating.frames,org.flexdock.
+ docking.state.tree",org.flexdock.docking.state.tree;version="1.0.0";use
+ s:="org.flexdock.docking,org.flexdock.docking.state",org.flexdock.event
+ ;version="1.0.0";uses:="org.flexdock.docking",org.flexdock.perspective.
+ actions;version="1.0.0";uses:="org.flexdock.perspective",org.flexdock.p
+ erspective;version="1.0.0";uses:="org.flexdock.docking,org.flexdock.doc
+ king.event,org.flexdock.docking.floating.frames,org.flexdock.docking.st
+ ate,org.flexdock.perspective.event,org.flexdock.perspective.persist,org
+ .flexdock.perspective.restore.handlers,org.flexdock.util",org.flexdock.
+ perspective.event;version="1.0.0";uses:="org.flexdock.docking,org.flexd
+ ock.event,org.flexdock.perspective",org.flexdock.perspective.persist;ve
+ rsion="1.0.0";uses:="org.flexdock.docking.state,org.flexdock.perspectiv
+ e",org.flexdock.perspective.persist.xml;version="1.0.0";uses:="org.flex
+ dock.docking.state,org.flexdock.perspective.persist",org.flexdock.persp
+ ective.restore.handlers;version="1.0.0";uses:="org.flexdock.docking,org
+ .flexdock.docking.state",org.flexdock.plaf.common.border;version="1.0.0
+ ";uses:="org.flexdock.docking",org.flexdock.plaf;version="1.0.0";uses:=
+ "org.flexdock.plaf.theme",org.flexdock.plaf.icons;version="1.0.0";uses:
+ ="org.flexdock.plaf",org.flexdock.plaf.mappings;version="1.0.0";uses:="
+ org.flexdock.plaf",org.flexdock.plaf.resources.action;version="1.0.0",o
+ rg.flexdock.plaf.resources;version="1.0.0";uses:="org.flexdock.plaf",or
+ g.flexdock.plaf.resources.border;version="1.0.0";uses:="org.flexdock.pl
+ af.resources",org.flexdock.plaf.resources.paint;version="1.0.0";uses:="
+ org.flexdock.plaf",org.flexdock.plaf.theme;version="1.0.0";uses:="org.f
+ lexdock.plaf,org.flexdock.plaf.icons,org.flexdock.plaf.resources.paint,
+ org.flexdock.view",org.flexdock.plaf.theme.eclipse2;version="1.0.0";use
+ s:="org.flexdock.plaf.resources.paint",org.flexdock.plaf.theme.metal;ve
+ rsion="1.0.0";uses:="org.flexdock.plaf.resources.paint,org.flexdock.pla
+ f.theme,org.flexdock.view",org.flexdock.plaf.theme.officexp;version="1.
+ 0.0";uses:="org.flexdock.plaf.resources.paint",org.flexdock.plaf.theme.
+ skinlf;version="1.0.0";uses:="org.flexdock.plaf.resources.paint,org.fle
+ xdock.plaf.theme,org.flexdock.view",org.flexdock.test.dockbar;version="
+ 1.0.0";uses:="org.flexdock.docking",org.flexdock.test.drag;version="1.0
+ .0",org.flexdock.test.perspective;version="1.0.0";uses:="org.flexdock.d
+ ocking",org.flexdock.test;version="1.0.0";uses:="org.flexdock.docking",
+ org.flexdock.test.view;version="1.0.0";uses:="org.flexdock.docking,org.
+ flexdock.plaf.theme",org.flexdock.test.xml;version="1.0.0",org.flexdock
+ .util;version="1.0.0";uses:="org.flexdock.docking",org.flexdock.view.ac
+ tions;version="1.0.0";uses:="org.flexdock.docking.state,org.flexdock.vi
+ ew",org.flexdock.view;version="1.0.0";uses:="org.flexdock.docking,org.f
+ lexdock.docking.defaults,org.flexdock.docking.event,org.flexdock.dockin
+ g.props",org.flexdock.view.model;version="1.0.0";uses:="org.flexdock.do
+ cking.state,org.flexdock.view"
 Import-Package: org.osgi.framework;version="[1.8,2)",org.osgi.util.track
  er;version="[1.5,2)"
 Originally-Created-By: Apache Maven Bundle Plugin

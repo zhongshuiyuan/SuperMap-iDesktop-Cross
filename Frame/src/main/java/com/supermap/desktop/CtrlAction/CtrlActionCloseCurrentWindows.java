@@ -1,15 +1,16 @@
-package com.supermap.desktop.ui.mdi.MdiTabsContextMenu;
+package com.supermap.desktop.CtrlAction;
 
 import com.supermap.desktop.Interface.IBaseItem;
 import com.supermap.desktop.Interface.IForm;
 import com.supermap.desktop.implement.CtrlAction;
+import com.supermap.desktop.ui.mdi.MdiTabsContextMenu.MdiTabContextMenuUtilities;
 
 /**
  * Created by lixiaoyao on 2017/10/11.
  */
-public class CtrlActionCloseCurrentTab extends CtrlAction {
+public class CtrlActionCloseCurrentWindows extends CtrlAction {
 
-	public CtrlActionCloseCurrentTab(IBaseItem caller, IForm formClass) {
+	public CtrlActionCloseCurrentWindows(IBaseItem caller, IForm formClass) {
 		super(caller, formClass);
 	}
 
