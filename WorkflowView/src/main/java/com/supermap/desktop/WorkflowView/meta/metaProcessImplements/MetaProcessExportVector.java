@@ -139,6 +139,8 @@ public class MetaProcessExportVector extends MetaProcessAbstractExport {
 		this.cadVersion.setEnabled(false);
 		this.exportPointAsWKT.setEnabled(false);
 		this.exportFieldName.setEnabled(false);
+
+		this.exportFieldName.setSelectedItem(false);
 		if (newExportSetting instanceof ExportSettingDWG || newExportSetting instanceof ExportSettingDXF) {
 			this.externalData.setEnabled(true);
 			this.externalRecord.setEnabled(true);
@@ -153,7 +155,7 @@ public class MetaProcessExportVector extends MetaProcessAbstractExport {
 				this.cadVersion.setSelectedItem(((ExportSettingDXF) newExportSetting).getVersion());
 			}
 		}
-		if (newExportSetting instanceof ExportSettingCSV) {
+		if (newExportSetting instanceof ExportSettingCSV && !(newExportSetting instanceof ExportSettingExcel)) {
 			this.exportFieldName.setEnabled(true);
 			//默认设置为导出表头
 			this.exportFieldName.setSelectedItem(true);
