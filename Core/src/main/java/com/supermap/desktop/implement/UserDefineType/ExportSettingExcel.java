@@ -19,7 +19,7 @@ public class ExportSettingExcel extends ExportSettingCSV {
 		UserDefineExportResult result = null;
 		try {
 			XlsUtilities.exportSettingExcel = this;
-			result = XlsUtilities.exportXlsxFile(((DatasetVector) this.getSourceData()), this.getTargetFilePath(), this.getIsExportFieldName());
+			result = XlsUtilities.exportXlsxFile(((DatasetVector) this.getSourceData()), this.getTargetFilePath(), true);
 		} catch (Exception ex) {
 			Application.getActiveApplication().getOutput().output(ex);
 		}
@@ -45,7 +45,7 @@ public class ExportSettingExcel extends ExportSettingCSV {
 		if (null != steppedListeners) {
 			Vector<ExportSteppedListener> listeners = this.steppedListeners;
 			for (int i = 0, size = listeners.size(); i < size; i++) {
-				((ExportSteppedListener) listeners.get(i)).stepped(event);
+				listeners.get(i).stepped(event);
 			}
 		}
 	}

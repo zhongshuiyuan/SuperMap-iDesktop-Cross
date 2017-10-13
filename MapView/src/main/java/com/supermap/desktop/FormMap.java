@@ -648,6 +648,13 @@ public class FormMap extends FormBaseChild implements IFormMap {
 		} else {
 			textField.setForeground(Color.black);
 		}
+		// fix by lixiaoyao 2017/10/13   当鼠标滚动改变当前地图比例尺时，就刷新图层树，更新图层树中图层图标
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				UICommonToolkit.getLayersManager().getLayersTree().updateUI();
+			}
+		});
 	}
 
 	/**

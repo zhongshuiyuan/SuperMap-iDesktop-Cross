@@ -188,6 +188,9 @@ public class XlsUtilities {
 						if (name.startsWith("Sm")) {
 							name = "Field_" + name;
 						}
+						if (StringUtilities.isNumber(name)) {
+							name = "Filed_" + String.valueOf(Convert.toInteger(name));
+						}
 						fieldInfo.setName(name);
 						fieldInfos.add(fieldInfo);
 						fieldNames.add(name);
@@ -307,6 +310,9 @@ public class XlsUtilities {
 						String name = sheet.getRow(0).getCell(j).getStringCellValue();
 						if (name.startsWith("Sm")) {
 							name = "Field_" + name;
+						}
+						if (StringUtilities.isNumber(name)) {
+							name = "Filed_" + String.valueOf(Convert.toInteger(name));
 						}
 						fieldInfo.setName(name);
 						fieldInfos.add(fieldInfo);

@@ -376,8 +376,8 @@ public class DialogSaveChildForms extends SmDialog {
 	private void buttonActive_Click() {
 		try {
 			if (tableChildForms.getSelectedRowCount() > 0) {
-				IForm form = Application.getActiveApplication().getMainFrame().getFormManager().get(tableChildForms.getSelectedRow());
-				Application.getActiveApplication().getMainFrame().getFormManager().setActiveForm(form);
+//				IForm form = Application.getActiveApplication().getMainFrame().getFormManager().get(tableChildForms.getSelectedRow());
+				Application.getActiveApplication().getMainFrame().getFormManager().setActiveForm(this.allForms.get(tableChildForms.getSelectedRow()));
 				this.buttonActive.setEnabled(false);
 			}
 		} catch (Exception ex) {
@@ -403,9 +403,9 @@ public class DialogSaveChildForms extends SmDialog {
 			// 保存之前先提交一下编辑
 			stopEditing();
 
-			IFormManager formManager = Application.getActiveApplication().getMainFrame().getFormManager();
+//			IFormManager formManager = Application.getActiveApplication().getMainFrame().getFormManager();
 			for (int i = 0; i < tableChildForms.getRowCount(); i++) {
-				IForm form = formManager.get(i);
+				IForm form = this.allForms.get(i);
 				String newName = tableChildForms.getModel().getValueAt(i, FormInfoTableModel.NAME).toString();
 				if (form instanceof IFormMap) {
 					((IFormMap) form).getMapControl().getMap().setName(newName);
