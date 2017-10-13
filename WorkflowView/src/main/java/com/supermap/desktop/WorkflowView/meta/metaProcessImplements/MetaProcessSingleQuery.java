@@ -89,6 +89,9 @@ public class MetaProcessSingleQuery extends MetaProcess {
 			CommonSettingCombine commonSettingCombine = new CommonSettingCombine("", "");
 			commonSettingCombine.add(input, analyst);
 			CursorUtilities.setWaitCursor();
+			if (null == parameterIServerLogin.getService()) {
+				parameterIServerLogin.login();
+			}
 			JobResultResponse response = parameterIServerLogin.getService().queryResult(MetaKeys.SINGLE_QUERY, commonSettingCombine.getFinalJSon());
 			if (null != response) {
 				NewMessageBus messageBus = new NewMessageBus(response, DefaultOpenServerMap.INSTANCE);

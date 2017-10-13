@@ -99,6 +99,9 @@ public class MetaProcessGridRegionAggregation extends MetaProcess {
 			CommonSettingCombine type = new CommonSettingCombine("type", parameterAggregationType.getSelectedData().toString());
 			CommonSettingCombine commonSettingCombine = new CommonSettingCombine("", "");
 			commonSettingCombine.add(input, analyst, type);
+			if (null == parameterIServerLogin.getService()) {
+				parameterIServerLogin.login();
+			}
 			JobResultResponse response = parameterIServerLogin.getService().queryResult(MetaKeys.GRIDREGION_AGGREGATION, commonSettingCombine.getFinalJSon());
 			CursorUtilities.setWaitCursor();
 			if (null != response) {
