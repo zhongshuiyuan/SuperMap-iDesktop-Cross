@@ -12,6 +12,8 @@ import com.supermap.mapping.*;
 import com.supermap.realspace.Scene;
 
 import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.event.MouseEvent;
@@ -27,6 +29,7 @@ public class LayersComponentManager extends JComponent {
 	// 临时的变量，现在还没有自动加载Dockbar，所以暂时用这个变量测试
 	private Boolean isContextMenuBuilded = false;
 	private JPopupMenu layerWMSPopupMenu;
+	private TreePath[] oldPaths;
 
 	/**
 	 * Create the panel.
@@ -58,6 +61,12 @@ public class LayersComponentManager extends JComponent {
 				layersTreeMousePressed(evt);
 			}
 		});
+		this.layersTree.addTreeSelectionListener(new TreeSelectionListener() {
+			@Override
+			public void valueChanged(TreeSelectionEvent e) {
+				layersTreeSelectedLegalPath(e);
+			}
+		});
 
 		this.layer3DsTree.addMouseListener(new java.awt.event.MouseAdapter() {
 			@Override
@@ -65,6 +74,26 @@ public class LayersComponentManager extends JComponent {
 				layer3DsTreeMousePressed(evt);
 			}
 		});
+	}
+
+	private void layersTreeSelectedLegalPath(TreeSelectionEvent e) {
+		TreePath[] selectionPaths = layersTree.getSelectionPaths();
+		if (!isPathLegal(selectionPaths)) {
+			layersTree.setSelectionPaths(oldPaths);
+		} else {
+			oldPaths = selectionPaths == null ? null : selectionPaths.clone();
+		}
+	}
+
+	private boolean isPathLegal(TreePath[] treePaths) {
+		if (null != treePaths && 0 < treePaths.length) {
+			for (TreePath treePath : treePaths) {
+				if (!treePath.getParentPath().equals(treePaths[0].getParentPath())) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	private void initialize() {

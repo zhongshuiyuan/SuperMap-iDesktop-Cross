@@ -14,6 +14,7 @@ import com.supermap.desktop.dialog.symbolDialogs.SymbolDialog;
 import com.supermap.desktop.ui.UICommonToolkit;
 import com.supermap.desktop.utilities.CursorUtilities;
 import com.supermap.desktop.utilities.MapUtilities;
+import com.supermap.desktop.utilities.SystemPropertyUtilities;
 import com.supermap.mapping.*;
 
 import javax.swing.*;
@@ -61,12 +62,12 @@ public class LayersTree extends JTree {
 	private DragSource dragSource;
 	private int draggedNodeIndex = -1;
 	private int dropTargetNodeIndex = -1;
-	private LinkedBlockingQueue<Layer[]> layersQueue=new LinkedBlockingQueue<>();
 
 	private DefaultMutableTreeNode dropTargetNode = null;
 	private DefaultMutableTreeNode draggedNode = null;
 	private DefaultTreeModel treeModeltemp;
 	private boolean isUp = false;
+	private boolean isHitTestInfo = false;
 
 	private static DataFlavor localObjectFlavor;
 	private static DataFlavor[] supportedFlavors = {localObjectFlavor};
@@ -111,6 +112,9 @@ public class LayersTree extends JTree {
 	}
 
 	private void initDrag() {
+		if (SystemPropertyUtilities.isLinux() && this.getRowHeight() == -1) {
+			this.setRowHeight(17);
+		}
 		this.setDragEnabled(true);
 		dragSource = DragSource.getDefaultDragSource();
 		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_MOVE, new LayersTreeDragGestureListener());
@@ -180,7 +184,7 @@ public class LayersTree extends JTree {
 	}
 
 	// 返回位于(x,y)位置的HitTestInfo。当没有内容时，返回NULL
-	public HitTestInfo hitTest(int x, int y) {
+	HitTestInfo hitTest(int x, int y) {
 		HitTestInfo result = null;
 
 		TreePath path = this.getPathForLocation(x, y);
@@ -582,7 +586,6 @@ public class LayersTree extends JTree {
 		}
 	}
 
-
 	private class GroupLayerRemovedListener implements LayerRemovedListener {
 		@Override
 		public void layerRemoved(LayerRemovedEvent event) {
@@ -593,7 +596,6 @@ public class LayersTree extends JTree {
 			model.removeNodeFromParent((MutableTreeNode) parentNode.getChildAt(event.getIndex()));
 		}
 	}
-
 
 	protected DefaultMutableTreeNode getGroupNodeByLayer(Layer layer) {
 		DefaultMutableTreeNode result = null;
@@ -707,7 +709,7 @@ public class LayersTree extends JTree {
 		}
 	}
 
-	LayerAddedListener getLayerAddedListener() {
+	private LayerAddedListener getLayerAddedListener() {
 		if (layerAddedListener == null) {
 			layerAddedListener = new TreeLayerAddedListener();
 		}
@@ -725,7 +727,7 @@ public class LayersTree extends JTree {
 		}
 	}
 
-	LayerRemovedListener getLayerRemovedListener() {
+	private LayerRemovedListener getLayerRemovedListener() {
 		if (layerRemovedListener == null) {
 			layerRemovedListener = new TreeLayerRemovedListener();
 		}
@@ -742,7 +744,7 @@ public class LayersTree extends JTree {
 		}
 	}
 
-	LayerGroupAddedListener getLayerGroupAddedListener() {
+	private LayerGroupAddedListener getLayerGroupAddedListener() {
 		if (layerGroupAddedListener == null) {
 			layerGroupAddedListener = new TreeLayerGroupAddedListener();
 		}
@@ -780,7 +782,7 @@ public class LayersTree extends JTree {
 		}
 	}
 
-	LayerGroupRemovedListener getLayerGroupRemovedListener() {
+	private LayerGroupRemovedListener getLayerGroupRemovedListener() {
 		if (layerGroupRemovedListener == null) {
 			layerGroupRemovedListener = new TreeLayerGroupRemovedListener();
 		}
@@ -813,7 +815,7 @@ public class LayersTree extends JTree {
 		}
 	}
 
-	KeyAdapter getKeyListener() {
+	private KeyAdapter getKeyListener() {
 		if (keyAdapter == null) {
 			keyAdapter = new TreeKeyListener();
 		}
@@ -866,43 +868,29 @@ public class LayersTree extends JTree {
 		return mouseAdapter;
 	}
 
-	/**
-	 * 如果layer包含于已选中节点中，则返回其所在的序号；否则返回-1
-	 * @return
-	 */
-	private int findSelectedLayersIndex(Layer[] layers,Layer layer) {
-		for (int i = 0; i < layers.length; i++) {
-			if (layers[i].equals(layer)) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
 	private class TreeMouseListener extends MouseAdapter {
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			layersTreeMouseClicked(e);
-			TreePath path = LayersTree.this.getPathForLocation(e.getX(), e.getY());
-			if (path != null) {
-				HitTestInfo hitTestInfo = hitTest(e.getX(), e.getY());
-				if (hitTestInfo != null) {
-					TreeNodeData nodeData = hitTestInfo.getData();
-					Object obj = nodeData.getData();
-					if (obj instanceof Layer) {
-						Layer layer = (Layer) obj;
-						int type = hitTestInfo.getIconType().value();
-						Layer[] selectedLayers = getCurrentSelectLayers().length > 1 ? getCurrentSelectLayers() : layersQueue.peek();
-						int index = findSelectedLayersIndex(selectedLayers,layer);
 
-						if (index > -1 && selectedLayers.length > 1) {
+		public void mouseReleased(MouseEvent e) {
+			layersTreeMouseClicked(e);
+			if (e.getClickCount() == 1) {
+				TreePath path = LayersTree.this.getPathForLocation(e.getX(), e.getY());
+				if (path != null) {
+					HitTestInfo hitTestInfo = hitTest(e.getX(), e.getY());
+					if (hitTestInfo != null) {
+						isHitTestInfo = true;
+						TreeNodeData nodeData = hitTestInfo.getData();
+						Object obj = nodeData.getData();
+						int type = hitTestInfo.getIconType().value();
+						Object[] selectedObjects = getCurrentSelectObjects();
+
+						if (selectedObjects.length > 1) {
 							switch (type) {
 								case 1:
-									setCaseOne(selectedLayers, index);
+									setCaseOne(selectedObjects, obj);
 									refresh();
 									break;
 								case 2:
-									setCaseTwo(selectedLayers, index);
+									setCaseTwo(selectedObjects, (Layer) obj);
 									updateLater();
 									break;
 								case 3:
@@ -910,7 +898,7 @@ public class LayersTree extends JTree {
 									updateLater();
 									break;
 								case 4:
-									setCaseFour(selectedLayers, index);
+									setCaseFour(selectedObjects, (Layer) obj);
 									updateLater();
 									break;
 							}
@@ -929,6 +917,8 @@ public class LayersTree extends JTree {
 								updateLater();
 							}
 						}
+					} else {
+						isHitTestInfo = false;
 					}
 				}
 			}
@@ -965,39 +955,7 @@ public class LayersTree extends JTree {
 			if (obj instanceof Layer) {
 				Layer layer = (Layer) obj;
 				layer.setVisible(!layer.isVisible());
-				if (null != layer.getTheme()) {
-					Theme tempTheme = layer.getTheme();
-					if (tempTheme instanceof ThemeUnique && 0 < ((ThemeUnique) tempTheme).getCount()) {
-						for (int i = 0; i < ((ThemeUnique) tempTheme).getCount(); i++) {
-							((ThemeUnique) tempTheme).getItem(i).setVisible(layer.isVisible());
-						}
-						return;
-					}
-					if (tempTheme instanceof ThemeRange && 0 < ((ThemeRange) tempTheme).getCount()) {
-						for (int i = 0; i < ((ThemeRange) tempTheme).getCount(); i++) {
-							((ThemeRange) tempTheme).getItem(i).setVisible(layer.isVisible());
-						}
-						return;
-					}
-					if (tempTheme instanceof ThemeLabel && 0 < ((ThemeLabel) tempTheme).getCount()) {
-						for (int i = 0; i < ((ThemeLabel) tempTheme).getCount(); i++) {
-							((ThemeLabel) tempTheme).getItem(i).setVisible(layer.isVisible());
-						}
-						return;
-					}
-					if (tempTheme instanceof ThemeGridUnique && 0 < ((ThemeGridUnique) tempTheme).getCount()) {
-						for (int i = 0; i < ((ThemeGridUnique) tempTheme).getCount(); i++) {
-							((ThemeGridUnique) tempTheme).getItem(i).setVisible(layer.isVisible());
-						}
-						return;
-					}
-					if (tempTheme instanceof ThemeGridRange && 0 < ((ThemeGridRange) tempTheme).getCount()) {
-						for (int i = 0; i < ((ThemeGridRange) tempTheme).getCount(); i++) {
-							((ThemeGridRange) tempTheme).getItem(i).setVisible(layer.isVisible());
-						}
-						return;
-					}
-				}
+				themeItemSetting(layer,layer.isVisible());
 			}
 			if (obj instanceof ThemeUniqueItem) {
 				ThemeUniqueItem item = (ThemeUniqueItem) obj;
@@ -1026,31 +984,99 @@ public class LayersTree extends JTree {
 			}
 		}
 
-		private void setCaseFour(Layer[] layers,int index) {
-			boolean isSnapable = !layers[index].isSnapable();
-			for (int i = 0; i < layers.length; i++) {
-				layers[i].setSnapable(layers[i].isVisible() && isSnapable);
+		private void setCaseFour(Object[] objects,Layer layer) {
+			boolean isSnapable = !layer.isSnapable();
+			for (int i = 0; i < objects.length; i++) {
+				((Layer)objects[i]).setSnapable(((Layer)objects[i]).isVisible() && isSnapable);
 			}
 		}
 		//cross暂时没有开放多图层编辑，这个还用不到
-		private void setCaseThree(Layer[] layers,int index) {
-			boolean isEditable = !layers[index].isEditable();
-			for (int i = 0; i < layers.length; i++) {
-				layers[i].setEditable(layers[i].isVisible() && isEditable);
+		private void setCaseThree(Object[] objects,Layer layer) {
+			boolean isEditable = !layer.isEditable();
+			for (int i = 0; i < objects.length; i++) {
+				((Layer)objects[i]).setEditable(((Layer)objects[i]).isVisible() && isEditable);
 			}
 		}
 
-		private void setCaseTwo(Layer[] layers,int index) {
-			boolean isSelectable = !layers[index].isSelectable();
-			for (int i = 0; i < layers.length; i++) {
-				layers[i].setSelectable(layers[i].isVisible() && isSelectable);
+		private void setCaseTwo(Object[] objects,Layer layer) {
+			boolean isSelectable = !layer.isSelectable();
+			for (int i = 0; i < objects.length; i++) {
+				((Layer)objects[i]).setSelectable(((Layer)objects[i]).isVisible() && isSelectable);
 			}
 		}
 
-		private void setCaseOne(Layer[] layers, int index) {
-			boolean isVisible = !layers[index].isVisible();
-			for (int i = 0; i < layers.length; i++) {
-				layers[i].setVisible(isVisible);
+		private void setCaseOne(Object[] objects,Object object) {
+			boolean isVisible;
+			if (object instanceof Layer) {
+				Layer layer = (Layer) object;
+				isVisible = !layer.isVisible();
+				for (Object object1:objects) {
+					Layer layer1 = ((Layer) object1);
+					layer1.setVisible(isVisible);
+					themeItemSetting(layer1,isVisible);
+				}
+			}else if (object instanceof ThemeUniqueItem) {
+				ThemeUniqueItem item = (ThemeUniqueItem) object;
+				isVisible = !item.isVisible();
+				for (Object o : objects) {
+					((ThemeUniqueItem) o).setVisible(isVisible);
+				}
+			}else if (object instanceof ThemeRangeItem) {
+				ThemeRangeItem item = (ThemeRangeItem) object;
+				isVisible = !item.isVisible();
+				for (Object o : objects) {
+					((ThemeRangeItem) o).setVisible(isVisible);
+				}
+			}else if (object instanceof ThemeGridUniqueItem) {
+				ThemeGridUniqueItem item = (ThemeGridUniqueItem) object;
+				isVisible = !item.isVisible();
+				for (Object o : objects) {
+					((ThemeGridUniqueItem) o).setVisible(isVisible);
+				}
+			}else if (object instanceof ThemeGridRangeItem) {
+				ThemeGridRangeItem item = (ThemeGridRangeItem) object;
+				isVisible = !item.isVisible();
+				for (Object o : objects) {
+					((ThemeGridRangeItem) o).setVisible(isVisible);
+				}
+			}else if (object instanceof ThemeLabelItem) {
+				ThemeLabelItem item = (ThemeLabelItem) object;
+				isVisible = !item.isVisible();
+				for (Object o : objects) {
+					((ThemeLabelItem) o).setVisible(isVisible);
+				}
+			}
+		}
+
+		private void themeItemSetting(Layer layer, boolean isVisible) {
+			if (null != layer.getTheme()) {
+				Theme tempTheme = layer.getTheme();
+				if (tempTheme instanceof ThemeUnique && 0 < ((ThemeUnique) tempTheme).getCount()) {
+					for (int i = 0; i < ((ThemeUnique) tempTheme).getCount(); i++) {
+						((ThemeUnique) tempTheme).getItem(i).setVisible(isVisible);
+					}
+				}else if (tempTheme instanceof ThemeRange && 0 < ((ThemeRange) tempTheme).getCount()) {
+					for (int i = 0; i < ((ThemeRange) tempTheme).getCount(); i++) {
+						((ThemeRange) tempTheme).getItem(i).setVisible(isVisible);
+					}
+				}else if (tempTheme instanceof ThemeLabel && 0 < ((ThemeLabel) tempTheme).getCount()) {
+					for (int i = 0; i < ((ThemeLabel) tempTheme).getCount(); i++) {
+						((ThemeLabel) tempTheme).getItem(i).setVisible(isVisible);
+					}
+				}else if (tempTheme instanceof ThemeGridUnique && 0 < ((ThemeGridUnique) tempTheme).getCount()) {
+					for (int i = 0; i < ((ThemeGridUnique) tempTheme).getCount(); i++) {
+						((ThemeGridUnique) tempTheme).getItem(i).setVisible(isVisible);
+					}
+				}else if (tempTheme instanceof ThemeGridRange && 0 < ((ThemeGridRange) tempTheme).getCount()) {
+					for (int i = 0; i < ((ThemeGridRange) tempTheme).getCount(); i++) {
+						((ThemeGridRange) tempTheme).getItem(i).setVisible(isVisible);
+					}
+				}
+			} else if (layer instanceof LayerGroup) {
+				LayerGroup layerGroup = (LayerGroup) layer;
+				for (int i = 0; i < layerGroup.getCount(); i++) {
+					layerGroup.get(i).setVisible(isVisible);
+				}
 			}
 		}
 
@@ -1084,6 +1110,10 @@ public class LayersTree extends JTree {
 				Application.getActiveApplication().getOutput().output(ex);
 			}
 		}
+	}
+
+	public boolean isHitTestInfo() {
+		return isHitTestInfo;
 	}
 
 	private void updateLater() {
@@ -1354,7 +1384,7 @@ public class LayersTree extends JTree {
 		return result;
 	}
 
-	public Layer[] getCurrentSelectLayers() {
+	private Layer[] getCurrentSelectLayers() {
 		if (this.getLastSelectedPathComponent() == null) {
 			return null;
 		}
@@ -1368,21 +1398,20 @@ public class LayersTree extends JTree {
 		return selectedLayers;
 	}
 
-	public void updateQueue() {
-		if (this.getSelectionPath() != null) {
-			TreePath[] selectionPaths = this.getSelectionPaths();
-			ArrayList<Layer> selectLayers = new ArrayList<>();
-			for (TreePath selectionPath : selectionPaths) {
-				Layer layer = (Layer) ((TreeNodeData) ((DefaultMutableTreeNode) selectionPath.getLastPathComponent()).getUserObject()).getData();
-				selectLayers.add(layer);
-			}
-			Layer[] selectedLayers = selectLayers.toArray(new Layer[selectLayers.size()]);
-			if (layersQueue.size() > 2) {
-				layersQueue.poll();
-			}
-			layersQueue.add(selectedLayers);
+	private Object[] getCurrentSelectObjects() {
+		if (this.getLastSelectedPathComponent() == null) {
+			return null;
 		}
+		TreePath[] selectionPaths = this.getSelectionPaths();
+		ArrayList<Object> selectObjects = new ArrayList<>();
+		for (TreePath selectionPath : selectionPaths) {
+			Object object = ((TreeNodeData) ((DefaultMutableTreeNode) selectionPath.getLastPathComponent()).getUserObject()).getData();
+			selectObjects.add(object);
+		}
+		return selectObjects.toArray(new Object[selectObjects.size()]);
 	}
+
+
 
 	/**
 	 * DragGestureListener:当该（子）类的对象检测到拖动启动动作时，调用此接口
@@ -1639,5 +1668,4 @@ public class LayersTree extends JTree {
 			LayersTree.this.repaint();
 		}
 	}
-
 }

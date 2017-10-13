@@ -40,7 +40,7 @@ public class ImportSettingSetter {
 				for (Method method : methods) {
 					methodName = method.getName();
 					//todo 设置后有崩溃问题，暂时屏蔽
-					if (methodName.equals(reflectInfo.methodName) && !methodName.equals("setIndexAsGeometry")) {
+					if (methodName.equals(reflectInfo.methodName)) {
 						Object arg = null;
 						if (null != reflectInfo.mixReflectInfo && !reflectInfo.mixReflectInfo.isEmpty()) {
 							if (methodName.equals("setTargetPrjCoordSys")) {
@@ -52,6 +52,9 @@ public class ImportSettingSetter {
 								point3D.setZ(Double.valueOf(((ISelectionParameter) reflectInfo.mixReflectInfo.get("setZ")).getSelectedItem().toString()));
 								arg = point3D;
 							} else if (methodName.equals("setFieldsAsPoint")) {
+								if (!((ParameterComboBox) reflectInfo.mixReflectInfo.get("setXFieldName")).isEnabled()) {
+									continue;
+								}
 								ArrayList<String> fields = new ArrayList();
 								Object setXFieldName = ((ISelectionParameter) reflectInfo.mixReflectInfo.get("setXFieldName")).getSelectedItem();
 								if (null != setXFieldName) {
@@ -91,6 +94,7 @@ public class ImportSettingSetter {
 							} else if (reflectInfo.parameter instanceof ParameterEnum
 									|| reflectInfo.parameter instanceof ParameterComboBox
 									|| reflectInfo.parameter instanceof ParameterCharset) {
+
 								arg = ((ParameterDataNode) selectItem).getData();
 							} else if (reflectInfo.parameter instanceof ParameterCheckBox) {
 								if (methodName.equals("setImportingByLayer")

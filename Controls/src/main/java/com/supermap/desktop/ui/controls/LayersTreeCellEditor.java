@@ -54,7 +54,7 @@ class LayersTreeCellEditor implements TreeCellEditor, KeyListener, ActionListene
 	public Component getTreeCellEditorComponent(JTree tree, Object value, boolean isSelected, boolean expanded, boolean leaf, int row) {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 		TreeNodeData obj = (TreeNodeData) node.getUserObject();
-		JPanel panel = (JPanel) layersTreeCellRenderer.getPanel(obj);
+		JPanel panel = layersTreeCellRenderer.getPanel(obj);
 		NodeDataType type = obj.getType();
 		jTextFieldName = new JTextField();
 		jTextFieldName.setPreferredSize(new Dimension(150, 20));
@@ -83,8 +83,8 @@ class LayersTreeCellEditor implements TreeCellEditor, KeyListener, ActionListene
 			jTextFieldName.addKeyListener(this);
 			jTextFieldName.addFocusListener(this);
 		}
-		int componetsCount = panel.getComponentCount();
-		Component component = panel.getComponent(componetsCount - 1);
+		int componentsCount = panel.getComponentCount();
+		Component component = panel.getComponent(componentsCount - 1);
 		if (component instanceof JLabel) {
 			JLabel label = (JLabel) component;
 			label.setText("");
@@ -231,15 +231,40 @@ class LayersTreeCellEditor implements TreeCellEditor, KeyListener, ActionListene
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
 		if (layersTree != null) {
-			layersTree.updateQueue();
-			if (layersTree.getSelectionCount() == 1)
-				lastPath = layersTree.getSelectionPath();
-			else
+			if (layersTree.getSelectionCount() == 1) {
+                if (!isSelectedLayersContained(e.getPaths(), layersTree.getSelectionPath()) && layersTree.isHitTestInfo()) {
+                    TreePath[] selectionPaths = new TreePath[e.getPaths().length + 1];
+                    for (int i = 0; i < e.getPaths().length; i++) {
+                        selectionPaths[i] = e.getPaths()[i];
+                    }
+                    selectionPaths[e.getPaths().length] = layersTree.getSelectionPath();
+                    layersTree.setSelectionPaths(selectionPaths);
+                }
+                lastPath = layersTree.getSelectionPath();
+			} else {
 				lastPath = null;
+			}
 		}
 		if (timer != null) {
 			timer.stop();
 		}
+	}
+
+	/**
+	 * 用于测试新选中的节点是否包含在原有节点组当中
+	 * 当新选中节点不包含在原有节点组中时，e.getPaths()包含layersTree.getSelectionPath()，返回true；反之，则返回false
+	 * 也即，isSelectedLayersContained(e.getPaths(),layersTree.getSelectionPath())与新节点是否包含于原有选中节点的结果相反
+	 * @param treePaths
+	 * @param treePath
+	 * @return
+	 */
+	private boolean isSelectedLayersContained(TreePath[] treePaths, TreePath treePath) {
+		for (int i = 0; i < treePaths.length; i++) {
+			if (treePaths[i].equals(treePath)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

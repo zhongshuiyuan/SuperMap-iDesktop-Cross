@@ -8,7 +8,6 @@ import com.supermap.desktop.controls.utilities.ComponentUIUtilities;
 import com.supermap.desktop.dataconversion.DataConversionProperties;
 import com.supermap.desktop.implement.UserDefineType.ImportSettingExcel;
 import com.supermap.desktop.implement.UserDefineType.ImportSettingGPX;
-import com.supermap.desktop.localUtilities.CommonUtilities;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.TristateCheckBox;
 import com.supermap.desktop.ui.controls.ComponentBorderPanel.CompTitledPane;
@@ -119,7 +118,9 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 
 	private void setImportAsPointWKT() {
 		//todo 设置后有崩溃问题，暂时屏蔽
-//		((ImportSettingCSV) importSetting).setIndexAsGeometry(comboBoxWKT.getSelectedIndex());
+		if (null != comboBoxWKT.getSelectedItem()) {
+			((ImportSettingCSV) importSetting).setIndexAsGeometry((Integer) ((ItemNode) comboBoxWKT.getSelectedItem()).getNodeInfo());
+		}
 	}
 
 	private ItemListener commonItemListener = new ItemListener() {
@@ -245,10 +246,23 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 				this.tablePreviewCSV.getTableHeader().setPreferredSize(
 						new Dimension(this.tablePreviewCSV.getTableHeader().getPreferredSize().width, 30));
 				this.scrollPanePreviewCSV.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-				DefaultComboBoxModel comboBoxModelWkt = new DefaultComboBoxModel(indexX);
+				boolean hasGeometry = false;
+				ItemNode itemNode = new ItemNode();
+				for (int i = 0, size = indexX.length; i < size; i++) {
+					if ("Geometry".equals(indexX[i])) {
+						hasGeometry = true;
+						itemNode.setItemInfo("Geometry");
+						itemNode.setNodeInfo(i);
+						break;
+					}
+				}
+
+				if (hasGeometry) {
+					this.comboBoxWKT.addItem(itemNode);
+				}
 				DefaultComboBoxModel comboBoxModelX = new DefaultComboBoxModel(indexX);
 				DefaultComboBoxModel comboBoxModelY = new DefaultComboBoxModel(indexX);
-				this.comboBoxWKT.setModel(comboBoxModelWkt);
+				this.comboBoxWKT.setRenderer(new ItemNodeComboBoxRender());
 				this.comboBoxX.setModel(comboBoxModelX);
 				this.comboBoxY.setModel(comboBoxModelY);
 				String[] indexZ = new String[indexX.length + 1];
@@ -262,7 +276,6 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 				tableValues = null;
 				indexX = null;
 				indexZ = null;
-				comboBoxModelWkt = null;
 				comboBoxModelX = null;
 				comboBoxModelY = null;
 			}
@@ -319,15 +332,12 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 		this.add(panelDefault, new GridBagConstraintsHelper(0, 0, 1, 1).setAnchor(GridBagConstraints.WEST).setFill(GridBagConstraints.BOTH).setWeight(1, 0));
 		this.add(this.paneForIndexAsPoint, new GridBagConstraintsHelper(0, 1, 1, 1).setAnchor(GridBagConstraints.WEST).setFill(GridBagConstraints.BOTH).setWeight(1, 0));
 		this.textFieldSeparator.setPreferredSize(new Dimension(18, 23));
+		this.comboBoxWKT.setPreferredSize(new Dimension(100,20));
 		if (null != panelImports) {
 			this.scrollPanePreviewCSV.setViewportView(null);
 		} else {
 			this.scrollPanePreviewCSV.setViewportView(this.tablePreviewCSV);
 		}
-		CommonUtilities.setComboBoxTheme(this.comboBoxWKT);
-		CommonUtilities.setComboBoxTheme(this.comboBoxX);
-		CommonUtilities.setComboBoxTheme(this.comboBoxY);
-		CommonUtilities.setComboBoxTheme(this.comboBoxZ);
 		this.radioButtonIndex.setSelected(true);
 		setFirstRowAsField();
 		setSeparator();
@@ -345,7 +355,7 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 		} else {
 			setIndexPanelEnabled();
 		}
-		if (importSetting instanceof ImportSettingExcel||importSetting instanceof ImportSettingGPX) {
+		if (importSetting instanceof ImportSettingExcel || importSetting instanceof ImportSettingGPX) {
 			this.labelDataPreview.setVisible(false);
 			this.paneForIndexAsPoint.setVisible(false);
 			this.labelSeparator.setVisible(false);
@@ -479,5 +489,35 @@ public class PanelTransformForMicrosoft extends PanelTransform {
 		comboBoxZ.setEnabled(enabled && indexPanelEnabled);
 		boolean wktEnabled = radioButtonIndexWKT.isSelected();
 		comboBoxWKT.setEnabled(wktEnabled && indexPanelEnabled);
+	}
+	class ItemNode{
+		Object itemInfo;
+		Object nodeInfo;
+
+		public Object getItemInfo() {
+			return itemInfo;
+		}
+
+		public void setItemInfo(Object itemInfo) {
+			this.itemInfo = itemInfo;
+		}
+
+		public Object getNodeInfo() {
+			return nodeInfo;
+		}
+
+		public void setNodeInfo(Object nodeInfo) {
+			this.nodeInfo = nodeInfo;
+		}
+	}
+	class ItemNodeComboBoxRender implements ListCellRenderer<ItemNode>{
+		@Override
+		public Component getListCellRendererComponent(JList<? extends ItemNode> list, ItemNode value, int index, boolean isSelected, boolean cellHasFocus) {
+			JLabel jLabel = new JLabel();
+			if (value != null) {
+				jLabel.setText((value).getItemInfo().toString());
+			}
+			return jLabel;
+		}
 	}
 }

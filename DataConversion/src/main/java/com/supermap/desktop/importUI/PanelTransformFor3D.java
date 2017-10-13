@@ -222,7 +222,7 @@ public class PanelTransformFor3D extends PanelTransform {
 					SmFileChoose.createFileFilter(ControlsProperties.getString("String_ImportPrjFileShape"), "prj"),
 					SmFileChoose.createFileFilter(ControlsProperties.getString("String_ImportPrjFileXml"), "xml"));
 			SmFileChoose.addNewNode(fileFilters, CommonProperties.getString("String_DefaultFilePath"),
-					ControlsProperties.getString("string_importPrjFile"), "ImportPrjFile", "OpenMany");
+					ControlsProperties.getString("String_ImportPrjFile"), "ImportPrjFile", "OpenMany");
 		}
 		SmFileChoose fileChooser = new SmFileChoose("ImportPrjFile");
 		this.fileChooserControlImportPrjFile.setFileChooser(fileChooser);

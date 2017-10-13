@@ -3,6 +3,7 @@ package com.supermap.desktop.ui.controls.prjcoordsys;
 import com.supermap.data.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.controls.ControlsProperties;
+import com.supermap.desktop.ui.controls.CellRenders.TableDataCellRender;
 import com.supermap.desktop.ui.controls.DatasourceComboBox;
 import com.supermap.desktop.ui.controls.DialogResult;
 import com.supermap.desktop.ui.controls.GridBagConstraintsHelper;
@@ -11,26 +12,33 @@ import com.supermap.desktop.ui.controls.SmDialog;
 import com.supermap.desktop.ui.controls.borderPanel.PanelButton;
 import com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels.PanelCoordSysInfo;
 import com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels.PanelReferSysTransSettings;
+import com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels.TableModelBatchPrjTranslatorDatasetsList;
+import com.supermap.desktop.ui.controls.progress.FormProgressTotal;
+import com.supermap.desktop.ui.controls.smTables.CheckHeaderCellRender;
 import com.supermap.desktop.utilities.DatasourceUtilities;
 import com.supermap.desktop.utilities.PrjCoordSysUtilities;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 
 /**
  * Created by yuanR on 2017/10/10 0010.
  * 批量投影转换主面板
  */
-public class JDialogBatchPrjTransform extends SmDialog {
+public class JDialogBatchPrjTranslator extends SmDialog {
 
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
+
 	// 源数据面板块
 	private JPanel panelSourceData;
 	private JLabel labelSourceDatasource;
@@ -42,16 +50,18 @@ public class JDialogBatchPrjTransform extends SmDialog {
 	private WarningOrHelpProvider labelTargetDatasource;
 	private DatasourceComboBox targetDatasource;
 	private PanelCoordSysInfo targetPanelCoordSysInfo;
+
 	// 参照系转换设置面板块
 	private PanelReferSysTransSettings panelReferSysTransSettings;
-	// 数据集列表
 
-	private JPanel panelDatasetList;
+	// 数据集列表
+	private JScrollPane jScrollPane;
 	private JTable table;
+	private TableModelBatchPrjTranslatorDatasetsList tableModel;
+	private JCheckBox checkBox;
 
 	// 确定取消按钮；
 	private PanelButton panelButton = new PanelButton();
-
 
 	public CoordSysTransMethod getMethod() {
 		return this.panelReferSysTransSettings.getMethod();
@@ -62,6 +72,11 @@ public class JDialogBatchPrjTransform extends SmDialog {
 	}
 
 
+	private static final int TABLE_COLUMN_ISSELECTED = 0;
+	private static final int TABLE_COLUMN_SOURCEDATASET = 1;
+	//private static final int TABLE_COLUMN_TARGETDATASETNAME = 2;
+	private ArrayList<TableModelBatchPrjTranslatorDatasetsList.TableData> dataList;
+
 	/**
 	 * 数据源、数据及改变监听
 	 */
@@ -70,9 +85,37 @@ public class JDialogBatchPrjTransform extends SmDialog {
 		public void itemStateChanged(ItemEvent e) {
 			if (e.getSource().equals(sourceDatasource) && e.getStateChange() == ItemEvent.SELECTED) {
 				sourcePanelCoordSysInfo.setCoordInfo(PrjCoordSysUtilities.getDescription(sourceDatasource.getSelectedDatasource().getPrjCoordSys()));
+				// 当源数据ComboBox改变时，JTable也跟随改变
+				if (!sourceDatasource.getSelectedDatasource().getPrjCoordSys().getType().equals(PrjCoordSysType.PCS_NON_EARTH)) {
+					tableModel.setDataList(sourceDatasource.getSelectedDatasource().getDatasets(), targetDatasource.getSelectedDatasource());
+				} else {
+					tableModel.setDataList(null, targetDatasource.getSelectedDatasource());
+				}
 			} else if (e.getSource().equals(targetDatasource) && e.getStateChange() == ItemEvent.SELECTED) {
 				targetPanelCoordSysInfo.setCoordInfo(PrjCoordSysUtilities.getDescription(targetDatasource.getSelectedDatasource().getPrjCoordSys()));
+				// 当目标数据ComboBox改变时，JTable也跟随改变，
+				if (!sourceDatasource.getSelectedDatasource().getPrjCoordSys().getType().equals(PrjCoordSysType.PCS_NON_EARTH)) {
+					tableModel.updataDataList(targetDatasource.getSelectedDatasource());
+				}
 			}
+
+		}
+	};
+
+	private TableModelListener tableModelListener = new TableModelListener() {
+		@Override
+		public void tableChanged(TableModelEvent e) {
+			// 当model改变时，
+			dataList = tableModel.getDataList();
+			Boolean isHasSelected = false;
+			for (int i = 0; i < dataList.size(); i++) {
+				if (dataList.get(i).isSelected()) {
+					isHasSelected = true;
+				}
+			}
+			checkBox.setSelected(isHasSelected);
+			table.getTableHeader().repaint();
+			panelButton.getButtonOk().setEnabled(isHasSelected);
 		}
 	};
 
@@ -82,55 +125,25 @@ public class JDialogBatchPrjTransform extends SmDialog {
 	private ActionListener actionListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (e.getSource().equals(panelButton.getButtonOk()) && Translator()) {
+			if (e.getSource().equals(panelButton.getButtonOk())) {
+				ArrayList<TableModelBatchPrjTranslatorDatasetsList.TableData> doDataList = new ArrayList<>();
+				for (int i = 0; i < dataList.size(); i++) {
+					if (dataList.get(i).isSelected()) {
+						doDataList.add(dataList.get(i));
+					}
+				}
+				FormProgressTotal formProgress = new FormProgressTotal();
+				formProgress.doWork(new BatchPrjTranslatorCallable(doDataList, getMethod(), getParameter()));
 				dialogResult = DialogResult.OK;
 			} else {
 				dialogResult = DialogResult.CANCEL;
 			}
-			JDialogBatchPrjTransform.this.dispose();
+			JDialogBatchPrjTranslator.this.dispose();
 		}
 	};
 
-	/**
-	 * 投影转换功能实现
-	 */
-	private Boolean Translator() {
-		//Boolean result;
-		//try {
-		//	// 进行批量投影转换
-		//	//todo 批量投影转换的具体实现
-		//	Dataset targetDataset = CoordSysTranslator.convert(getSourceDataset(), getTargetPrj(), getSelectedResultDatasource(), getResultDatasetName(), getParameter(), getMethod());
-		//	result = targetDataset != null;
-		//	if (result) {
-		//		Application
-		//				.getActiveApplication()
-		//				.getOutput()
-		//				.output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_RasterSuccess"),
-		//						getSourceDataset().getDatasource().getAlias(), getSourceDataset().getName(), getSelectedResultDatasource().getAlias(), getResultDatasetName()));
-		//	} else {
-		//		Application
-		//				.getActiveApplication()
-		//				.getOutput()
-		//				.output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
-		//						getSourceDataset().getDatasource().getAlias(), getSourceDataset().getName()));
-		//	}
-		//	// 这种转换方式主要针对非矢量数据，转换之后会生成新的数据集，但是树的显示状态很诡异，这里对目标数据源的节点进行一次刷新
-		//	WorkspaceTreeManagerUIUtilities.refreshNode(getSelectedResultDatasource());
-		//
-		//} catch (Exception e) {
-		//	result = false;
-		//	Application.getActiveApplication().getOutput().output(e);
-		//} finally {
-		//	removeListener();
-		//	if (getParameter() != null) {
-		//		getParameter().dispose();
-		//	}
-		//}
-		//return result;
-		return false;
-	}
 
-	public JDialogBatchPrjTransform() {
+	public JDialogBatchPrjTranslator() {
 		initializeComponents();
 		initializeResources();
 		initializeLayout();
@@ -139,23 +152,6 @@ public class JDialogBatchPrjTransform extends SmDialog {
 
 		setSize(800, 600);
 		setLocationRelativeTo(null);
-	}
-
-	private void removeListener() {
-		this.sourceDatasource.removeItemListener(this.datasourceChangedListener);
-		this.targetDatasource.removeItemListener(this.datasourceChangedListener);
-
-		this.panelButton.getButtonOk().removeActionListener(this.actionListener);
-		this.panelButton.getButtonCancel().removeActionListener(this.actionListener);
-	}
-
-	private void initListener() {
-		removeListener();
-		this.sourceDatasource.addItemListener(this.datasourceChangedListener);
-		this.targetDatasource.addItemListener(this.datasourceChangedListener);
-
-		this.panelButton.getButtonOk().addActionListener(this.actionListener);
-		this.panelButton.getButtonCancel().addActionListener(this.actionListener);
 	}
 
 	private void initStates() {
@@ -184,12 +180,32 @@ public class JDialogBatchPrjTransform extends SmDialog {
 				}
 			}
 		}
-
 		// 初始化JTable显示
+		this.tableModel.setDataList(sourceDatasource.getSelectedDatasource().getDatasets(), this.targetDatasource.getSelectedDatasource());
+		// 面板是否可用
 		if (null == targetDatasource.getSelectedDatasource()) {
 			this.targetPanelCoordSysInfo.setCoordInfo("");
 			setPanelEnabled(false);
 		}
+
+		this.dataList = tableModel.getDataList();
+	}
+
+	private void removeListener() {
+		this.sourceDatasource.removeItemListener(this.datasourceChangedListener);
+		this.targetDatasource.removeItemListener(this.datasourceChangedListener);
+		this.tableModel.removeTableModelListener(this.tableModelListener);
+		this.panelButton.getButtonOk().removeActionListener(this.actionListener);
+		this.panelButton.getButtonCancel().removeActionListener(this.actionListener);
+	}
+
+	private void initListener() {
+		removeListener();
+		this.sourceDatasource.addItemListener(this.datasourceChangedListener);
+		this.targetDatasource.addItemListener(this.datasourceChangedListener);
+		this.tableModel.addTableModelListener(this.tableModelListener);
+		this.panelButton.getButtonOk().addActionListener(this.actionListener);
+		this.panelButton.getButtonCancel().addActionListener(this.actionListener);
 	}
 
 
@@ -209,8 +225,19 @@ public class JDialogBatchPrjTransform extends SmDialog {
 		// 参照系转换设置面板块
 		this.panelReferSysTransSettings = new PanelReferSysTransSettings();
 		//数据集列表
-		this.panelDatasetList = new JPanel();
+		this.jScrollPane = new JScrollPane();
 		this.table = new JTable();
+		this.tableModel = new TableModelBatchPrjTranslatorDatasetsList();
+		this.table.setModel(this.tableModel);
+
+		this.table.setRowHeight(23);
+		this.table.getColumn(this.table.getModel().getColumnName(TABLE_COLUMN_ISSELECTED)).setMaxWidth(50);
+		this.table.getTableHeader().setReorderingAllowed(false);
+		CheckHeaderCellRender checkHeaderCellRender = new CheckHeaderCellRender(this.table, "", true);
+		this.checkBox = checkHeaderCellRender.getCheckBox();
+		this.table.getTableHeader().getColumnModel().getColumn(TABLE_COLUMN_ISSELECTED).setHeaderRenderer(checkHeaderCellRender);
+		this.table.getColumnModel().getColumn(TABLE_COLUMN_SOURCEDATASET).setCellRenderer(new TableDataCellRender());
+
 	}
 
 	private void initializeResources() {
@@ -222,8 +249,7 @@ public class JDialogBatchPrjTransform extends SmDialog {
 		this.labelTargetDatasource.setText(ControlsProperties.getString("String_Label_Datasource"));
 
 		this.panelReferSysTransSettings.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_CoordSysTranslatorSetting")));
-		this.panelDatasetList.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_DatasetsList")));
-
+		this.jScrollPane.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_DatasetsList")));
 	}
 
 	private void initializeLayout() {
@@ -248,7 +274,7 @@ public class JDialogBatchPrjTransform extends SmDialog {
 						.addComponent(this.sourcePanelCoordSysInfo)));
 		// @formatter:on
 
-
+		// 目标数据
 		GroupLayout targetDataPanelLayout = new GroupLayout(panelTargetData);
 		targetDataPanelLayout.setAutoCreateContainerGaps(true);
 		targetDataPanelLayout.setAutoCreateGaps(true);
@@ -269,14 +295,15 @@ public class JDialogBatchPrjTransform extends SmDialog {
 						.addComponent(this.targetPanelCoordSysInfo)));
 		// @formatter:on
 
-
+		//数据集列表
+		this.jScrollPane.setViewportView(this.table);
 		// 主面板布局
 		JPanel mianPanel = new JPanel();
 		mianPanel.setLayout(new GridBagLayout());
 		mianPanel.add(this.panelSourceData, new GridBagConstraintsHelper(0, 0, 1, 1).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(10, 5, 0, 0).setWeight(0, 1));
 		mianPanel.add(this.panelTargetData, new GridBagConstraintsHelper(0, 1, 1, 1).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(0, 5, 0, 0).setWeight(0, 1));
 		mianPanel.add(this.panelReferSysTransSettings, new GridBagConstraintsHelper(0, 2, 1, 1).setFill(GridBagConstraints.HORIZONTAL).setAnchor(GridBagConstraints.CENTER).setInsets(0, 5, 0, 0).setWeight(0, 0));
-		mianPanel.add(this.panelDatasetList, new GridBagConstraintsHelper(1, 0, 3, 3).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(10, 0, 0, 5).setWeight(1, 1));
+		mianPanel.add(this.jScrollPane, new GridBagConstraintsHelper(1, 0, 3, 3).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(10, 0, 0, 5).setWeight(1, 1));
 
 		this.setLayout(new GridBagLayout());
 		this.add(mianPanel, new GridBagConstraintsHelper(0, 0, 1, 1).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setWeight(1, 1));

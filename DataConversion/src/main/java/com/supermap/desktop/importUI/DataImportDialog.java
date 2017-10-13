@@ -227,8 +227,12 @@ public class DataImportDialog extends SmDialog implements IPanelModel {
 		panelImportTemp = (PanelImport) importPanelFactory.createPanelImport(tempPanelImports);
 		int panelImportType = panelImportTemp.getPanelImportType();
 		if (panelImportType == SAME_TYPE) {
-			String fileType = panelImports.get(0).getImportInfo().getImportSetting().getSourceFileType().toString();
-			labelTitle.setText(MessageFormat.format(DataConversionProperties.getString("String_ImportFill"), fileType));
+			if (panelImports.get(0).getImportInfo().getImportSetting() instanceof ImportSettingModel3DS) {
+				labelTitle.setText(MessageFormat.format(DataConversionProperties.getString("String_ImportFill"), "Model3DS"));
+			} else {
+				String fileType = panelImports.get(0).getImportInfo().getImportSetting().getSourceFileType().toString();
+				labelTitle.setText(MessageFormat.format(DataConversionProperties.getString("String_ImportFill"), fileType));
+			}
 		} else if (panelImportType == VERTICAL_TYPE) {
 			labelTitle.setText(DataConversionProperties.getString("String_FormImportVector_Text"));
 		} else if (panelImportType == GRID_TYPE) {
@@ -712,6 +716,8 @@ public class DataImportDialog extends SmDialog implements IPanelModel {
 	private void setImportTitle(ImportSetting importSetting) {
 		if (importSetting instanceof ImportSettingExcel) {
 			labelTitle.setText(MessageFormat.format(DataConversionProperties.getString("String_ImportFill"), "EXCEL"));
+		} else if (importSetting instanceof ImportSettingModel3DS) {
+			labelTitle.setText(MessageFormat.format(DataConversionProperties.getString("String_ImportFill"), "Model3DS"));
 		} else if (importSetting instanceof ImportSettingGPX) {
 			//If you want to replace your title for import file,change the message
 			labelTitle.setText(MessageFormat.format(DataConversionProperties.getString("String_ImportFill"), "GPS"));
