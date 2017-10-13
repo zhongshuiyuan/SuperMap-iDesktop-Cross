@@ -21,7 +21,7 @@ class VisibleDecorator implements TreeNodeDecorator {
 	private static final int BOTTOM_Y = 14;
 	private static final int SHORT_LINE_LENGTH = 3;
 	private static final Color WARNING_COLOR = Color.RED;
-	private static final Color NO_WARNING_COLOR = new JTable().getTableHeader().getForeground();
+	private static final Color NO_WARNING_COLOR = (new JTable()).getSelectionBackground();
 	private static final Color UNAVAILABLE_COLOR = Color.GRAY;
 	private Graphics graphics = null;
 	private boolean isVisible = false;

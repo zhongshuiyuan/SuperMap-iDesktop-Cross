@@ -601,6 +601,10 @@ public class RasterReclassValuePanel extends JPanel {
 		this.buttonCombine.setEnabled(false);
 		this.dataset = dataset;
 		this.rasterReclassModel.setDataset(dataset);
+		if (this.dataset != null) {
+			this.textFieldLegitNoValue.setText(String.valueOf(this.dataset.getNoValue()));
+			this.reclassMappingTable.setChangeNoValueTo(this.dataset.getNoValue());
+		}
 		getNewMappingTable();
 	}
 
