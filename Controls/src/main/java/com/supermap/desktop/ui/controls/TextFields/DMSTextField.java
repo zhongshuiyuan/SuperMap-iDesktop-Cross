@@ -271,6 +271,17 @@ public class DMSTextField extends JPanel {
 	}
 
 	/**
+	 * 设置textField是否可用
+	 *
+	 * @param enabled
+	 */
+	public void setTextFieldEnabled(Boolean enabled) {
+		this.textFieldD.setEnabled(enabled);
+		this.textFieldM.setEnabled(enabled);
+		this.textFieldS.setEnabled(enabled);
+	}
+
+	/**
 	 * 获得度分秒的度值
 	 *
 	 * @return

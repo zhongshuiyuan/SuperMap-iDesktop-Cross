@@ -16,6 +16,8 @@ import java.awt.event.*;
  * Created by yuanR on 2017/10/12 0012.
  * 坐标点转换功能.坐标点键入面板
  * 面板一共有三态：x/y、经纬度（度形式）、经纬度（度分秒形式）
+ * <p>
+ * 外部通过model的设置改变面板的显示
  */
 public class PanelPointCoordSysTranslator extends JPanel {
 
@@ -91,6 +93,9 @@ public class PanelPointCoordSysTranslator extends JPanel {
 	//};
 
 
+	/**
+	 * 默认构造方法
+	 */
 	public PanelPointCoordSysTranslator() {
 		initLayout();
 		initListener();
@@ -152,7 +157,7 @@ public class PanelPointCoordSysTranslator extends JPanel {
 		this.checkBoxShowAsDMS.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// 当点击checkBoxShowAsDMS时，算值，并显示
+				// 当点击checkBoxShowAsDMS时，算值，并显示相应面板
 				if (checkBoxShowAsDMS.isSelected()) {
 					textFieldLongitudeValue.setDMSValue(unitDegreeTextFieldLongtitude.getTextField().getText());
 					textFieldLatitudeValue.setDMSValue(unitDegreeTextFieldLatitude.getTextField().getText());
@@ -180,7 +185,6 @@ public class PanelPointCoordSysTranslator extends JPanel {
 
 	public void initStates() {
 		setComponentVisible();
-		setComponentEnabled(true);
 	}
 
 
@@ -207,12 +211,12 @@ public class PanelPointCoordSysTranslator extends JPanel {
 
 
 	public void setComponentEnabled(Boolean enabled) {
-		this.unitMeterTextFieldX.setEnabled(enabled);
-		this.unitMeterTextFieldY.setEnabled(enabled);
-		this.unitDegreeTextFieldLongtitude.setEnabled(enabled);
-		this.unitDegreeTextFieldLatitude.setEnabled(enabled);
-		this.textFieldLongitudeValue.setEnabled(enabled);
-		this.textFieldLatitudeValue.setEnabled(enabled);
+		this.unitMeterTextFieldX.setTextFieldEnabled(enabled);
+		this.unitMeterTextFieldY.setTextFieldEnabled(enabled);
+		this.unitDegreeTextFieldLongtitude.setTextFieldEnabled(enabled);
+		this.unitDegreeTextFieldLatitude.setTextFieldEnabled(enabled);
+		this.textFieldLongitudeValue.setTextFieldEnabled(enabled);
+		this.textFieldLatitudeValue.setTextFieldEnabled(enabled);
 		this.checkBoxShowAsDMS.setEnabled(!(getCurrentModel() == METERMODEL));
 	}
 
@@ -222,21 +226,27 @@ public class PanelPointCoordSysTranslator extends JPanel {
 	 *
 	 * @return
 	 */
-	public int getCurrentModel() {
+	private int getCurrentModel() {
 		return currentModel;
 	}
 
 	/**
 	 * 设置当前model
 	 * 当改变model时，设置面板显示也改变
+	 * 暂时只接受：model=1和model=2，其他属性无效果
 	 *
 	 * @param currentModel
 	 */
 	public void setCurrentModel(int currentModel) {
-		this.currentModel = currentModel;
+		if (currentModel == DEGREEMODEL || currentModel == METERMODEL) {
+			this.currentModel = currentModel;
+		}
+		// 为逻辑清晰考虑，外界model属性改变时，无法直接显示度分秒类型面板，因此先设置checkBox不选中，并且不可用
 		this.checkBoxShowAsDMS.setSelected(false);
 		this.checkBoxShowAsDMS.setEnabled(false);
+
 		if (this.currentModel == DEGREEMODEL) {
+			// 当投影单位为度时，设置checkBox可用
 			this.checkBoxShowAsDMS.setEnabled(true);
 			unitDegreeTextFieldLongtitude.getTextField().setText(unitMeterTextFieldX.getTextField().getText());
 			unitDegreeTextFieldLatitude.getTextField().setText(unitMeterTextFieldY.getTextField().getText());
@@ -350,6 +360,10 @@ public class PanelPointCoordSysTranslator extends JPanel {
 			this.textField.removeKeyListener(this.keyAdapter);
 			this.textField.removeEvents();
 		}
+
+		public void setTextFieldEnabled(Boolean enabled) {
+			this.textField.setEnabled(enabled);
+		}
 	}
 
 	/**
@@ -445,7 +459,6 @@ public class PanelPointCoordSysTranslator extends JPanel {
 			// @formatter on
 		}
 
-
 		private void registEvents() {
 			removeListener();
 			this.textField.addKeyListener(this.keyAdapter);
@@ -457,6 +470,9 @@ public class PanelPointCoordSysTranslator extends JPanel {
 			this.textField.removeKeyListener(this.keyAdapter);
 			this.textField.removeEvents();
 		}
-	}
 
+		public void setTextFieldEnabled(Boolean enabled) {
+			this.textField.setEnabled(enabled);
+		}
+	}
 }
