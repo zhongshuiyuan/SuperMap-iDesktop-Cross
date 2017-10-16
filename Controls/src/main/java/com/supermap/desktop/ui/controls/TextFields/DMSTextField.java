@@ -236,14 +236,6 @@ public class DMSTextField extends JPanel {
 		this.labelM = new JLabel();
 		this.labelS = new JLabel();
 
-		// label是透明的，要想设置颜色生效，先设置为不透明
-		this.labelD.setOpaque(true);
-		this.labelD.setBackground(Color.white);
-		this.labelM.setOpaque(true);
-		this.labelM.setBackground(Color.white);
-		this.labelS.setOpaque(true);
-		this.labelS.setBackground(Color.white);
-
 		this.setBorder(new JTextField().getBorder());
 		this.setBackground(Color.white);
 	}
@@ -305,13 +297,18 @@ public class DMSTextField extends JPanel {
 
 	/**
 	 * 设置textField是否可用
+	 * 为保证控件可用和不可用时的颜色显示，根据是否可用进行调整
 	 *
 	 * @param enabled
 	 */
-	public void setTextFieldEnabled(Boolean enabled) {
+	public void setPanelEnabled(Boolean enabled) {
 		this.textFieldD.setEnabled(enabled);
 		this.textFieldM.setEnabled(enabled);
 		this.textFieldS.setEnabled(enabled);
+		// 当设置控件不可用时，设置面板颜色为空
+		if (!enabled) {
+			this.setBackground(null);
+		}
 	}
 
 	/**

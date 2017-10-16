@@ -248,7 +248,6 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 		this.labelDatasource.setText(ControlsProperties.getString("String_Label_Datasource"));
 		this.labelDataset.setText(ControlsProperties.getString("String_Label_Dataset"));
 		this.panelSourceData.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_SourceDataset")));
-		this.panelCoordSysInfo.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_SrcCoordSys")));
 		this.panelReferSysTransSettings.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_CoordSysTranslatorSetting")));
 		this.panelTargetCoordSys.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_TarCoorSys")));
 	}
@@ -278,11 +277,17 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 						.addComponent(this.dataset, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)));
 		// @formatter:on
 
+		// 调整布局之用
+		JPanel panel = new JPanel();
+		panel.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_SrcCoordSys")));
+		panel.setLayout(new GridBagLayout());
+		panel.add(this.panelCoordSysInfo, new GridBagConstraintsHelper(0, 0, 1, 1).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(10, 10, 10, 10).setWeight(1, 1));
+
 		// 主面板布局
 		JPanel mianPanel = new JPanel();
 		mianPanel.setLayout(new GridBagLayout());
 		mianPanel.add(this.panelSourceData, new GridBagConstraintsHelper(0, 0, 1, 1).setFill(GridBagConstraints.HORIZONTAL).setAnchor(GridBagConstraints.CENTER).setInsets(10, 5, 0, 0).setWeight(1, 0));
-		mianPanel.add(this.panelCoordSysInfo, new GridBagConstraintsHelper(0, 1, 1, 1).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(0, 5, 0, 0).setWeight(1, 1));
+		mianPanel.add(panel, new GridBagConstraintsHelper(0, 1, 1, 1).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(0, 5, 0, 0).setWeight(1, 1));
 		mianPanel.add(this.panelReferSysTransSettings, new GridBagConstraintsHelper(0, 2, 1, 1).setFill(GridBagConstraints.HORIZONTAL).setAnchor(GridBagConstraints.CENTER).setInsets(0, 5, 0, 0).setWeight(1, 0));
 		mianPanel.add(this.panelResultDataset.getPanel(), new GridBagConstraintsHelper(1, 0, 1, 1).setFill(GridBagConstraints.HORIZONTAL).setAnchor(GridBagConstraints.CENTER).setInsets(5, 0, 0, 5).setWeight(1, 0));
 		mianPanel.add(this.panelTargetCoordSys, new GridBagConstraintsHelper(1, 1, 1, 2).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(0, 0, 0, 5).setWeight(1, 1));
