@@ -25,6 +25,7 @@ public class PanelPointCoordSysTranslator extends JPanel {
 	private final static int DEGREEMODEL = 2;
 	private final static int DMSMODEL = 3;
 	private int currentModel = METERMODEL;
+	private int lastModel = METERMODEL;
 
 	private JLabel labelX = new JLabel("X:");
 	private JLabel labelY = new JLabel("Y:");
@@ -46,51 +47,6 @@ public class PanelPointCoordSysTranslator extends JPanel {
 	private UnitDegreeTextField unitDegreeTextFieldLatitude = new UnitDegreeTextField();
 
 	private JCheckBox checkBoxShowAsDMS = new JCheckBox(ControlsProperties.getString("String_CheckBox_ShowAsDMS"));
-
-	///**
-	// * 两种以度为单位的经度textField，内容改变监听
-	// */
-	//private CaretListener LongtitudeTextFieldCaretListener = new CaretListener() {
-	//	@Override
-	//	public void caretUpdate(CaretEvent e) {
-	//		if (e.getSource().equals(unitDegreeTextFieldLongtitude.getTextField())) {
-	//			// 当以度为单位的经度值改变时，同时设置以度分秒为单位的经度值textField
-	//			textFieldLongitudeValue.getTextFieldD().removeCaretListener(LongtitudeTextFieldCaretListener);
-	//			textFieldLongitudeValue.getTextFieldM().removeCaretListener(LongtitudeTextFieldCaretListener);
-	//			textFieldLongitudeValue.getTextFieldS().removeCaretListener(LongtitudeTextFieldCaretListener);
-	//			textFieldLongitudeValue.setDMSValue(unitDegreeTextFieldLongtitude.getTextField().getText());
-	//			textFieldLongitudeValue.getTextFieldD().addCaretListener(LongtitudeTextFieldCaretListener);
-	//			textFieldLongitudeValue.getTextFieldM().addCaretListener(LongtitudeTextFieldCaretListener);
-	//			textFieldLongitudeValue.getTextFieldS().addCaretListener(LongtitudeTextFieldCaretListener);
-	//		} else if (e.getSource().equals(textFieldLongitudeValue.getTextFieldD())) {
-	//			unitDegreeTextFieldLongtitude.getTextField().removeCaretListener(LongtitudeTextFieldCaretListener);
-	//			unitDegreeTextFieldLongtitude.getTextField().setText(DoubleUtilities.getFormatString(textFieldLongitudeValue.getDMSValue()));
-	//			unitDegreeTextFieldLongtitude.getTextField().addCaretListener(LongtitudeTextFieldCaretListener);
-	//		} else if (e.getSource().equals(textFieldLongitudeValue.getTextFieldM())) {
-	//			unitDegreeTextFieldLongtitude.getTextField().removeCaretListener(LongtitudeTextFieldCaretListener);
-	//			unitDegreeTextFieldLongtitude.getTextField().setText(DoubleUtilities.getFormatString(textFieldLongitudeValue.getDMSValue()));
-	//			unitDegreeTextFieldLongtitude.getTextField().addCaretListener(LongtitudeTextFieldCaretListener);
-	//		} else if (e.getSource().equals(textFieldLongitudeValue.getTextFieldS())) {
-	//			unitDegreeTextFieldLongtitude.getTextField().removeCaretListener(LongtitudeTextFieldCaretListener);
-	//			unitDegreeTextFieldLongtitude.getTextField().setText(DoubleUtilities.getFormatString(textFieldLongitudeValue.getDMSValue()));
-	//			unitDegreeTextFieldLongtitude.getTextField().addCaretListener(LongtitudeTextFieldCaretListener);
-	//		}
-	//	}
-	//};
-	//
-	///**
-	// * 两种以度为单位的经度textField，内容改变监听
-	// */
-	//private CaretListener LatitudeTextFieldCaretListener = new CaretListener() {
-	//	@Override
-	//	public void caretUpdate(CaretEvent e) {
-	//		if (e.getSource().equals(unitDegreeTextFieldLatitude)) {
-	//
-	//		} else if (e.getSource().equals(textFieldLatitudeValue)) {
-	//
-	//		}
-	//	}
-	//};
 
 
 	/**
@@ -159,11 +115,16 @@ public class PanelPointCoordSysTranslator extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				// 当点击checkBoxShowAsDMS时，算值，并显示相应面板
 				if (checkBoxShowAsDMS.isSelected()) {
+					// 两种值得表达方式，当值得改变小于一定精度时，认为两个值相等，不做改变
 					textFieldLongitudeValue.setDMSValue(unitDegreeTextFieldLongtitude.getTextField().getText());
 					textFieldLatitudeValue.setDMSValue(unitDegreeTextFieldLatitude.getTextField().getText());
 				} else {
-					unitDegreeTextFieldLongtitude.getTextField().setText(DoubleUtilities.getFormatString(textFieldLongitudeValue.getDMSValue()));
-					unitDegreeTextFieldLatitude.getTextField().setText(DoubleUtilities.getFormatString(textFieldLatitudeValue.getDMSValue()));
+					if (!textFieldLongitudeValue.getCurrentSText().equals(textFieldLongitudeValue.getTextFieldS().getText().toString())) {
+						unitDegreeTextFieldLongtitude.getTextField().setText(DoubleUtilities.toString(textFieldLongitudeValue.getDMSValue(), 15));
+					}
+					if (!textFieldLatitudeValue.getCurrentSText().equals(textFieldLatitudeValue.getTextFieldS().getText().toString())) {
+						unitDegreeTextFieldLatitude.getTextField().setText(DoubleUtilities.toString(textFieldLatitudeValue.getDMSValue(), 15));
+					}
 				}
 				setComponentVisible();
 			}
@@ -234,6 +195,9 @@ public class PanelPointCoordSysTranslator extends JPanel {
 	 * 设置当前model
 	 * 当改变model时，设置面板显示也改变
 	 * 暂时只接受：model=1和model=2，其他属性无效果
+	 * <p>
+	 * 当投影改变时，引发model改变，当两次model相同时，不做textField值改变
+	 * *
 	 *
 	 * @param currentModel
 	 */
@@ -245,16 +209,59 @@ public class PanelPointCoordSysTranslator extends JPanel {
 		this.checkBoxShowAsDMS.setSelected(false);
 		this.checkBoxShowAsDMS.setEnabled(false);
 
-		if (this.currentModel == DEGREEMODEL) {
+		if (this.currentModel == DEGREEMODEL && this.lastModel != this.currentModel) {
 			// 当投影单位为度时，设置checkBox可用
 			this.checkBoxShowAsDMS.setEnabled(true);
-			unitDegreeTextFieldLongtitude.getTextField().setText(unitMeterTextFieldX.getTextField().getText());
-			unitDegreeTextFieldLatitude.getTextField().setText(unitMeterTextFieldY.getTextField().getText());
-		} else if (this.currentModel == METERMODEL) {
-			unitMeterTextFieldX.getTextField().setText(unitDegreeTextFieldLongtitude.getTextField().getText());
-			unitMeterTextFieldY.getTextField().setText(unitDegreeTextFieldLatitude.getTextField().getText());
+			// 米——>度，需要考虑是否超出限制的问题
+			if (StringUtilities.getNumber(this.unitMeterTextFieldX.getTextField().getText()) >= -180 && StringUtilities.getNumber(this.unitMeterTextFieldX.getTextField().getText()) <= 180) {
+				this.unitDegreeTextFieldLongtitude.getTextField().setText(this.unitMeterTextFieldX.getTextField().getText().toString());
+				this.unitDegreeTextFieldLatitude.getTextField().setText(this.unitMeterTextFieldY.getTextField().getText().toString());
+			}
+			this.lastModel = this.currentModel;
+		} else if (this.currentModel == METERMODEL && this.lastModel != this.currentModel) {
+			this.unitMeterTextFieldX.getTextField().setText(this.unitDegreeTextFieldLongtitude.getTextField().getText().toString());
+			this.unitMeterTextFieldY.getTextField().setText(this.unitDegreeTextFieldLatitude.getTextField().getText().toString());
+			this.lastModel = this.currentModel;
 		}
 		setComponentVisible();
+	}
+
+	public double getXValue() {
+		// 获得值之前先同步三种状态下的值
+		if (this.checkBoxShowAsDMS.isSelected()) {
+			this.unitDegreeTextFieldLongtitude.getTextField().setText(DoubleUtilities.getFormatString(this.textFieldLongitudeValue.getDMSValue()));
+		}
+
+		if (this.currentModel == METERMODEL) {
+			return StringUtilities.getNumber(this.unitMeterTextFieldX.getTextField().getText());
+		} else {
+			return StringUtilities.getNumber(this.unitDegreeTextFieldLongtitude.getTextField().getText());
+		}
+	}
+
+	public double getYValue() {
+		// 获得值之前先同步三种状态下的值
+		if (this.checkBoxShowAsDMS.isSelected()) {
+			this.unitDegreeTextFieldLatitude.getTextField().setText(DoubleUtilities.getFormatString(this.textFieldLatitudeValue.getDMSValue()));
+		}
+
+		if (this.currentModel == METERMODEL) {
+			return StringUtilities.getNumber(this.unitMeterTextFieldY.getTextField().getText());
+		} else {
+			return StringUtilities.getNumber(this.unitDegreeTextFieldLatitude.getTextField().getText());
+		}
+	}
+
+	public void setXValue(String xValue) {
+		this.unitMeterTextFieldX.getTextField().setText(xValue);
+		this.unitDegreeTextFieldLongtitude.getTextField().setText(xValue);
+		this.textFieldLongitudeValue.setDMSValue(xValue);
+	}
+
+	public void setYValue(String yValue) {
+		this.unitMeterTextFieldY.getTextField().setText(yValue);
+		this.unitDegreeTextFieldLatitude.getTextField().setText(yValue);
+		this.textFieldLatitudeValue.setDMSValue(yValue);
 	}
 
 

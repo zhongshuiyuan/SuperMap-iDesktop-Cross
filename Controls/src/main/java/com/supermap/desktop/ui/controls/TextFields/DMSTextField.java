@@ -2,7 +2,6 @@ package com.supermap.desktop.ui.controls.TextFields;
 
 import com.supermap.desktop.Interface.ISmTextFieldLegit;
 import com.supermap.desktop.controls.ControlsProperties;
-import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.utilities.DoubleUtilities;
 import com.supermap.desktop.utilities.StringUtilities;
 
@@ -39,6 +38,23 @@ public class DMSTextField extends JPanel {
 	private JLabel labelD;
 	private JLabel labelM;
 	private JLabel labelS;
+
+
+	/**
+	 * 获得之前秒textField中的值，用以判断当转换显示方式时，是否要重新计算以度为单位的textField的值
+	 *
+	 * @return
+	 */
+	public String getCurrentSText() {
+		return currentSText;
+	}
+
+	public void setCurrentSText(String currentSText) {
+		this.currentSText = currentSText;
+	}
+
+	// 存储当前秒的text
+	private String currentSText;
 
 	// 键盘限制输入事件
 	private KeyListener keyAdapter = new KeyAdapter() {
@@ -208,15 +224,28 @@ public class DMSTextField extends JPanel {
 	private void initComponent() {
 		this.textFieldD = new SmTextFieldLegit("0");
 		this.textFieldD.setToolTipText(ControlsProperties.getString("String_RangeSection") + "[-180,180]");
+		this.textFieldD.setBorder(null);
 		this.textFieldM = new SmTextFieldLegit("0");
 		this.textFieldM.setToolTipText(ControlsProperties.getString("String_RangeSection") + "[0,60)");
+		this.textFieldM.setBorder(null);
 		this.textFieldS = new SmTextFieldLegit("0");
 		this.textFieldS.setToolTipText(ControlsProperties.getString("String_RangeSection") + "[0,60)");
+		this.textFieldS.setBorder(null);
 
 		this.labelD = new JLabel();
 		this.labelM = new JLabel();
 		this.labelS = new JLabel();
 
+		// label是透明的，要想设置颜色生效，先设置为不透明
+		this.labelD.setOpaque(true);
+		this.labelD.setBackground(Color.white);
+		this.labelM.setOpaque(true);
+		this.labelM.setBackground(Color.white);
+		this.labelS.setOpaque(true);
+		this.labelS.setBackground(Color.white);
+
+		this.setBorder(new JTextField().getBorder());
+		this.setBackground(Color.white);
 	}
 
 	private void initLayout() {
@@ -243,9 +272,13 @@ public class DMSTextField extends JPanel {
 	}
 
 	private void initResources() {
-		this.labelD.setText(CommonProperties.getString("String_AngleUnit_Degree"));
-		this.labelM.setText(CommonProperties.getString("String_AngleUnit_Minute"));
-		this.labelS.setText(CommonProperties.getString("String_AngleUnit_Second"));
+		//this.labelD.setText(CommonProperties.getString("String_AngleUnit_Degree"));
+		//this.labelM.setText(CommonProperties.getString("String_AngleUnit_Minute"));
+		//this.labelS.setText(CommonProperties.getString("String_AngleUnit_Second"));
+		this.labelD.setText("°");
+		this.labelM.setText("′");
+		this.labelS.setText("″");
+
 	}
 
 	private void registEvents() {
@@ -317,9 +350,7 @@ public class DMSTextField extends JPanel {
 			}
 			this.textFieldM.setText(String.valueOf(fen));
 			this.textFieldS.setText(String.valueOf(miao));
-
-			//String.valueOf(miaoDouble));
-
+			setCurrentSText(this.textFieldS.getText().toString());
 		}
 	}
 
