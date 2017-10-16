@@ -88,13 +88,12 @@ public class PanelReferSysTransSettings extends JPanel {
 		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_BURSA_WOLF));
 
 		this.buttonSet = new SmButton();
-		this.buttonSet.setUseDefaultSize(false);
 	}
 
 	private void initializeResources() {
 		this.labelMethod.setText(ControlsProperties.getString("String_Label_CoordSysTranslatorMethod"));
 		this.labelPrjTransParameterset.setText(ControlsProperties.getString("String_Label_CoordSysTranslatorParam"));
-		this.buttonSet.setText(ControlsProperties.getString("String_TransParamsSetting"));
+		this.buttonSet.setText(ControlsProperties.getString("String_Button_Setting"));
 	}
 
 	private void initLayout() {
@@ -110,7 +109,7 @@ public class PanelReferSysTransSettings extends JPanel {
 						.addComponent(this.labelPrjTransParameterset))
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 						.addComponent(this.comboBoxMethod)
-						.addComponent(this.buttonSet)));
+						.addComponent(this.buttonSet, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
 		groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)

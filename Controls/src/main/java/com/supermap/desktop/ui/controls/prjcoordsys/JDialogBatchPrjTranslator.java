@@ -263,15 +263,13 @@ public class JDialogBatchPrjTranslator extends SmDialog {
 				.addGroup(sourceDataPanelLayout.createSequentialGroup()
 						.addComponent(this.labelSourceDatasource)
 						.addComponent(this.sourceDatasource))
-				.addGroup(sourceDataPanelLayout.createSequentialGroup()
-						.addComponent(this.sourcePanelCoordSysInfo)));
+				.addComponent(this.sourcePanelCoordSysInfo));
 
 		sourceDataPanelLayout.setVerticalGroup(sourceDataPanelLayout.createSequentialGroup()
 				.addGroup(sourceDataPanelLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(this.labelSourceDatasource)
 						.addComponent(this.sourceDatasource, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addGroup(sourceDataPanelLayout.createSequentialGroup()
-						.addComponent(this.sourcePanelCoordSysInfo)));
+				.addComponent(this.sourcePanelCoordSysInfo));
 		// @formatter:on
 
 		// 目标数据
