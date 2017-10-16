@@ -615,6 +615,7 @@ public class LayerGridAggregationPropertyControl extends AbstractLayerPropertyCo
 
 	private void lineColorTransparenceChange() {
 		this.componentDropDownLineColor.setColor(resetColor(this.componentDropDownLineColor.getColor(), (int) this.smSpinnerLineColorTransparence.getValue()));
+		this.componentDropDownLineColor.repaint();
 		this.lineStyle.setLineColor(this.componentDropDownLineColor.getColor());
 		lineStyleChange();
 	}

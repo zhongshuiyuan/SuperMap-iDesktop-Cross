@@ -40,9 +40,15 @@ public class ParameterSingleDatasetPanel extends SwingPanel implements IParamete
 	private DatasetCreatedListener datasetCreatedListener = new DatasetCreatedListener() {
 		@Override
 		public void datasetCreated(DatasetCreatedEvent datasetCreatedEvent) {
+			int oldDatasetComboBoxItemCount=datasetComboBox.getItemCount();
 			isSelectingItem = true;
 			datasetComboBox.addDataset(ParameterSingleDatasetPanel.this.datasource.getDatasets().get(datasetCreatedEvent.getDatasetName()));
 			isSelectingItem = false;
+			// fix by lixiaoyao 2017/10/13  当数据源中数据集为空的时候，复制进来数据集，通知parameterSingleDataset改变，
+			// 有了新的数据集
+			if(oldDatasetComboBoxItemCount-1==0 && datasetComboBox.getItemCount()>=1){
+				parameterSingleDataset.setSelectedItem(datasetComboBox.getSelectedDataset());
+			}
 		}
 	};
 	private DatasetDeletingListener datasetDeletingListener = new DatasetDeletingListener() {

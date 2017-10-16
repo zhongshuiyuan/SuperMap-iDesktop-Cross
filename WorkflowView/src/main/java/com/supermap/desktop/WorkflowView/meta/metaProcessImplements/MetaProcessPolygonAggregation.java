@@ -96,7 +96,9 @@ public class MetaProcessPolygonAggregation extends MetaProcess {
 			CommonSettingCombine type = new CommonSettingCombine("type", parameterAggregationType.getSelectedData().toString());
 			CommonSettingCombine commonSettingCombine = new CommonSettingCombine("", "");
 			commonSettingCombine.add(input, analyst, type);
-
+			if (null == parameterIServerLogin.getService()) {
+				parameterIServerLogin.login();
+			}
 			JobResultResponse response = parameterIServerLogin.getService().queryResult(MetaKeys.POLYGON_AGGREGATION, commonSettingCombine.getFinalJSon());
 			CursorUtilities.setWaitCursor();
 			if (null != response) {

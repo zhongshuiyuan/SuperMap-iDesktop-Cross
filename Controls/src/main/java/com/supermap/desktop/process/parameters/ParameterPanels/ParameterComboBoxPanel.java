@@ -75,15 +75,15 @@ public class ParameterComboBoxPanel extends SwingPanel implements IParameterPane
 	}
 
 	private void initListeners() {
-		comboBox.getComponent(0).addMouseListener(new MouseAdapter() {
+		MouseAdapter comboBoxClicked = new MouseAdapter() {
 			//添加右边按钮点击时事件
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				isSelectingItem = true;
-				parameterComboBox.firePropertyChangeListener(new PropertyChangeEvent(parameterComboBox,"LeftButtonClicked","",""));
-				isSelectingItem = false;
+				parameterComboBox.firePropertyChangeListener(new PropertyChangeEvent(parameterComboBox, "ComboBoxClicked", "", ""));
 			}
-		});
+		};
+		comboBox.addMouseListener(comboBoxClicked);
+		comboBox.getComponent(0).addMouseListener(comboBoxClicked);
 		parameterComboBox.addPropertyListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
