@@ -40,6 +40,23 @@ public class DMSTextField extends JPanel {
 	private JLabel labelM;
 	private JLabel labelS;
 
+
+	/**
+	 * 获得之前秒textField中的值，用以判断当转换显示方式时，是否要重新计算以度为单位的textField的值
+	 *
+	 * @return
+	 */
+	public String getCurrentSText() {
+		return currentSText;
+	}
+
+	public void setCurrentSText(String currentSText) {
+		this.currentSText = currentSText;
+	}
+
+	// 存储当前秒的text
+	private String currentSText;
+
 	// 键盘限制输入事件
 	private KeyListener keyAdapter = new KeyAdapter() {
 		@Override
@@ -317,9 +334,9 @@ public class DMSTextField extends JPanel {
 			}
 			this.textFieldM.setText(String.valueOf(fen));
 			this.textFieldS.setText(String.valueOf(miao));
+			setCurrentSText(this.textFieldS.getText().toString());
 
 			//String.valueOf(miaoDouble));
-
 		}
 	}
 
