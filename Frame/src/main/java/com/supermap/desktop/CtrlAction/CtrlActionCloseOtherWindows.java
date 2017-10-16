@@ -1,4 +1,4 @@
-package com.supermap.desktop.ui.mdi.MdiTabsContextMenu;
+package com.supermap.desktop.CtrlAction;
 
 import com.supermap.desktop.Application;
 import com.supermap.desktop.Interface.IBaseItem;
@@ -9,9 +9,9 @@ import com.supermap.desktop.ui.FormManager;
 /**
  * Created by lixiaoyao on 2017/10/11.
  */
-public class CtrlActionCloseOtherTab extends CtrlAction {
+public class CtrlActionCloseOtherWindows extends CtrlAction {
 
-	public CtrlActionCloseOtherTab(IBaseItem caller, IForm formClass) {
+	public CtrlActionCloseOtherWindows(IBaseItem caller, IForm formClass) {
 		super(caller, formClass);
 	}
 

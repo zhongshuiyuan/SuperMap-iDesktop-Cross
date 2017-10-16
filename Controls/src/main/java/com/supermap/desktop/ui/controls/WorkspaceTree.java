@@ -855,7 +855,7 @@ public class WorkspaceTree extends JTree implements IDisposable {
 	 * 初始化方法
 	 */
 	private void init() {
-		if (SystemPropertyUtilities.isLinux() && this.getRowHeight() == -1) {
+		if (SystemPropertyUtilities.isLinux()) {
 			this.setRowHeight(17);
 		}
 		treeRenderer = new WorkspaceTreeCellRenderer(currentWorkspace);

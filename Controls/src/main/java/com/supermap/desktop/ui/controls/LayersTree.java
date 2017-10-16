@@ -39,7 +39,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * 图层管理树控件
@@ -112,7 +111,7 @@ public class LayersTree extends JTree {
 	}
 
 	private void initDrag() {
-		if (SystemPropertyUtilities.isLinux() && this.getRowHeight() == -1) {
+		if (SystemPropertyUtilities.isLinux()) {
 			this.setRowHeight(17);
 		}
 		this.setDragEnabled(true);
