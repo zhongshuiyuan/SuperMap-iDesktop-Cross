@@ -104,7 +104,7 @@ public class ImportParameterCreator implements IImportParameterCreator {
 							ParameterDataNode dataNode = null;
 							if (geoIndex != -1) {
 								dataNode = new ParameterDataNode("Geometry", geoIndex);
-								parameterWKTFieldName.addItem(new ParameterDataNode("Geometry", geoIndex));
+								parameterWKTFieldName.addItem(dataNode);
 							}
 							parameterZFieldName.addItem(new ParameterDataNode("", " "));
 							for (int i = 0; i < indexX.length; i++) {
