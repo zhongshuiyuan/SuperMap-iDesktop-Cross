@@ -327,7 +327,7 @@ public class JDialogBatchPrjTranslator extends SmDialog {
 	private ArrayList getAvailableDatasets(Datasets datasets) {
 		ArrayList<Dataset> availableDatasets = new ArrayList();
 		for (int i = 0; i < datasets.getCount(); i++) {
-			if (!datasets.get(i).isReadOnly() && datasets.get(i).getPrjCoordSys().getType() != PrjCoordSysType.PCS_NON_EARTH) {
+			if (datasets.get(i).getPrjCoordSys().getType() != PrjCoordSysType.PCS_NON_EARTH) {
 				availableDatasets.add(datasets.get(i));
 			}
 		}
