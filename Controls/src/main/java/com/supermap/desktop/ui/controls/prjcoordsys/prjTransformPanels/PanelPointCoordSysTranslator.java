@@ -145,6 +145,7 @@ public class PanelPointCoordSysTranslator extends JPanel {
 	}
 
 	public void initStates() {
+		this.checkBoxShowAsDMS.setEnabled(false);
 		setComponentVisible();
 	}
 

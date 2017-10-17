@@ -153,10 +153,10 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 				result = CoordSysTranslator.convert(getSourceDataset(), getTargetPrj(), getParameter(), getMethod());
 				if (result) {
 					Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_VectorSuccess"),
-							getSourceDataset().getDatasource().getAlias(), getSourceDataset().getName()));
+							getSourceDataset().getName(), getSourceDataset().getDatasource().getAlias()));
 				} else {
 					Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
-							getSourceDataset().getDatasource().getAlias(), getSourceDataset().getName()));
+							getSourceDataset().getName(), getSourceDataset().getDatasource().getAlias()));
 				}
 			} else {
 				Dataset targetDataset = CoordSysTranslator.convert(getSourceDataset(), getTargetPrj(), getSelectedResultDatasource(), getResultDatasetName(), getParameter(), getMethod());
@@ -166,13 +166,13 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 							.getActiveApplication()
 							.getOutput()
 							.output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_RasterSuccess"),
-									getSourceDataset().getDatasource().getAlias(), getSourceDataset().getName(), getSelectedResultDatasource().getAlias(), getResultDatasetName()));
+									getSourceDataset().getName(), getSourceDataset().getDatasource().getAlias(), getResultDatasetName(), getSelectedResultDatasource().getAlias()));
 				} else {
 					Application
 							.getActiveApplication()
 							.getOutput()
 							.output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
-									getSourceDataset().getDatasource().getAlias(), getSourceDataset().getName()));
+									getSourceDataset().getName(), getSourceDataset().getDatasource().getAlias()));
 				}
 				// 这种转换方式主要针对非矢量数据，转换之后会生成新的数据集，但是树的显示状态很诡异，这里对目标数据源的节点进行一次刷新
 				WorkspaceTreeManagerUIUtilities.refreshNode(getSelectedResultDatasource());
