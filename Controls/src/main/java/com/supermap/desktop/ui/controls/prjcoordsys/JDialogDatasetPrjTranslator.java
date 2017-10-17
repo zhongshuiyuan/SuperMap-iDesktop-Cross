@@ -237,7 +237,7 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 		this.panelSourceData = new JPanel();
 
 		this.panelCoordSysInfo = new PanelCoordSysInfo("");
-		this.panelReferSysTransSettings = new PanelReferSysTransSettings();
+		this.panelReferSysTransSettings = new PanelReferSysTransSettings("");
 		this.panelResultDataset = new PanelResultDataset("", true);
 		this.panelTargetCoordSys = new PanelTargetCoordSys(doSome);
 

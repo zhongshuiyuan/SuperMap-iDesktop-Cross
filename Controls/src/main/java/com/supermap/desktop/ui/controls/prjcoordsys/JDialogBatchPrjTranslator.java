@@ -217,7 +217,7 @@ public class JDialogBatchPrjTranslator extends SmDialog {
 		this.targetDatasource = new DatasourceComboBox();
 		this.targetPanelCoordSysInfo = new PanelCoordSysInfo("");
 		// 参照系转换设置面板块
-		this.panelReferSysTransSettings = new PanelReferSysTransSettings();
+		this.panelReferSysTransSettings = new PanelReferSysTransSettings("");
 		//数据集列表
 		this.tablePanel = new JPanel();
 		this.table = new JTable();
