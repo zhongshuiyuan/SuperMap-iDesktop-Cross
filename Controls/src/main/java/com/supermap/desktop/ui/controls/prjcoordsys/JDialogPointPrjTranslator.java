@@ -1,8 +1,8 @@
 package com.supermap.desktop.ui.controls.prjcoordsys;
 
-import com.supermap.data.PrjCoordSys;
-import com.supermap.data.Unit;
+import com.supermap.data.*;
 import com.supermap.desktop.controls.ControlsProperties;
+import com.supermap.desktop.ui.controls.DialogResult;
 import com.supermap.desktop.ui.controls.GridBagConstraintsHelper;
 import com.supermap.desktop.ui.controls.SmDialog;
 import com.supermap.desktop.ui.controls.borderPanel.PanelButton;
@@ -10,9 +10,12 @@ import com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels.DoSome;
 import com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels.PanelPointCoordSysTranslator;
 import com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels.PanelReferSysTransSettings;
 import com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels.PanelTargetCoordSys;
+import com.supermap.desktop.utilities.DoubleUtilities;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Created by yuanR on 2017/10/12 0012.
@@ -87,8 +90,47 @@ public class JDialogPointPrjTranslator extends SmDialog {
 		}
 	};
 
-	public JDialogPointPrjTranslator() {
+	/**
+	 *
+	 */
+	private ActionListener OKAndCancelActionListener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource().equals(panelButton.getButtonOk())) {
+				Translator();
+				dialogResult = DialogResult.OK;
+			} else {
+				dialogResult = DialogResult.CANCEL;
+				JDialogPointPrjTranslator.this.dispose();
+			}
+		}
+	};
 
+	/**
+	 * 点坐标转换功能实现
+	 */
+	private Boolean Translator() {
+		Boolean result = false;
+		try {
+			if (prjCoordSysSource != null && prjCoordSysResult != null) {
+				double xValue = panelPointCoordSysTranslatorSource.getXValue();
+				double yValue = panelPointCoordSysTranslatorSource.getYValue();
+				Point2Ds point2Ds = new Point2Ds();
+				point2Ds.add(new Point2D(xValue, yValue));
+				result = CoordSysTranslator.convert(point2Ds, prjCoordSysSource, prjCoordSysResult, panelReferSysTransSettings.getParameter(), panelReferSysTransSettings.getMethod());
+
+				if (result) {
+					panelPointCoordSysTranslatorResult.setXValue(DoubleUtilities.toString(point2Ds.getItem(0).getX(), 15));
+					panelPointCoordSysTranslatorResult.setYValue(DoubleUtilities.toString(point2Ds.getItem(0).getY(), 15));
+				}
+			}
+		} catch (Exception e) {
+
+		}
+		return result;
+	}
+
+	public JDialogPointPrjTranslator() {
 		initializeComponents();
 		initializeResources();
 		initializeLayout();
@@ -113,6 +155,7 @@ public class JDialogPointPrjTranslator extends SmDialog {
 		this.panelTargetCoordSysSource.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_SrcCoordSys")));
 		this.panelTargetCoordSysResult.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_TarCoorSys")));
 		this.panelReferSysTransSettings.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_CoordSysTranslatorSetting")));
+		this.panelButton.getButtonOk().setText(ControlsProperties.getString("String_Button_Conversion"));
 	}
 
 	private void initializeLayout() {
@@ -135,6 +178,14 @@ public class JDialogPointPrjTranslator extends SmDialog {
 	}
 
 	private void initListener() {
+		removeListener();
+		this.panelButton.getButtonOk().addActionListener(OKAndCancelActionListener);
+		this.panelButton.getButtonCancel().addActionListener(OKAndCancelActionListener);
 
+	}
+
+	private void removeListener() {
+		this.panelButton.getButtonOk().removeActionListener(OKAndCancelActionListener);
+		this.panelButton.getButtonCancel().removeActionListener(OKAndCancelActionListener);
 	}
 }

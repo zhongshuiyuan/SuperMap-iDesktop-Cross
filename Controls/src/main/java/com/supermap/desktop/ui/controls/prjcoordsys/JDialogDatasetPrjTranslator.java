@@ -153,10 +153,10 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 				result = CoordSysTranslator.convert(getSourceDataset(), getTargetPrj(), getParameter(), getMethod());
 				if (result) {
 					Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_VectorSuccess"),
-							getSourceDataset().getDatasource().getAlias(), getSourceDataset().getName()));
+							getSourceDataset().getName(), getSourceDataset().getDatasource().getAlias()));
 				} else {
 					Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
-							getSourceDataset().getDatasource().getAlias(), getSourceDataset().getName()));
+							getSourceDataset().getName(), getSourceDataset().getDatasource().getAlias()));
 				}
 			} else {
 				Dataset targetDataset = CoordSysTranslator.convert(getSourceDataset(), getTargetPrj(), getSelectedResultDatasource(), getResultDatasetName(), getParameter(), getMethod());
@@ -166,13 +166,13 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 							.getActiveApplication()
 							.getOutput()
 							.output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_RasterSuccess"),
-									getSourceDataset().getDatasource().getAlias(), getSourceDataset().getName(), getSelectedResultDatasource().getAlias(), getResultDatasetName()));
+									getSourceDataset().getName(), getSourceDataset().getDatasource().getAlias(), getResultDatasetName(), getSelectedResultDatasource().getAlias()));
 				} else {
 					Application
 							.getActiveApplication()
 							.getOutput()
 							.output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
-									getSourceDataset().getDatasource().getAlias(), getSourceDataset().getName()));
+									getSourceDataset().getName(), getSourceDataset().getDatasource().getAlias()));
 				}
 				// 这种转换方式主要针对非矢量数据，转换之后会生成新的数据集，但是树的显示状态很诡异，这里对目标数据源的节点进行一次刷新
 				WorkspaceTreeManagerUIUtilities.refreshNode(getSelectedResultDatasource());
@@ -248,7 +248,6 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 		this.labelDatasource.setText(ControlsProperties.getString("String_Label_Datasource"));
 		this.labelDataset.setText(ControlsProperties.getString("String_Label_Dataset"));
 		this.panelSourceData.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_SourceDataset")));
-		this.panelCoordSysInfo.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_SrcCoordSys")));
 		this.panelReferSysTransSettings.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_CoordSysTranslatorSetting")));
 		this.panelTargetCoordSys.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_TarCoorSys")));
 	}
@@ -278,11 +277,17 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 						.addComponent(this.dataset, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)));
 		// @formatter:on
 
+		// 调整布局之用
+		JPanel panel = new JPanel();
+		panel.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_GroupBox_SrcCoordSys")));
+		panel.setLayout(new GridBagLayout());
+		panel.add(this.panelCoordSysInfo, new GridBagConstraintsHelper(0, 0, 1, 1).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(10, 10, 10, 10).setWeight(1, 1));
+
 		// 主面板布局
 		JPanel mianPanel = new JPanel();
 		mianPanel.setLayout(new GridBagLayout());
 		mianPanel.add(this.panelSourceData, new GridBagConstraintsHelper(0, 0, 1, 1).setFill(GridBagConstraints.HORIZONTAL).setAnchor(GridBagConstraints.CENTER).setInsets(10, 5, 0, 0).setWeight(1, 0));
-		mianPanel.add(this.panelCoordSysInfo, new GridBagConstraintsHelper(0, 1, 1, 1).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(0, 5, 0, 0).setWeight(1, 1));
+		mianPanel.add(panel, new GridBagConstraintsHelper(0, 1, 1, 1).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(0, 5, 0, 0).setWeight(1, 1));
 		mianPanel.add(this.panelReferSysTransSettings, new GridBagConstraintsHelper(0, 2, 1, 1).setFill(GridBagConstraints.HORIZONTAL).setAnchor(GridBagConstraints.CENTER).setInsets(0, 5, 0, 0).setWeight(1, 0));
 		mianPanel.add(this.panelResultDataset.getPanel(), new GridBagConstraintsHelper(1, 0, 1, 1).setFill(GridBagConstraints.HORIZONTAL).setAnchor(GridBagConstraints.CENTER).setInsets(5, 0, 0, 5).setWeight(1, 0));
 		mianPanel.add(this.panelTargetCoordSys, new GridBagConstraintsHelper(1, 1, 1, 2).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(0, 0, 0, 5).setWeight(1, 1));

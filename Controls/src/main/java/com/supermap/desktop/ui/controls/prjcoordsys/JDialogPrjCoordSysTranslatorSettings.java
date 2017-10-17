@@ -97,7 +97,7 @@ public class JDialogPrjCoordSysTranslatorSettings extends SmDialog {
 		fillCoordSysTransParameter(this.parameter);
 		setComponentsEnabled();
 		registerEvents();
-		setSize(600, 350);
+		setSize(600, 315);
 		setLocationRelativeTo(null);
 		//this.componentList.add(buttonSetPrj);
 		this.componentList.add(buttonImport);
@@ -433,7 +433,19 @@ public class JDialogPrjCoordSysTranslatorSettings extends SmDialog {
 		setVisible(false);
 	}
 
+	/**
+	 *
+	 */
 	private void buttonCancelClicked() {
+		// 点击取消按钮时，恢复textField的默认显示
+		this.comboBoxMethod.setSelectedIndex(0);
+		this.textFieldScaleDifference.setValue(0);
+		this.textFieldRotationX.setValue(0);
+		this.textFieldRotationY.setValue(0);
+		this.textFieldRotationZ.setValue(0);
+		this.textFieldTranslateX.setValue(0);
+		this.textFieldTranslateY.setValue(0);
+		this.textFieldTranslateZ.setValue(0);
 		this.dialogResult = DialogResult.CANCEL;
 		setVisible(false);
 	}

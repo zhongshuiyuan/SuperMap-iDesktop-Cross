@@ -1,7 +1,6 @@
 package com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels;
 
 import com.supermap.data.Dataset;
-import com.supermap.data.Datasets;
 import com.supermap.data.Datasource;
 import com.supermap.desktop.properties.CommonProperties;
 import com.supermap.desktop.ui.controls.DataCell;
@@ -94,10 +93,10 @@ public class TableModelBatchPrjTranslatorDatasetsList extends DefaultTableModel 
 		return super.getColumnClass(columnIndex);
 	}
 
-	public void setDataList(Datasets datasets, Datasource targetDatasource) {
+	public void setDataList(ArrayList<Dataset> datasets, Datasource targetDatasource) {
 		this.dataList.clear();
-		if (targetDatasource != null && datasets != null && datasets.getCount() > 0) {
-			for (int i = 0; i < datasets.getCount(); i++) {
+		if (targetDatasource != null && datasets != null && datasets.size() > 0) {
+			for (int i = 0; i < datasets.size(); i++) {
 				dataList.add(new TableData(true, datasets.get(i), targetDatasource.getDatasets().getAvailableDatasetName(datasets.get(i).getName()), targetDatasource));
 			}
 		}

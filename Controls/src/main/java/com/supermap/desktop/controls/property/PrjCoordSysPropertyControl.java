@@ -1,18 +1,20 @@
 package com.supermap.desktop.controls.property;
 
-import com.supermap.data.PrjCoordSysType;
 import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.controls.utilities.ComponentUIUtilities;
 import com.supermap.desktop.enums.PropertyType;
-import com.supermap.desktop.ui.controls.DialogResult;
-import com.supermap.desktop.ui.controls.GridBagConstraintsHelper;
+import com.supermap.desktop.ui.UICommonToolkit;
+import com.supermap.desktop.ui.controls.*;
 import com.supermap.desktop.ui.controls.button.SmButton;
+import com.supermap.desktop.ui.controls.prjcoordsys.JDialogBatchPrjTranslator;
 import com.supermap.desktop.ui.controls.prjcoordsys.JDialogDatasetPrjTranslator;
 import com.supermap.desktop.ui.controls.prjcoordsys.JDialogPrjCoordSysSettings;
 import com.supermap.desktop.utilities.PrjCoordSysUtilities;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalBorders;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -228,11 +230,23 @@ public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 	 * 現投影转换功能更为独立，在功能内可以任意跟换原数据
 	 * 因此对功能的实现进行修改及优化
 	 * yuanR2017.9.27
+	 * 当选中数据源时，打开批量投影转换，选中数据及时打开数据集投影转换
 	 */
 	private void buttonConvertClicked() {
-		JDialogDatasetPrjTranslator dialogTranslator = new JDialogDatasetPrjTranslator();
-		if (dialogTranslator.showDialog() == DialogResult.OK) {
-			fillComponents();
+		WorkspaceTree workspaceTree = UICommonToolkit.getWorkspaceManager().getWorkspaceTree();
+		TreePath selectedPath = workspaceTree.getSelectionPath();
+		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
+		TreeNodeData selectedNodeData = (TreeNodeData) selectedNode.getUserObject();
+		NodeDataType type = selectedNodeData.getType();
+
+		if (type == NodeDataType.DATASOURCE) {
+			JDialogBatchPrjTranslator dialogTranslator = new JDialogBatchPrjTranslator();
+			dialogTranslator.showDialog();
+		} else {
+			JDialogDatasetPrjTranslator dialogTranslator = new JDialogDatasetPrjTranslator();
+			if (dialogTranslator.showDialog() == DialogResult.OK) {
+				fillComponents();
+			}
 		}
 	}
 
@@ -244,11 +258,7 @@ public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 		} else {
 			this.buttonCopy.setEnabled(true);
 			this.buttonSet.setEnabled(true);
-			if (this.prjHandle.getPrj().getType() == PrjCoordSysType.PCS_NON_EARTH) {
-				this.buttonConvert.setEnabled(false);
-			} else {
-				this.buttonConvert.setEnabled(true);
-			}
+			this.buttonConvert.setEnabled(true);
 		}
 	}
 }

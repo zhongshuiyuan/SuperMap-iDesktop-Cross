@@ -125,7 +125,6 @@ public class PanelTargetCoordSys extends JPanel {
 		}
 		this.datasource = new DatasourceComboBox(datasourceArray);
 		this.buttonPrjSetting = new SmButton();
-		this.buttonPrjSetting.setUseDefaultSize(false);
 
 		String moduleName = "ImportPrjFile";
 		if (!SmFileChoose.isModuleExist(moduleName)) {
@@ -147,8 +146,7 @@ public class PanelTargetCoordSys extends JPanel {
 		this.radioButtonFromDatasource.setText(ControlsProperties.getString("String_Label_FromDatasource"));
 		this.radioButtonPrjSetting.setText(ControlsProperties.getString("String_Label_CustomPrjCoordSysSetting"));
 		this.radioButtonImportPrjFile.setText(ControlsProperties.getString("String_Label_ImportPrjCoordSysFile"));
-		this.buttonPrjSetting.setText(ControlsProperties.getString("String_SetProjection_Caption"));
-		this.panelCoordSysInfo = new PanelCoordSysInfo("");
+		this.buttonPrjSetting.setText(ControlsProperties.getString("String_Button_Setting"));
 	}
 
 	private void initializeLayout() {
@@ -165,11 +163,11 @@ public class PanelTargetCoordSys extends JPanel {
 								.addComponent(this.radioButtonImportPrjFile))
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(this.datasource)
-								.addComponent(this.buttonPrjSetting)
+								.addComponent(this.buttonPrjSetting, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 								.addComponent(this.fileChooser)))
 				.addGroup(groupLayout.createSequentialGroup()
+						.addGap(5)
 						.addComponent(this.panelCoordSysInfo)));
-
 		groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(this.radioButtonFromDatasource)
@@ -180,9 +178,7 @@ public class PanelTargetCoordSys extends JPanel {
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(this.radioButtonImportPrjFile)
 						.addComponent(this.fileChooser, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addGroup(groupLayout.createSequentialGroup()
-						.addComponent(this.panelCoordSysInfo))
-		);
+				.addComponent(this.panelCoordSysInfo));
 		// @formatter:on
 	}
 
