@@ -176,8 +176,8 @@ public class PanelPointCoordSysTranslator extends JPanel {
 		this.unitMeterTextFieldY.setTextFieldEnabled(enabled);
 		this.unitDegreeTextFieldLongtitude.setTextFieldEnabled(enabled);
 		this.unitDegreeTextFieldLatitude.setTextFieldEnabled(enabled);
-		this.textFieldLongitudeValue.setTextFieldEnabled(enabled);
-		this.textFieldLatitudeValue.setTextFieldEnabled(enabled);
+		this.textFieldLongitudeValue.setPanelEnabled(enabled);
+		this.textFieldLatitudeValue.setPanelEnabled(enabled);
 		this.checkBoxShowAsDMS.setEnabled(!(getCurrentModel() == METERMODEL));
 	}
 
@@ -207,11 +207,9 @@ public class PanelPointCoordSysTranslator extends JPanel {
 		}
 		// 为逻辑清晰考虑，外界model属性改变时，无法直接显示度分秒类型面板，因此先设置checkBox不选中，并且不可用
 		this.checkBoxShowAsDMS.setSelected(false);
-		this.checkBoxShowAsDMS.setEnabled(false);
+		this.checkBoxShowAsDMS.setEnabled(this.currentModel == DEGREEMODEL);
 
 		if (this.currentModel == DEGREEMODEL && this.lastModel != this.currentModel) {
-			// 当投影单位为度时，设置checkBox可用
-			this.checkBoxShowAsDMS.setEnabled(true);
 			// 米——>度，需要考虑是否超出限制的问题
 			if (StringUtilities.getNumber(this.unitMeterTextFieldX.getTextField().getText()) >= -180 && StringUtilities.getNumber(this.unitMeterTextFieldX.getTextField().getText()) <= 180) {
 				this.unitDegreeTextFieldLongtitude.getTextField().setText(this.unitMeterTextFieldX.getTextField().getText().toString());
