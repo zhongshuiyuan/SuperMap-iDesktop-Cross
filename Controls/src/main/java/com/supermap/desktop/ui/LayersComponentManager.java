@@ -115,11 +115,11 @@ public class LayersComponentManager extends JComponent {
 	}
 
 	//  Create by lixiaoyao 2017/10/10
-	// 当点击鼠标右键时，当坐标Y超出图层树当前显示的高度时那么不需要改变图层树当前选择的对象，
+	// 当点击鼠标右键时，当坐标超出图层树当前显示的高度时那么不需要改变图层树当前选择的对象，
 	// 如果没超过那么就需要改变图层树中当前选择的对象，效果类似于工作空间树
 	private void layersTreeSelectDataChange(java.awt.event.MouseEvent e){
 		if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
-			if (e.getY()<=this.layersTree.getRowCount()*this.layersTree.getRowHeight()) {
+			if (this.layersTree.getRowForLocation(e.getX(),e.getY())!=-1) {
 				TreePath mouseLocationPath = this.layersTree.getClosestPathForLocation(e.getX(), e.getY());
 				if (mouseLocationPath != null && mouseLocationPath.getPath() != null && mouseLocationPath.getPath().length > 0
 						&& !this.layersTree.isPathSelected(mouseLocationPath)) {
