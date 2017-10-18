@@ -13,6 +13,8 @@ import com.supermap.desktop.utilities.PrjCoordSysUtilities;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -21,6 +23,8 @@ import java.util.ArrayList;
  * 投影转换.目标坐标系面板
  * 提供三种方式选择投影坐标系：来自数据源、选择、导入文件
  * 面板主要提供设置好的坐标系
+ * <p>
+ * 数据源屏蔽平面坐标系
  */
 public class PanelTargetCoordSys extends JPanel {
 	/**
@@ -74,10 +78,24 @@ public class PanelTargetCoordSys extends JPanel {
 				// 当点击了投影设置，并且设置了投影
 				JDialogPrjCoordSysSettings dialogPrjCoordSysSettings = new JDialogPrjCoordSysSettings();
 				if (dialogPrjCoordSysSettings.showDialog() == DialogResult.OK) {
-					buttonSetPrjCoordSys = dialogPrjCoordSysSettings.getPrjCoordSys();
-					setPrjCoordSysInfo(buttonSetPrjCoordSys);
+					if (dialogPrjCoordSysSettings.getPrjCoordSys().getType() != PrjCoordSysType.PCS_NON_EARTH) {
+						buttonSetPrjCoordSys = dialogPrjCoordSysSettings.getPrjCoordSys();
+						setPrjCoordSysInfo(buttonSetPrjCoordSys);
+					}
 				}
 			}
+		}
+	};
+
+	private ItemListener datasourceChangedListener = new ItemListener() {
+		@Override
+		public void itemStateChanged(ItemEvent e) {
+			if (datasource.getSelectedDatasource() != null) {
+				targetPrjCoordSys = datasource.getSelectedDatasource().getPrjCoordSys();
+			} else {
+				targetPrjCoordSys = null;
+			}
+			setPrjCoordSysInfo(targetPrjCoordSys);
 		}
 	};
 
@@ -137,6 +155,7 @@ public class PanelTargetCoordSys extends JPanel {
 		}
 		SmFileChoose smFileChoose = new SmFileChoose(moduleName);
 		this.fileChooser = new JFileChooserControl();
+		this.fileChooser.setEnabled(false);
 		this.fileChooser.setFileChooser(smFileChoose);
 
 		this.panelCoordSysInfo = new PanelCoordSysInfo("");
@@ -184,19 +203,21 @@ public class PanelTargetCoordSys extends JPanel {
 
 	private void initListener() {
 		removeListener();
-		this.radioButtonFromDatasource.addActionListener(actionListener);
-		this.radioButtonPrjSetting.addActionListener(actionListener);
-		this.radioButtonImportPrjFile.addActionListener(actionListener);
-		this.buttonPrjSetting.addActionListener(actionListener);
-		this.fileChooser.addFileChangedListener(exportPathDocumentListener);
+		this.datasource.addItemListener(this.datasourceChangedListener);
+		this.radioButtonFromDatasource.addActionListener(this.actionListener);
+		this.radioButtonPrjSetting.addActionListener(this.actionListener);
+		this.radioButtonImportPrjFile.addActionListener(this.actionListener);
+		this.buttonPrjSetting.addActionListener(this.actionListener);
+		this.fileChooser.addFileChangedListener(this.exportPathDocumentListener);
 	}
 
 	private void removeListener() {
-		this.radioButtonFromDatasource.removeActionListener(actionListener);
-		this.radioButtonPrjSetting.removeActionListener(actionListener);
-		this.radioButtonImportPrjFile.removeActionListener(actionListener);
-		this.buttonPrjSetting.removeActionListener(actionListener);
-		this.fileChooser.removePathChangedListener(exportPathDocumentListener);
+		this.datasource.removeItemListener(this.datasourceChangedListener);
+		this.radioButtonFromDatasource.removeActionListener(this.actionListener);
+		this.radioButtonPrjSetting.removeActionListener(this.actionListener);
+		this.radioButtonImportPrjFile.removeActionListener(this.actionListener);
+		this.buttonPrjSetting.removeActionListener(this.actionListener);
+		this.fileChooser.removePathChangedListener(this.exportPathDocumentListener);
 
 	}
 
@@ -211,6 +232,7 @@ public class PanelTargetCoordSys extends JPanel {
 			this.buttonPrjSetting.setEnabled(false);
 			setPrjCoordSysInfo(this.datasource.getSelectedDatasource().getPrjCoordSys());
 		} else {
+			this.datasource.setEnabled(false);
 			this.radioButtonPrjSetting.setSelected(true);
 			setPrjCoordSysInfo(null);
 		}
@@ -250,7 +272,8 @@ public class PanelTargetCoordSys extends JPanel {
 			} else {
 				isPrjFile = newPrjCoorSys.fromFile(this.fileChooser.getPath(), PrjFileType.SUPERMAP);
 			}
-			if (isPrjFile) {
+			// 去除导入平面无投影坐标系
+			if (isPrjFile && newPrjCoorSys.getType() != PrjCoordSysType.PCS_NON_EARTH) {
 				return newPrjCoorSys;
 			} else {
 				return null;
@@ -272,6 +295,4 @@ public class PanelTargetCoordSys extends JPanel {
 		this.fileChooser.setEnabled(isEnable);
 		this.panelCoordSysInfo.setEnabled(isEnable);
 	}
-
-
 }

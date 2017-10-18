@@ -14,7 +14,6 @@ import com.supermap.desktop.dialog.symbolDialogs.SymbolDialog;
 import com.supermap.desktop.ui.UICommonToolkit;
 import com.supermap.desktop.utilities.CursorUtilities;
 import com.supermap.desktop.utilities.MapUtilities;
-import com.supermap.desktop.utilities.SystemPropertyUtilities;
 import com.supermap.mapping.*;
 
 import javax.swing.*;
@@ -111,9 +110,6 @@ public class LayersTree extends JTree {
 	}
 
 	private void initDrag() {
-		if (SystemPropertyUtilities.isLinux()) {
-			this.setRowHeight(17);
-		}
 		this.setDragEnabled(true);
 		dragSource = DragSource.getDefaultDragSource();
 		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_MOVE, new LayersTreeDragGestureListener());
@@ -123,6 +119,21 @@ public class LayersTree extends JTree {
 	@Override
 	public DropTarget getDropTarget() {
 		return this.dropTargetTemp;
+	}
+
+	// fix by lixiaoyao 2017/10/16
+	// 重写此方法，在根据坐标获取RowIndex时，不考虑x坐标，只需要考虑Y坐标；
+	// 实现只有当坐标Y超出树显示范围时，不改变选择对象，在范围内则改变选择对象
+	@Override
+	public TreePath getPathForLocation(int x, int y) {
+		TreePath closestPath = getClosestPathForLocation(x, y);
+
+		if (closestPath != null) {
+			Rectangle pathBounds = getPathBounds(closestPath);
+			if (pathBounds != null && y >= pathBounds.y && y < (pathBounds.y + pathBounds.height))
+				return closestPath;
+		}
+		return null;
 	}
 
 	public Map getMap() {

@@ -10,6 +10,7 @@ import com.supermap.desktop.ui.controls.prjcoordsys.JDialogPrjCoordSysTranslator
 import com.supermap.desktop.utilities.CoordSysTransMethodUtilities;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -37,10 +38,12 @@ public class PanelReferSysTransSettings extends JPanel {
 		return parameter;
 	}
 
-	public PanelReferSysTransSettings() {
+	private static final String LAYOUTMODEL = "HORIZONTAL";
+
+	public PanelReferSysTransSettings(String layoutModel) {
 		initComponents();
 		initializeResources();
-		initLayout();
+		initLayout(layoutModel);
 		initListener();
 	}
 
@@ -52,8 +55,10 @@ public class PanelReferSysTransSettings extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			if (dialogPrjCoordSysTranslatorSettings == null) {
 				dialogPrjCoordSysTranslatorSettings = new JDialogPrjCoordSysTranslatorSettings();
+				dialogPrjCoordSysTranslatorSettings.setCoordSysTransMethodValue(CoordSysTransMethodUtilities.valueOf(comboBoxMethod.getSelectedItem().toString()));
 				dialogPrjCoordSysTranslatorSettings.setVisible(true);
 			} else {
+				dialogPrjCoordSysTranslatorSettings.setCoordSysTransMethodValue(CoordSysTransMethodUtilities.valueOf(comboBoxMethod.getSelectedItem().toString()));
 				dialogPrjCoordSysTranslatorSettings.setVisible(true);
 			}
 			if (dialogPrjCoordSysTranslatorSettings.getDialogResult() == DialogResult.OK) {
@@ -96,29 +101,52 @@ public class PanelReferSysTransSettings extends JPanel {
 		this.buttonSet.setText(ControlsProperties.getString("String_Button_Setting"));
 	}
 
-	private void initLayout() {
-		GroupLayout groupLayout = new GroupLayout(this);
-		groupLayout.setAutoCreateContainerGaps(true);
-		groupLayout.setAutoCreateGaps(true);
-		this.setLayout(groupLayout);
+	private void initLayout(String layoutModel) {
+		this.comboBoxMethod.setPreferredSize(new Dimension(85, 23));
+		this.buttonSet.setPreferredSize(new Dimension(50, 23));
+		if (layoutModel.equals(LAYOUTMODEL)) {
+			GroupLayout groupLayout = new GroupLayout(this);
+			groupLayout.setAutoCreateContainerGaps(true);
+			groupLayout.setAutoCreateGaps(true);
+			this.setLayout(groupLayout);
 
-		// @formatter:off
-		groupLayout.setHorizontalGroup(groupLayout.createSequentialGroup()
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addComponent(this.labelMethod)
-						.addComponent(this.labelPrjTransParameterset))
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addComponent(this.comboBoxMethod)
-						.addComponent(this.buttonSet, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+			// @formatter:off
+			groupLayout.setHorizontalGroup(groupLayout.createSequentialGroup()
+					.addComponent(this.labelMethod)
+					.addComponent(this.comboBoxMethod, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addGap(40)
+					.addComponent(this.labelPrjTransParameterset)
+					.addComponent(this.buttonSet, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+			groupLayout.setVerticalGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+					.addComponent(this.labelMethod)
+					.addComponent(this.comboBoxMethod, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addComponent(this.labelPrjTransParameterset)
+					.addComponent(this.buttonSet, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE));
+			// @formatter:on
+		} else {
+			GroupLayout groupLayout = new GroupLayout(this);
+			groupLayout.setAutoCreateContainerGaps(true);
+			groupLayout.setAutoCreateGaps(true);
+			this.setLayout(groupLayout);
 
-		groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(this.labelMethod)
-						.addComponent(this.comboBoxMethod, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(this.labelPrjTransParameterset)
-						.addComponent(this.buttonSet, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)));
-		// @formatter:on
+			// @formatter:off
+			groupLayout.setHorizontalGroup(groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(this.labelMethod)
+							.addComponent(this.labelPrjTransParameterset))
+					.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(this.comboBoxMethod)
+							.addComponent(this.buttonSet, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+
+			groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+							.addComponent(this.labelMethod)
+							.addComponent(this.comboBoxMethod, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+							.addComponent(this.labelPrjTransParameterset)
+							.addComponent(this.buttonSet, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)));
+			// @formatter:on
+		}
 	}
 
 	private void initListener() {

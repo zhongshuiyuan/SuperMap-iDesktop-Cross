@@ -1,6 +1,7 @@
 package com.supermap.desktop.ui.mdi.plaf.feature;
 
 import com.supermap.desktop.ui.mdi.MdiGroup;
+import com.supermap.desktop.ui.mdi.NextAndPrePageStrategy.INextAndPrePageStrategy;
 import com.supermap.desktop.ui.mdi.plaf.properties.MdiTabsUIProperties;
 
 import java.awt.*;
@@ -21,9 +22,11 @@ public class MdiTabsFeature extends AbstractMdiFeature {
 	private int lastVisibleTabIndex = 0; // 当前 tabs 最后一个可显示的 tab
 	private int height = 0;
 	private MdiTabFeature activeTab;
+	private INextAndPrePageStrategy nextAndPrePageStrategy;
 
 	public MdiTabsFeature(MdiGroup group, IMdiFeature parent) {
 		super(group, parent);
+		this.nextAndPrePageStrategy=group.getNextAndPrePageStrategy();
 	}
 
 	public static int getTabGap() {
@@ -84,7 +87,13 @@ public class MdiTabsFeature extends AbstractMdiFeature {
 	 */
 	@Override
 	public void layouting() {
-		layoutingVisibleIndex();
+//		layoutingVisibleIndex();
+		if (this.nextAndPrePageStrategy!=null){
+			this.nextAndPrePageStrategy.resetVisibleIndex(getGroup(),getEffectiveWidth(),this.features,this.firstVisibleTabIndex,
+					this.lastVisibleTabIndex,this.tabGap);
+			this.firstVisibleTabIndex=this.nextAndPrePageStrategy.getFirstVisibleTabIndex();
+			this.lastVisibleTabIndex=this.nextAndPrePageStrategy.getLastVisibleTabIndex();
+		}
 		layoutingFeaturesRect();
 	}
 
@@ -92,42 +101,54 @@ public class MdiTabsFeature extends AbstractMdiFeature {
 	 * 计算整个 Tabs 区域可以显示的 Tab 起止索引
 	 * Tab 的文本不同导致 Tab 的宽度不同，每一次重绘都需要根据当前视图重新计算
 	 */
-	private void layoutingVisibleIndex() {
-		int effectiveWidth = getEffectiveWidth();
-
-		if (getGroup() != null && this.features.size() > 0 && effectiveWidth > 0) {
-			this.lastVisibleTabIndex = this.features.size() - 1;
-			int sum = 0;
-
-			// 从 firstIndex 往后遍历计算宽度，直至所有的 Features 摆放完毕或者 sum 总宽度超过 effectiveWidth
-			for (int i = this.firstVisibleTabIndex; i < this.features.size(); i++) {
-				IMdiFeature childFeature = this.features.get(i);
-				sum += sum == 0 ? childFeature.getWidth() : childFeature.getWidth() + this.tabGap;
-
-				if (sum > effectiveWidth) {
-					this.lastVisibleTabIndex = i - 1;
-					break;
-				}
-			}
-
-			// 如果 tabs 区域可以摆放的下，那么就全部显示出来。
-			// 如果 lastVisibleTabIndex 已经是最后一个了，那么就说明可用的 tabs 区域还有发挥空间，就从 startIndex 往前继续运算
-			if (this.lastVisibleTabIndex == this.features.size() && this.firstVisibleTabIndex > 0) {
-				for (int i = this.firstVisibleTabIndex - 1; i >= 0; i--) {
-					IMdiFeature childFeature = this.features.get(i);
-					sum += sum == 0 ? childFeature.getWidth() : childFeature.getWidth() + this.tabGap;
-
-					if (sum > effectiveWidth && i < this.firstVisibleTabIndex) {
-						this.firstVisibleTabIndex = i + 1;
-						break;
-					}
-				}
-			}
-		} else {
-			this.firstVisibleTabIndex = 0;
-			this.lastVisibleTabIndex = 0;
-		}
-	}
+//	private void layoutingVisibleIndex() {
+//		int effectiveWidth = getEffectiveWidth();
+//
+//		if (getGroup() != null && this.features.size() > 0 && effectiveWidth > 0) {
+//			this.lastVisibleTabIndex = this.features.size() - 1;
+//			int sum = 0;
+//			boolean isChangeShowFormsCount=getGroup().isChangeShowFormsCount();
+//
+//			// 从 firstIndex 往后遍历计算宽度，直至所有的 Features 摆放完毕或者 sum 总宽度超过 effectiveWidth
+//			for (int i = this.firstVisibleTabIndex; i < this.features.size(); i++) {
+//				IMdiFeature childFeature = this.features.get(i);
+//				sum += sum == 0 ? childFeature.getWidth() : childFeature.getWidth() + this.tabGap;
+//
+//				if (isChangeShowFormsCount && i-this.firstVisibleTabIndex>=getGroup().getShowFormsCount()-1){
+//					this.lastVisibleTabIndex = i;
+//					break;
+//				}
+//
+//				if (sum > effectiveWidth) {
+//					this.lastVisibleTabIndex = i - 1;
+//					break;
+//				}
+//
+//			}
+//
+//			// 如果 tabs 区域可以摆放的下，那么就全部显示出来。
+//			// 如果 lastVisibleTabIndex 已经是最后一个了，那么就说明可用的 tabs 区域还有发挥空间，就从 startIndex 往前继续运算
+//			if (this.lastVisibleTabIndex == this.features.size() && this.firstVisibleTabIndex > 0) {
+//				for (int i = this.firstVisibleTabIndex - 1; i >= 0; i--) {
+//					IMdiFeature childFeature = this.features.get(i);
+//					sum += sum == 0 ? childFeature.getWidth() : childFeature.getWidth() + this.tabGap;
+//
+//					if (isChangeShowFormsCount && this.lastVisibleTabIndex-i>=getGroup().getShowFormsCount()-1){
+//						this.firstVisibleTabIndex = i;
+//						break;
+//					}
+//
+//					if (sum > effectiveWidth && i < this.firstVisibleTabIndex) {
+//						this.firstVisibleTabIndex = i + 1;
+//						break;
+//					}
+//				}
+//			}
+//		} else {
+//			this.firstVisibleTabIndex = 0;
+//			this.lastVisibleTabIndex = 0;
+//		}
+//	}
 
 	/**
 	 * 计算每一个 Feature 的 bounds
