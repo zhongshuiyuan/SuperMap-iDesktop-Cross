@@ -16,6 +16,7 @@ import com.supermap.desktop.utilities.StringUtilities;
 
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -130,7 +131,7 @@ public class JDialogPrjCoordSysTranslatorSettings extends SmDialog {
 		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_POSITION_VECTOR));
 		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_COORDINATE_FRAME));
 		this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_BURSA_WOLF));
-
+		this.comboBoxMethod.setPreferredSize(new Dimension(80, 23));
 		this.labelScaleDifference = new JLabel("ScaleDiff");
 		this.textFieldScaleDifference = new SMFormattedTextField(NumberFormat.getInstance());
 		//this.buttonSetPrj = new SmButton(ControlsProperties.getString("String_SetDesPrjCoordSys"));

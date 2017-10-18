@@ -217,7 +217,7 @@ public class JDialogBatchPrjTranslator extends SmDialog {
 		this.targetDatasource = new DatasourceComboBox();
 		this.targetPanelCoordSysInfo = new PanelCoordSysInfo("");
 		// 参照系转换设置面板块
-		this.panelReferSysTransSettings = new PanelReferSysTransSettings();
+		this.panelReferSysTransSettings = new PanelReferSysTransSettings("");
 		//数据集列表
 		this.tablePanel = new JPanel();
 		this.table = new JTable();
@@ -327,7 +327,7 @@ public class JDialogBatchPrjTranslator extends SmDialog {
 	private ArrayList getAvailableDatasets(Datasets datasets) {
 		ArrayList<Dataset> availableDatasets = new ArrayList();
 		for (int i = 0; i < datasets.getCount(); i++) {
-			if (!datasets.get(i).isReadOnly() && datasets.get(i).getPrjCoordSys().getType() != PrjCoordSysType.PCS_NON_EARTH) {
+			if (datasets.get(i).getPrjCoordSys().getType() != PrjCoordSysType.PCS_NON_EARTH) {
 				availableDatasets.add(datasets.get(i));
 			}
 		}

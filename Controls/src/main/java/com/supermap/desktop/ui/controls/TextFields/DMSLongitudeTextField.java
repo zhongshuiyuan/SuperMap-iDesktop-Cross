@@ -14,10 +14,10 @@ import java.math.BigDecimal;
 
 /**
  * Created by yuanR on 2017/10/13 0013.
- * 支持输入度分秒的组合控件
+ * 支持输入度分秒的组合控件（经度版）
  * 组合控件由三个TextField和三个Label组合而成，
  */
-public class DMSTextField extends JPanel {
+public class DMSLongitudeTextField extends JPanel {
 
 	public SmTextFieldLegit getTextFieldD() {
 		return textFieldD;
@@ -152,10 +152,6 @@ public class DMSTextField extends JPanel {
 				return false;
 			}
 			try {
-				//if (!StringUtilities.isNumeric(textFieldValue) || !StringUtilities.isNumeric(textFieldD.getText().replace("-", ""))) {
-				//	return false;
-				//}
-
 				Integer integer = Integer.valueOf(textFieldValue);
 				Integer degree = Integer.valueOf(textFieldD.getText().replace("-", ""));
 				if ((degree.equals(180) && integer != 0)) {
@@ -212,7 +208,7 @@ public class DMSTextField extends JPanel {
 	};
 
 
-	public DMSTextField() {
+	public DMSLongitudeTextField() {
 		initComponent();
 		initLayout();
 		initResources();
@@ -301,10 +297,10 @@ public class DMSTextField extends JPanel {
 	 *
 	 * @param enabled
 	 */
-	public void setPanelEnabled(Boolean enabled) {
-		this.textFieldD.setEnabled(enabled);
-		this.textFieldM.setEnabled(enabled);
-		this.textFieldS.setEnabled(enabled);
+	public void setPanelEditable(Boolean enabled) {
+		this.textFieldD.setEditable(enabled);
+		this.textFieldM.setEditable(enabled);
+		this.textFieldS.setEditable(enabled);
 		// 当设置控件不可用时，设置面板颜色为空
 		if (!enabled) {
 			this.setBackground(null);
