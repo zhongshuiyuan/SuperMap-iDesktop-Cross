@@ -1071,11 +1071,6 @@ public class LayersTree extends JTree {
 						((ThemeGridRange) tempTheme).getItem(i).setVisible(isVisible);
 					}
 				}
-			} else if (layer instanceof LayerGroup) {
-				LayerGroup layerGroup = (LayerGroup) layer;
-				for (int i = 0; i < layerGroup.getCount(); i++) {
-					layerGroup.get(i).setVisible(isVisible);
-				}
 			}
 		}
 
@@ -1113,6 +1108,10 @@ public class LayersTree extends JTree {
 
 	public boolean isHitTestInfo() {
 		return isHitTestInfo;
+	}
+
+	public void setHitTestInfo(boolean hitTestInfo) {
+		isHitTestInfo = hitTestInfo;
 	}
 
 	private void updateLater() {
