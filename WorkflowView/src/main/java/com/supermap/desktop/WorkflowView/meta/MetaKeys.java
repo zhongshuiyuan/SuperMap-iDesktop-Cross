@@ -93,6 +93,8 @@ public class MetaKeys {
 	public static final String INCREMENTAL_AUTO_CORRELATION = "IncrementalAutoCorrelation";
 	public static final String AVERAGE_NEAREST_NEIGHBOR = "AverageNearestNeighbor";
 	public static final String OPTIMIZED_HOT_SPOT_ANALYST = "OptimizedHotSpotAnalyst";
+	public static final String COLLECT_EVENTS="CollectEvents";
+	public static final String INTEGRATE="Integrate";
 
 	//数据处理
 	public static final String AGGREGATE_POINTS = "AggregatePoints";
