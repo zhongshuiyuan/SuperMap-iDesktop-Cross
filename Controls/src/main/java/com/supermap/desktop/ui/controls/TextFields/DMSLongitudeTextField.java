@@ -353,7 +353,7 @@ public class DMSLongitudeTextField extends JPanel {
 		int fInt = (int) d;
 		BigDecimal b1 = new BigDecimal(Double.toString(d));
 		BigDecimal b2 = new BigDecimal(Integer.toString(fInt));
-		double dPoint = b1.subtract(b2).floatValue();
+		double dPoint = b1.subtract(b2).doubleValue();
 		return dPoint;
 	}
 }

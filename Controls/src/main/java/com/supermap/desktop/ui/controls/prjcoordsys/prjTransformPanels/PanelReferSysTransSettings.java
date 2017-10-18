@@ -55,8 +55,10 @@ public class PanelReferSysTransSettings extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			if (dialogPrjCoordSysTranslatorSettings == null) {
 				dialogPrjCoordSysTranslatorSettings = new JDialogPrjCoordSysTranslatorSettings();
+				dialogPrjCoordSysTranslatorSettings.setCoordSysTransMethodValue(CoordSysTransMethodUtilities.valueOf(comboBoxMethod.getSelectedItem().toString()));
 				dialogPrjCoordSysTranslatorSettings.setVisible(true);
 			} else {
+				dialogPrjCoordSysTranslatorSettings.setCoordSysTransMethodValue(CoordSysTransMethodUtilities.valueOf(comboBoxMethod.getSelectedItem().toString()));
 				dialogPrjCoordSysTranslatorSettings.setVisible(true);
 			}
 			if (dialogPrjCoordSysTranslatorSettings.getDialogResult() == DialogResult.OK) {

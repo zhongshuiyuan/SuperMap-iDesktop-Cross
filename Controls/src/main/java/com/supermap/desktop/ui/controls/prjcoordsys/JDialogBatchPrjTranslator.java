@@ -150,10 +150,9 @@ public class JDialogBatchPrjTranslator extends SmDialog {
 
 	private void initStates() {
 		// 设置源数据的数据源选择以及投影信息
-		Datasource ActiveDatasource = DatasourceUtilities.getDefaultResultDatasource();
+		Datasource ActiveDatasource = DatasourceUtilities.getDefaultDatasource();
 		this.sourceDatasource.setSelectedDatasource(ActiveDatasource);
 		this.sourcePanelCoordSysInfo.setCoordInfo(PrjCoordSysUtilities.getDescription(sourceDatasource.getSelectedDatasource().getPrjCoordSys()));
-
 		// 设置目标数据数据源选择以及投影信息
 		// 目标数据源不支持平面无投影数据源
 		Datasources datasources = Application.getActiveApplication().getWorkspace().getDatasources();
@@ -166,21 +165,17 @@ public class JDialogBatchPrjTranslator extends SmDialog {
 			for (int i = 0; i < this.targetDatasource.getItemCount(); i++) {
 				if (!this.targetDatasource.getDatasourceAt(i).equals(sourceDatasource.getSelectedDatasource())) {
 					this.targetDatasource.setSelectedDatasource(this.targetDatasource.getDatasourceAt(i));
-					this.targetPanelCoordSysInfo.setCoordInfo(PrjCoordSysUtilities.getDescription(targetDatasource.getSelectedDatasource().getPrjCoordSys()));
 					break;
-				} else {
-					this.targetDatasource.setSelectedDatasource(this.targetDatasource.getDatasourceAt(i));
-					this.targetPanelCoordSysInfo.setCoordInfo(PrjCoordSysUtilities.getDescription(targetDatasource.getSelectedDatasource().getPrjCoordSys()));
 				}
 			}
+			this.targetPanelCoordSysInfo.setCoordInfo(PrjCoordSysUtilities.getDescription(targetDatasource.getSelectedDatasource().getPrjCoordSys()));
 		}
 		// 初始化JTable显示,对选中数据源中每条数据集记录进行遍历，找出可以填入列表的数据
 		this.tableModel.setDataList(getAvailableDatasets(sourceDatasource.getSelectedDatasource().getDatasets()), this.targetDatasource.getSelectedDatasource());
 		this.dataList = tableModel.getDataList();
 		// 面板是否可用
 		if (null == targetDatasource.getSelectedDatasource() || this.dataList.size() == 0) {
-			this.targetPanelCoordSysInfo.setCoordInfo("");
-			setPanelEnabled(false);
+			this.panelButton.getButtonOk().setEnabled(false);
 		}
 
 	}
@@ -304,18 +299,6 @@ public class JDialogBatchPrjTranslator extends SmDialog {
 		this.setLayout(new GridBagLayout());
 		this.add(mianPanel, new GridBagConstraintsHelper(0, 0, 1, 1).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setWeight(1, 1));
 		this.add(this.panelButton, new GridBagConstraintsHelper(0, 1, 1, 1).setFill(GridBagConstraints.HORIZONTAL).setAnchor(GridBagConstraints.EAST).setWeight(1, 0));
-	}
-
-	/**
-	 * 设置面板是否可用
-	 *
-	 * @param isEnable
-	 */
-	public void setPanelEnabled(Boolean isEnable) {
-		// 参照系转换设置面板块
-		this.panelReferSysTransSettings.setPanelEnabled(isEnable);
-		// 确定取消按钮；
-		this.panelButton.getButtonOk().setEnabled(isEnable);
 	}
 
 	/**

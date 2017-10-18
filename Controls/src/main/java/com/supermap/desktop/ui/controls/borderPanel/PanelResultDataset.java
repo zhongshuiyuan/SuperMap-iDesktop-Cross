@@ -13,6 +13,8 @@ import java.awt.event.*;
 /**
  * Created by yuanR on 2017/9/26 0026.
  * 结果数据集面板，支持自定义默认结果数据集名称、边框添加CheckBox控件控制面板是否可用
+ * <p>
+ * 优化：当combox为空时，整个功能不可用
  */
 public class PanelResultDataset extends JPanel {
 	/**
@@ -155,7 +157,9 @@ public class PanelResultDataset extends JPanel {
 	 */
 	public void setResultName(String resultName) {
 		this.resultName = resultName;
-		this.textFieldResultDatasetName.setText(comboBoxResultDataDatasource.getSelectedDatasource().getDatasets().getAvailableDatasetName(this.resultName));
+		if (this.comboBoxResultDataDatasource.getSelectedDatasource() != null) {
+			this.textFieldResultDatasetName.setText(comboBoxResultDataDatasource.getSelectedDatasource().getDatasets().getAvailableDatasetName(this.resultName));
+		}
 	}
 
 	/**
