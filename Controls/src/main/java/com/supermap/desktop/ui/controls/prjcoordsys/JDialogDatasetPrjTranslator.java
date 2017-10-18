@@ -115,14 +115,8 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 				// 当数据集改变时，更新投影信息、结果数据及名称、面板可用否
 				panelCoordSysInfo.setCoordInfo(PrjCoordSysUtilities.getDescription(dataset.getSelectedDataset().getPrjCoordSys()));
 				panelResultDataset.setResultName(dataset.getSelectedDataset().getName());
-				if (dataset.getSelectedDataset().getPrjCoordSys().getType().equals(PrjCoordSysType.PCS_NON_EARTH)) {
-					setPanelEnabled(false);
-				} else {
-					setPanelEnabled(true);
-					// 每次切换数据集时，当选中数据集投影坐标含有地理坐标时可以进行投影转换，此时需要判断下目标坐标系值是否为空
-					doSome.setOKButtonEnabled(panelTargetCoordSys.getTargetPrjCoordSys() != null);
-					setResultPanelEnabled();
-				}
+				setResultPanelEnabled();
+				doSome.setOKButtonEnabled(panelTargetCoordSys.getTargetPrjCoordSys() != null && null != panelResultDataset.getComboBoxResultDataDatasource().getSelectedDatasource());
 			}
 		}
 	};
@@ -222,10 +216,8 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 		this.dataset.setSelectedDataset(dataset);
 		this.panelCoordSysInfo.setCoordInfo(PrjCoordSysUtilities.getDescription(dataset.getPrjCoordSys()));
 		this.panelResultDataset.setResultName(dataset.getName());
-		if (dataset.getPrjCoordSys().getType().equals(PrjCoordSysType.PCS_NON_EARTH)) {
-			setPanelEnabled(false);
-		}
 		setResultPanelEnabled();
+		this.panelButton.getButtonOk().setEnabled(!dataset.getPrjCoordSys().getType().equals(PrjCoordSysType.PCS_NON_EARTH) && null != panelResultDataset.getComboBoxResultDataDatasource().getSelectedDatasource());
 	}
 
 
@@ -297,33 +289,34 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 		this.add(this.panelButton, new GridBagConstraintsHelper(0, 1, 1, 1).setFill(GridBagConstraints.HORIZONTAL).setAnchor(GridBagConstraints.EAST).setWeight(1, 0));
 	}
 
-	/**
-	 * 设置面板是否可用
-	 *
-	 * @param isEnable
-	 */
-	public void setPanelEnabled(Boolean isEnable) {
-		// 参照系转换设置面板块
-		this.panelReferSysTransSettings.setPanelEnabled(isEnable);
-		// 结果另存为面板块
-		this.panelResultDataset.setPanelEnable(isEnable);
-		// 目标坐标系块
-		this.panelTargetCoordSys.setPanelEnabled(isEnable);
-		// 确定取消按钮；
-		this.panelButton.getButtonOk().setEnabled(isEnable);
-	}
+	///**
+	// * 设置面板是否可用
+	// *
+	// * @param isEnable
+	// */
+	//public void setPanelEnabled(Boolean isEnable) {
+	//	// 参照系转换设置面板块
+	//	this.panelReferSysTransSettings.setPanelEnabled(isEnable);
+	//	// 结果另存为面板块
+	//	this.panelResultDataset.setPanelEnable(isEnable);
+	//	// 目标坐标系块
+	//	this.panelTargetCoordSys.setPanelEnabled(isEnable);
+	//	// 确定取消按钮；
+	//	this.panelButton.getButtonOk().setEnabled(isEnable);
+	//}
 
 	/**
 	 * 当转换的数据为栅格和影像时，必须另存结果
 	 */
 	public void setResultPanelEnabled() {
-		if (this.dataset.getSelectedDataset().getType().equals(DatasetType.GRID) || this.dataset.getSelectedDataset().getType().equals(DatasetType.IMAGE)) {
-			this.panelResultDataset.getCheckBoxUsed().setSelected(true);
-			this.panelResultDataset.getCheckBoxUsed().setEnabled(false);
-			this.panelResultDataset.getComboBoxResultDataDatasource().setEnabled(true);
-			this.panelResultDataset.getTextFieldResultDataDataset().setEnabled(true);
-		} else {
-			this.panelResultDataset.getCheckBoxUsed().setEnabled(true);
-		}
+		Boolean isHasDatasource = null != this.panelResultDataset.getComboBoxResultDataDatasource().getSelectedDatasource();
+		Boolean isGridDatasetType = this.dataset.getSelectedDataset().getType().equals(DatasetType.GRID);
+		Boolean isImageDatasetType = this.dataset.getSelectedDataset().getType().equals(DatasetType.IMAGE);
+
+		this.panelResultDataset.getCheckBoxUsed().setSelected(isHasDatasource && (isGridDatasetType || isImageDatasetType));
+		this.panelResultDataset.getCheckBoxUsed().setEnabled(isHasDatasource && !isGridDatasetType && !isImageDatasetType);
+		this.panelResultDataset.getComboBoxResultDataDatasource().setEnabled(isHasDatasource && (isGridDatasetType || isImageDatasetType));
+		this.panelResultDataset.getTextFieldResultDataDataset().setEnabled(isHasDatasource && (isGridDatasetType || isImageDatasetType));
+
 	}
 }

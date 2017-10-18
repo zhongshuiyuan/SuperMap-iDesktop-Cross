@@ -52,10 +52,10 @@ public class PanelResultDataset extends JPanel {
 		this.resultName = defaultResultDatasetName;
 		this.isAddCheckBox = isAddChecoBox;
 		initComponent();
-		initResources();
-		resetDatasetName();
-		initComboBoxResultDataDatasource();
 		setPanelResultDataLayout();
+		initResources();
+		initComboBoxResultDataDatasource();
+		resetDatasetName();
 		setComponentName();
 		if (this.isAddCheckBox) {
 			this.compTitledPane = new CompTitledPane(this.checkBoxUsed, this);
@@ -144,9 +144,8 @@ public class PanelResultDataset extends JPanel {
 	}
 
 	private void resetDatasetName() {
-		String name = this.resultName;
 		if (this.comboBoxResultDataDatasource.getSelectedDatasource() != null) {
-			this.textFieldResultDatasetName.setText(this.comboBoxResultDataDatasource.getSelectedDatasource().getDatasets().getAvailableDatasetName(name));
+			this.textFieldResultDatasetName.setText(this.comboBoxResultDataDatasource.getSelectedDatasource().getDatasets().getAvailableDatasetName(this.resultName));
 		}
 	}
 
@@ -156,8 +155,8 @@ public class PanelResultDataset extends JPanel {
 	 * @param resultName 当设置结果数据集名称时，立即生效
 	 */
 	public void setResultName(String resultName) {
-		this.resultName = resultName;
 		if (this.comboBoxResultDataDatasource.getSelectedDatasource() != null) {
+			this.resultName = resultName;
 			this.textFieldResultDatasetName.setText(comboBoxResultDataDatasource.getSelectedDatasource().getDatasets().getAvailableDatasetName(this.resultName));
 		}
 	}
@@ -182,6 +181,7 @@ public class PanelResultDataset extends JPanel {
 		this.checkBoxUsed.setSelected(isEnable);
 		this.checkBoxUsed.setEnabled(isEnable);
 		setControlsState(isEnable);
+
 	}
 
 	public DatasourceComboBox getComboBoxResultDataDatasource() {

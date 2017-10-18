@@ -253,9 +253,9 @@ public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 
 	private void setControlsEnabled() {
 		if (!covertFlag) {
-			//this.buttonConvert.setEnabled(false);
 			this.buttonCopy.setEnabled(false);
 			this.buttonSet.setEnabled(false);
+			//this.buttonConvert.setEnabled(false);
 		} else {
 			this.buttonCopy.setEnabled(true);
 			this.buttonSet.setEnabled(true);
