@@ -55,9 +55,10 @@ public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 					throw new UnsupportedOperationException();
 				} else if (e.getSource() == buttonSet) {
 					buttonSetClicked();
-				} else if (e.getSource() == buttonConvert) {
-					buttonConvertClicked();
 				}
+			}
+			if (e.getSource() == buttonConvert) {
+				buttonConvertClicked();
 			}
 		}
 	};
@@ -252,13 +253,13 @@ public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 
 	private void setControlsEnabled() {
 		if (!covertFlag) {
-			this.buttonConvert.setEnabled(false);
+			//this.buttonConvert.setEnabled(false);
 			this.buttonCopy.setEnabled(false);
 			this.buttonSet.setEnabled(false);
 		} else {
 			this.buttonCopy.setEnabled(true);
 			this.buttonSet.setEnabled(true);
-			this.buttonConvert.setEnabled(true);
+			//this.buttonConvert.setEnabled(true);
 		}
 	}
 }

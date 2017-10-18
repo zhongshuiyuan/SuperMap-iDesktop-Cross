@@ -22,7 +22,6 @@ public class CtrlActionDatasetPrjTranslator extends CtrlAction {
 	@Override
 	public void run() {
 
-
 		JDialogDatasetPrjTranslator dialogPrjTransform = new JDialogDatasetPrjTranslator();
 		dialogPrjTransform.showDialog();
 	}
