@@ -407,7 +407,7 @@ public class JDialogPrjCoordSysSettings extends SmDialog {
 		this.splitPaneMain.setContinuousLayout(true);
 
 		JScrollPane scrollPane = new JScrollPane();
-		this.treePrjCoordSys = new JTree(new DefaultTreeModel(new DefaultMutableTreeNode(ControlsProperties.getString("String_CoordS ystem"))));
+		this.treePrjCoordSys = new JTree(new DefaultTreeModel(new DefaultMutableTreeNode(ControlsProperties.getString("String_CoordSystem"))));
 		this.treePrjCoordSys.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		scrollPane.setViewportView(this.treePrjCoordSys);
 		this.splitPaneMain.setLeftComponent(scrollPane);
