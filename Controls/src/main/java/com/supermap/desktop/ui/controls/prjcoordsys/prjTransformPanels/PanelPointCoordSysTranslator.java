@@ -337,9 +337,10 @@ public class PanelPointCoordSysTranslator extends JPanel {
 				// 度textField键盘输入限定
 				String text = textField.getText();
 				//“-”负号在首位，并且只能输入一次
-				if (!StringUtilities.isNullOrEmpty(text) && keyChar == KeyEvent.VK_MINUS) {// keyChar == 45代表负号
+				if (textField.getCaretPosition() != 0 && keyChar == KeyEvent.VK_MINUS || text.contains("-") && keyChar == KeyEvent.VK_MINUS) {// keyChar == 45代表负号
 					e.consume();
 				}
+
 				//“.”不能在首位，并且只能输入一次
 				if (StringUtilities.isNullOrEmpty(text) && keyChar == KeyEvent.VK_PERIOD || text.contains(".") && keyChar == KeyEvent.VK_PERIOD) {//keyChar == 46代表小数点
 					e.consume();
@@ -445,7 +446,7 @@ public class PanelPointCoordSysTranslator extends JPanel {
 				// 度textField键盘输入限定
 				String text = textField.getText();
 				//“-”负号在首位，并且只能输入一次
-				if (!StringUtilities.isNullOrEmpty(text) && keyChar == KeyEvent.VK_MINUS) {// keyChar == 45代表负号
+				if (textField.getCaretPosition() != 0 && keyChar == KeyEvent.VK_MINUS || text.contains("-") && keyChar == KeyEvent.VK_MINUS) {// keyChar == 45代表负号
 					e.consume();
 				}
 				//“.”不能在首位，并且只能输入一次

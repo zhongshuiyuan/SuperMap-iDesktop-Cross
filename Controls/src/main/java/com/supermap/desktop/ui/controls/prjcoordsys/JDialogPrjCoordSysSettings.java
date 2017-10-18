@@ -44,6 +44,7 @@ import static com.supermap.desktop.ui.controls.prjcoordsys.XMLProjectionTag.GEOC
  * 而在本类的实现中， 分组与子项是上下层级关系。
  *
  * @author highsad
+ * 优化：支持树节点的定制-yuanR2017.10.18
  */
 // @formatter:on
 public class JDialogPrjCoordSysSettings extends SmDialog {
@@ -406,7 +407,7 @@ public class JDialogPrjCoordSysSettings extends SmDialog {
 		this.splitPaneMain.setContinuousLayout(true);
 
 		JScrollPane scrollPane = new JScrollPane();
-		this.treePrjCoordSys = new JTree(new DefaultTreeModel(new DefaultMutableTreeNode(ControlsProperties.getString("String_CoordSystem"))));
+		this.treePrjCoordSys = new JTree(new DefaultTreeModel(new DefaultMutableTreeNode(ControlsProperties.getString("String_CoordS ystem"))));
 		this.treePrjCoordSys.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		scrollPane.setViewportView(this.treePrjCoordSys);
 		this.splitPaneMain.setLeftComponent(scrollPane);
@@ -1649,4 +1650,24 @@ public class JDialogPrjCoordSysSettings extends SmDialog {
 		}
 	}
 
+	/**
+	 * 外部去除节点，定制
+	 * yuanR2017.10.18
+	 *
+	 * @param num
+	 */
+	//public void removeRoot(int[] num) {
+	//	for (int i = 0; i < num.length; i++) {
+	//		switch (num[i]) {
+	//			case CoordSysDefine.NONE_ERRTH:
+	//
+	//				this.treePrjCoordSys.getModel().g()
+	//
+	//			case CoordSysDefine.PROJECTION_SYSTEM:
+	//
+	//			case CoordSysDefine.GEOGRAPHY_COORDINATE:
+	//
+	//		}
+	//	}
+	//}
 }
