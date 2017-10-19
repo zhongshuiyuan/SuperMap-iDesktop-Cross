@@ -1238,6 +1238,7 @@ public class JDialogPrjCoordSysSettings extends SmDialog {
 	 * 描述一个坐标系
 	 *
 	 * @author highsad
+	 * 坐标系定义类
 	 */
 	public class CoordSysDefine {
 		public static final int USER_DEFINED = -1; // 用户自定义
@@ -1652,22 +1653,22 @@ public class JDialogPrjCoordSysSettings extends SmDialog {
 
 	/**
 	 * 外部去除节点，定制
+	 * 未完成
 	 * yuanR2017.10.18
 	 *
 	 * @param num
 	 */
-	//public void removeRoot(int[] num) {
-	//	for (int i = 0; i < num.length; i++) {
-	//		switch (num[i]) {
-	//			case CoordSysDefine.NONE_ERRTH:
-	//
-	//				this.treePrjCoordSys.getModel().g()
-	//
-	//			case CoordSysDefine.PROJECTION_SYSTEM:
-	//
-	//			case CoordSysDefine.GEOGRAPHY_COORDINATE:
-	//
-	//		}
-	//	}
-	//}
+	public void removeRoot(int[] num) {
+		for (int i = 0; i < num.length; i++) {
+			switch (num[i]) {
+				case CoordSysDefine.NONE_ERRTH:
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode) getNodeByDefine((DefaultMutableTreeNode) this.treePrjCoordSys.getModel().getRoot(), currentPrjDefine.getParent());
+					// HOW TO DO 隐藏节点？
+				case CoordSysDefine.PROJECTION_SYSTEM:
+
+				case CoordSysDefine.GEOGRAPHY_COORDINATE:
+
+			}
+		}
+	}
 }
