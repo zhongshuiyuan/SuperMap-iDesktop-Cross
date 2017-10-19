@@ -108,10 +108,9 @@ public class DMSLongitudeTextField extends JPanel {
 				// 度textField键盘输入限定
 				String textD = textFieldD.getText();
 				//“-”负号在首位，并且只能输入一次
-				if (!StringUtilities.isNullOrEmpty(textD) && keyChar == KeyEvent.VK_MINUS) {// keyChar == 45代表负号
+				if (textFieldD.getCaretPosition() != 0 && keyChar == KeyEvent.VK_MINUS || textD.contains("-") && keyChar == KeyEvent.VK_MINUS) {// keyChar == 45代表负号
 					e.consume();
 				}
-
 
 				if (keyChar == KeyEvent.VK_PERIOD || keyChar == KeyEvent.VK_SLASH) {
 					e.consume();
@@ -353,7 +352,7 @@ public class DMSLongitudeTextField extends JPanel {
 		int fInt = (int) d;
 		BigDecimal b1 = new BigDecimal(Double.toString(d));
 		BigDecimal b2 = new BigDecimal(Integer.toString(fInt));
-		double dPoint = b1.subtract(b2).floatValue();
+		double dPoint = b1.subtract(b2).doubleValue();
 		return dPoint;
 	}
 }

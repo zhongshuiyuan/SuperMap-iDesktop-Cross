@@ -77,6 +77,8 @@ public class PanelTargetCoordSys extends JPanel {
 			} else if (e.getSource().equals(buttonPrjSetting)) {
 				// 当点击了投影设置，并且设置了投影
 				JDialogPrjCoordSysSettings dialogPrjCoordSysSettings = new JDialogPrjCoordSysSettings();
+				// TODO 如何隐藏tree中节点-yuanR2017.10.18
+				//dialogPrjCoordSysSettings.removeRoot(new int[]{JDialogPrjCoordSysSettings.CoordSysDefine.NONE_ERRTH});
 				if (dialogPrjCoordSysSettings.showDialog() == DialogResult.OK) {
 					if (dialogPrjCoordSysSettings.getPrjCoordSys().getType() != PrjCoordSysType.PCS_NON_EARTH) {
 						buttonSetPrjCoordSys = dialogPrjCoordSysSettings.getPrjCoordSys();
